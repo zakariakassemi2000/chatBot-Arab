@@ -1,0 +1,16 @@
+.env
+__pycache__/
+*.py[cod]
+*$py.class
+.streamlit/
+venv/
+.env/
+env/
+.vscode/
+.idea/
+*.png
+*.jpg
+*.jpeg
+*.wav
+*.mp3
+!Stylized_Heart_and_Cross_Logo_for_SHIFA_AI__1_-removebg-preview.png
