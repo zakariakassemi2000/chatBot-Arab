@@ -1,0 +1,43 @@
+# Ignore python bytecode and cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+env.bak/
+venv.bak/
+
+# Ignore local environment variables
+# Keep .env.example but ignore .env
+.env
+secret.env
+
+# Ignore version control
+.git/
+.gitignore
+
+# Ignore build files
+build/
+dist/
+*.egg-info/
+
+# Do NOT ignore models/ since FAISS and classifier are needed,
+# UNLESS we start using external Dbs/APIs exclusively.
+# Wait, for Docker, if models/ is large, we should probably mount it via volumes,
+# but for now, we include it.
+
+# Ignore Streamlit configurations that might conflict
+.streamlit/
+
+# Temporary tests or scripts
+test_*.py
+test_*.txt
+*sanitize*.py
+inspect_h5.py
+convert_keras3.py
+
+# History files
+consultation_history.json

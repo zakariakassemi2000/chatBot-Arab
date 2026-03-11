@@ -1,0 +1,4 @@
+gTTS>=2.3.0
+SpeechRecognition>=3.10.0
+audio-recorder-streamlit>=0.0.8
+pydub>=0.25.0

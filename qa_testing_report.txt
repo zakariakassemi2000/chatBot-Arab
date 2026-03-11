@@ -1,0 +1,51 @@
+--- Testing model: FAISSRetriever ---
+Status: Not Working
+Error: OfflineModeIsEnabled: Cannot reach https://huggingface.co/api/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2: offline mode is enabled. To disable it, please unset the `HF_HUB_OFFLINE` environment variable.
+Cause: Exception during initialization. Possibly missing files or wrong path.
+
+--- Testing model: IntentClassifier ---
+Status: Working
+Load Time: 2.04s
+
+--- Testing model: BreastCancerDetector ---
+Status: Partially Working
+Error: pseudo-load failed: Model file not found: models/breast_cancer_model_v2.keras. Please run: python train_cancer_model.py
+Cause: Model files missing or dependency error.
+--- Testing model: BreastDensityDetector ---
+Status: Working
+Load Time: 2.40s
+Inference Status: Working
+Inference Time: 4.02s
+
+--- Testing model: BrainTumorDetector ---
+Status: Working
+Load Time: 3.88s
+Inference Status: Working
+Inference Time: 1.29s
+
+--- Testing model: ChestXrayAnalyzer ---
+Status: Working
+Load Time: 1.43s
+Inference Status: Working
+Inference Time: 9.47s
+
+--- Testing model: DermDetector ---
+Status: Working
+Load Time: 5.10s
+Inference Status: Working
+Inference Time: 2.90s
+
+--- Testing model: MRIAnalyzer ---
+Status: Not Working
+Error: ImportError: cannot import name 'MRIAnalyzer' from 'models.imaging.mri' (C:\Users\zakar\chatBot Arab\models\imaging\mri.py)
+Cause: Exception during initialization. Possibly missing files or wrong path.
+
+--- Testing model: MedFlamingoAnalyzer ---
+Status: Not Working
+Error: RuntimeError: Failed to download weights for tag 'openai': Failed to download file (open_clip_pytorch_model.bin) for timm/vit_large_patch14_clip_224.openai. Last error: An error happened while trying to locate the file on the Hub and we cannot find the requested files in the local cache. Please check your connection and try again or make sure your Internet connection is on.
+Cause: Exception during initialization. Possibly missing files or wrong path.
+
+--- Testing model: BioMistralLLM ---
+Status: Not Working
+Error: ImportError: cannot import name 'BioMistralLLM' from 'models.nlp.biomistral' (C:\Users\zakar\chatBot Arab\models\nlp\biomistral.py)
+Cause: Exception during initialization. Possibly missing files or wrong path.

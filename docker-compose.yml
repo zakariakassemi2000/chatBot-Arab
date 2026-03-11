@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  shifa-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: shifa-ai-web
+    restart: unless-stopped
+    ports:
+      - "8501:8501"
+    environment:
+      - GROQ_API_KEY=${GROQ_API_KEY}
+    volumes:
+      # Keep consultation history persistent
+      - ./consultation_history.json:/app/consultation_history.json
+      # Optional: if you update the knowledge base dynamically, mount models directory.
+      # - ./models:/app/models

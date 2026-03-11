@@ -1,0 +1,13 @@
+# Imaging stack (heavy). Install only if you need MRI/XRay/Density pages.
+torch>=2.0.0
+torchvision>=0.15.0
+transformers>=4.30.0
+huggingface_hub>=0.20.0
+opencv-python-headless
+monai>=1.3.0
+
+# Optional visualization
+grad-cam>=1.4.0
+
+# Some training/legacy scripts still rely on TF
+tensorflow>=2.15.0
