@@ -16,7 +16,7 @@ import faiss
 from sentence_transformers import SentenceTransformer
 
 # ─── Embedding model (multilingual, small, fast) ──────────────────
-EMBED_MODEL_NAME = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+EMBED_MODEL_NAME = "aubmindlab/bert-base-arabertv2"
 
 
 class FAISSRetriever:
@@ -29,8 +29,8 @@ class FAISSRetriever:
       3. At query time: encode query → FAISS search → return top-K results
     """
 
-    INDEX_PATH = "models/faiss_index.bin"
-    DATA_PATH  = "models/retriever_data.pkl"
+    INDEX_PATH = "models/faiss_index_camel.bin"
+    DATA_PATH  = "models/faiss_index_camel_meta.pkl"
 
     def __init__(self):
         self.index = None

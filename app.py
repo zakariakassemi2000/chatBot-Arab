@@ -111,176 +111,332 @@ st.set_page_config(
 # ── ADVANCED UI CSS ──
 st.markdown(f"""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Alexandria:wght@300;400;500;600;700&display=swap');
 
     html, body, [class*="st-"] {{
-        font-family: 'Cairo', sans-serif !important;
+        font-family: 'Alexandria', 'Outfit', sans-serif !important;
         direction: rtl !important;
         text-align: right !important;
     }}
 
+    /* Global Background */
     .stApp {{
-        background: linear-gradient(135deg, #fff5f5 0%, #ffffff 50%, #fff0f0 100%) !important;
+        background: linear-gradient(120deg, #0B0E14 0%, #151A28 100%) !important;
+        background-attachment: fixed !important;
+        color: #E2E8F0 !important;
+    }}
+    
+    .stApp::before {{
+        content: "";
+        position: fixed;
+        top: -200px;
+        right: -200px;
+        width: 600px;
+        height: 600px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(229, 57, 53, 0.15) 0%, rgba(0,0,0,0) 70%);
+        z-index: 0;
+        pointer-events: none;
+    }}
+
+    .stApp::after {{
+        content: "";
+        position: fixed;
+        bottom: -200px;
+        left: -100px;
+        width: 500px;
+        height: 500px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(56, 189, 248, 0.1) 0%, rgba(0,0,0,0) 70%);
+        z-index: 0;
+        pointer-events: none;
+    }}
+
+    [data-testid="stHeader"] {{
+        background: transparent !important;
     }}
 
     /* ── Sidebar ── */
     [data-testid="stSidebar"] {{
-        background: linear-gradient(180deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%) !important;
-        border-left: none !important;
+        background: rgba(16, 23, 42, 0.6) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        border-left: 1px solid rgba(255, 255, 255, 0.05) !important;
+        box-shadow: -10px 0 30px rgba(0,0,0,0.5) !important;
     }}
 
+    [data-testid="stSidebarNav"] {{
+        display: none !important;
+    }}
+
+    /* Sidebar Buttons */
     [data-testid="stSidebar"] .stButton > button {{
-        color: #e0e0e0 !important;
-        background: rgba(255,255,255,0.05) !important;
-        border: 1px solid rgba(255,255,255,0.1) !important;
+        color: #94A3B8 !important;
+        background: rgba(255,255,255,0.02) !important;
+        border: 1px solid rgba(255,255,255,0.05) !important;
         border-radius: 12px !important;
-        transition: all 0.3s ease !important;
-        font-weight: 600 !important;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+        font-weight: 500 !important;
+        padding: 12px !important;
+        justify-content: flex-start !important;
     }}
     [data-testid="stSidebar"] .stButton > button:hover {{
-        background: rgba(229,57,53,0.25) !important;
-        border-color: #E53935 !important;
-        color: #fff !important;
-        transform: translateX(-4px);
+        background: rgba(229,57,53,0.15) !important;
+        border-color: rgba(229,57,53,0.4) !important;
+        color: #FFF !important;
+        transform: scale(1.02) translateX(-4px) !important;
+        box-shadow: 0 4px 15px rgba(229,57,53,0.2) !important;
     }}
     [data-testid="stSidebar"] .stButton > button[kind="primary"] {{
-        background: linear-gradient(135deg, #E53935, #C62828) !important;
-        border: none !important;
+        background: linear-gradient(135deg, #E53935 0%, #ef4444 100%) !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
         color: white !important;
-        box-shadow: 0 4px 15px rgba(229,57,53,0.4) !important;
+        box-shadow: 0 8px 25px rgba(229,57,53,0.3) !important;
+        font-weight: 600 !important;
     }}
-    [data-testid="stSidebar"] p, [data-testid="stSidebar"] h3 {{
-        color: #e0e0e0 !important;
+    
+    [data-testid="stSidebar"] p, [data-testid="stSidebar"] h3, [data-testid="stSidebar"] label {{
+        color: #e2e8f0 !important;
     }}
-    [data-testid="stSidebar"] .stAlert {{
-        background: rgba(255,193,7,0.1) !important;
-        border: 1px solid rgba(255,193,7,0.3) !important;
-        color: #ffd54f !important;
-        border-radius: 10px !important;
-    }}
-
-    /* ── Global ── */
+    
+    /* ── Typography & Cards ── */
     .block-container {{
-        padding-top: 1.5rem !important;
-        padding-bottom: 5rem !important;
-        max-width: 860px !important;
+        padding-top: 2.5rem !important;
+        padding-bottom: 6rem !important;
+        max-width: 900px !important;
+        z-index: 1;
+        position: relative;
     }}
+    
     .main-title {{
-        background: linear-gradient(135deg, #E53935, #ff6b6b);
+        background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        font-size: 36px;
-        font-weight: 900;
+        font-size: 42px;
+        font-weight: 800;
         margin: 0;
+        letter-spacing: -0.02em;
+        text-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }}
+    
     .welcome-card, .data-card {{
-        background: white;
-        border-radius: 20px;
-        padding: 25px;
-        border: 1px solid #f0e0e0;
-        box-shadow: 0 8px 32px rgba(229,57,53,0.06);
-        margin-bottom: 20px;
-        transition: box-shadow 0.3s;
+        background: rgba(30, 41, 59, 0.5);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-radius: 24px;
+        padding: 30px;
+        border: 1px solid rgba(255,255,255,0.08);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        margin-bottom: 24px;
+        transition: transform 0.4s ease, box-shadow 0.4s ease;
+        color: #E2E8F0 !important;
     }}
     .welcome-card:hover, .data-card:hover {{
-        box-shadow: 0 12px 40px rgba(229,57,53,0.12);
+        transform: translateY(-5px);
+        box-shadow: 0 15px 45px rgba(0,0,0,0.4);
+        border: 1px solid rgba(255,255,255,0.12);
     }}
 
-    /* ── Quick suggestions ── */
+    /* ── Suggestions ── */
     .suggestion-btn {{
         display: inline-block;
-        background: linear-gradient(135deg, #fff5f5, #ffe0e0);
-        color: #C62828;
-        padding: 8px 16px;
+        background: rgba(15, 23, 42, 0.6);
+        color: #94A3B8;
+        padding: 10px 20px;
         border-radius: 20px;
-        margin: 4px;
-        font-size: 13px;
-        font-weight: 600;
+        margin: 5px;
+        font-size: 14px;
+        font-weight: 500;
         cursor: pointer;
-        border: 1px solid #ffcdd2;
-        transition: all 0.2s;
-        user-select: none;
+        border: 1px solid rgba(255,255,255,0.05);
+        transition: all 0.3s ease;
+        backdrop-filter: blur(8px);
     }}
     .suggestion-btn:hover {{
-        background: linear-gradient(135deg, #E53935, #C62828);
+        background: linear-gradient(135deg, rgba(229,57,53,0.8), rgba(198,40,40,0.8));
         color: white;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(229,57,53,0.3);
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 8px 20px rgba(229,57,53,0.3);
+        border-color: rgba(255,255,255,0.2);
     }}
 
     /* ── Stats badge ── */
     .stat-badge {{
-        background: rgba(229,57,53,0.15);
-        border: 1px solid rgba(229,57,53,0.3);
-        border-radius: 10px;
-        padding: 10px 14px;
-        margin: 6px 0;
+        background: rgba(15, 23, 42, 0.5);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.05);
+        border-radius: 16px;
+        padding: 14px 18px;
+        margin: 8px 0;
         text-align: center;
-        color: #ffcdd2;
+        transition: all 0.3s ease;
+    }}
+    .stat-badge:hover {{
+        background: rgba(30, 41, 59, 0.8);
+        border-color: rgba(255,255,255,0.1);
     }}
     .stat-badge .stat-num {{
-        font-size: 22px;
-        font-weight: 900;
-        color: #ff6b6b;
+        font-size: 26px;
+        font-weight: 800;
+        color: #E53935;
         display: block;
+        text-shadow: 0 2px 10px rgba(229,57,53,0.3);
     }}
     .stat-badge .stat-label {{
-        font-size: 11px;
-        color: #b0bec5;
+        font-size: 12px;
+        color: #94A3B8;
+        font-weight: 500;
     }}
 
     /* ── Chat ── */
     [data-testid="stChatMessage"] {{
-        animation: fadeInUp 0.35s ease-out;
+        animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        background: transparent !important;
+        padding: 1rem !important;
     }}
+    
     [data-testid="stChatMessageAvatarContainer"] img,
     [data-testid="stChatMessageAvatarContainer"] div {{
-        border: 2px solid #E53935 !important;
+        border: none !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
+        background: #1E293B !important;
+        color: #F8FAFC !important;
     }}
+    
     [data-testid="stChatMessage"]:not(:has([data-testid="chatAvatarIcon-user"])) div[data-testid="stChatMessageContent"] {{
-        background: #FFFFFF !important;
-        border-right: 4px solid #E53935 !important;
-        border-radius: 4px 20px 20px 20px !important;
-        box-shadow: 0 4px 16px rgba(229,57,53,0.08) !important;
-        color: #1E2028 !important;
+        background: rgba(30, 41, 59, 0.6) !important;
+        backdrop-filter: blur(16px) !important;
+        border-right: 3px solid #E53935 !important;
+        border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+        border-left: 1px solid rgba(255,255,255,0.05) !important;
+        border-top: 1px solid rgba(255,255,255,0.05) !important;
+        border-radius: 8px 24px 24px 24px !important;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.2) !important;
+        color: #E2E8F0 !important;
+        padding: 1.2rem !important;
     }}
+    
     [data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) div[data-testid="stChatMessageContent"] {{
-        background: linear-gradient(135deg, #FEEEEE, #fff5f5) !important;
-        border-right: 4px solid #C62828 !important;
-        border-radius: 20px 4px 20px 20px !important;
-        color: #1A202C !important;
+        background: linear-gradient(135deg, rgba(229,57,53,0.15) 0%, rgba(229,57,53,0.05) 100%) !important;
+        backdrop-filter: blur(16px) !important;
+        border: 1px solid rgba(229,57,53,0.2) !important;
+        border-radius: 24px 8px 24px 24px !important;
+        color: #F8FAFC !important;
+        padding: 1.2rem !important;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15) !important;
     }}
+    
+    [data-testid="stChatInput"] {{
+        background: rgba(15, 23, 42, 0.8) !important;
+        backdrop-filter: blur(20px) !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
+        border-radius: 24px !important;
+        padding-bottom: 5px !important;
+        box-shadow: 0 -10px 40px rgba(0,0,0,0.3) !important;
+    }}
+    
     .stChatInput textarea {{
-        border-radius: 16px !important;
-        border: 2px solid #ffcdd2 !important;
-        font-family: 'Cairo', sans-serif !important;
+        background: transparent !important;
+        color: #F8FAFC !important;
+        border: none !important;
+        font-family: 'Alexandria', sans-serif !important;
     }}
     .stChatInput textarea:focus {{
-        border-color: #E53935 !important;
-        box-shadow: 0 0 0 3px rgba(229,57,53,0.1) !important;
+        box-shadow: none !important;
     }}
 
     /* ── Animations ── */
-    @keyframes fadeInUp {{
-        from {{ opacity: 0; transform: translateY(12px); }}
-        to   {{ opacity: 1; transform: translateY(0); }}
+    @keyframes slideUpFade {{
+        from {{ opacity: 0; transform: translateY(20px); filter: blur(5px); }}
+        to   {{ opacity: 1; transform: translateY(0); filter: blur(0); }}
     }}
-    @keyframes pulse {{
-        0%, 100% {{ opacity: 1; }}
-        50%       {{ opacity: 0.5; }}
+    @keyframes pulseGlow {{
+        0%, 100% {{ opacity: 1; box-shadow: 0 0 15px rgba(229,57,53,0.3); }}
+        50%      {{ opacity: 0.6; box-shadow: 0 0 5px rgba(229,57,53,0.1); }}
     }}
-    .typing-indicator {{ animation: pulse 1.2s infinite; }}
+    .typing-indicator {{ 
+        display: inline-block;
+        padding: 5px 15px;
+        background: rgba(229,57,53,0.1);
+        border-radius: 20px;
+        color: #ff8a80;
+        font-weight: 500;
+        animation: pulseGlow 1.5s infinite; 
+    }}
 
     /* ── Tabs ── */
+    .stTabs [data-baseweb="tab-list"] {{
+        background-color: transparent !important;
+        gap: 8px !important;
+    }}
     .stTabs [data-baseweb="tab"] {{
-        border-radius: 10px 10px 0 0 !important;
-        font-weight: 700 !important;
+        background: rgba(30, 41, 59, 0.4) !important;
+        border: 1px solid rgba(255,255,255,0.05) !important;
+        border-radius: 12px 12px 0 0 !important;
+        font-weight: 600 !important;
+        color: #94A3B8 !important;
+        padding: 10px 20px !important;
+        transition: all 0.3s ease !important;
     }}
     .stTabs [aria-selected="true"] {{
+        background: rgba(229,57,53,0.1) !important;
         color: #E53935 !important;
-        border-bottom-color: #E53935 !important;
+        border-top: 2px solid #E53935 !important;
+        border-bottom: none !important;
     }}
+    
+    /* Texts and Elements within dark mode */
+    h1, h2, h3, h4, h5, h6, p, span, div, label {{
+        color: inherit;
+    }}
+    
+    .stMarkdown p {{
+        color: #CBD5E1 !important;
+        line-height: 1.7 !important;
+        font-size: 1.05rem !important;
+    }}
+    
+    [data-testid="stAlert"] {{
+        background: rgba(30, 41, 59, 0.6) !important;
+        backdrop-filter: blur(10px) !important;
+        border: 1px solid rgba(255,255,255,0.08) !important;
+        border-radius: 16px !important;
+        color: #E2E8F0 !important;
+    }}
+    [data-testid="stAlert"] div[role="alert"] {{
+        color: #E2E8F0 !important;
+    }}
+    
+    /* Inputs */
+    .stNumberInput input, .stTextInput input, .stTextArea textarea, .stSelectbox select {{
+        background: rgba(15, 23, 42, 0.6) !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
+        color: #ffffff !important;
+        border-radius: 12px !important;
+    }}
+    .stNumberInput input:focus, .stTextInput input:focus, .stTextArea textarea:focus {{
+        border-color: #E53935 !important;
+        box-shadow: 0 0 0 2px rgba(229,57,53,0.2) !important;
+    }}
+    
+    /* Expander */
+    [data-testid="stExpander"] {{
+        background: rgba(30, 41, 59, 0.4) !important;
+        border: 1px solid rgba(255,255,255,0.05) !important;
+        border-radius: 16px !important;
+    }}
+    [data-testid="stExpander"] details {{
+        border-color: transparent !important;
+    }}
+    [data-testid="stExpander"] summary {{
+        color: #E2E8F0 !important;
+        font-weight: 600 !important;
+    }}
+    [data-testid="stExpander"] p {{
+        color: #94A3B8 !important;
+    }}
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -358,6 +514,7 @@ with st.sidebar:
 
     pages = [
         ("chat",            "", "المحادثة السريعة (القديمة)"),
+        ("vision",          "", "🔬 تحليل الصور"),
         ("scanner",         "", "فاحص الأعراض"),
         ("cancer_scanner",  "", "كثافة الثدي (MONAI)"),
         ("calculators",     "", "حاسبات طبية"),
@@ -478,12 +635,12 @@ if st.session_state.page == "chat":
         st.markdown("</div></div>", unsafe_allow_html=True)
 
     # Display Chat history
-    for msg in st.session_state.messages:
+    for i, msg in enumerate(st.session_state.messages):
         with st.chat_message(msg["role"], avatar=get_logo() if msg["role"] == "assistant" else None):
             st.markdown(msg["content"])
             # TTS button for assistant messages
             if msg["role"] == "assistant":
-                if st.button("استماع", key=f"tts_{hash(msg['content'])}", help="تشغيل الإجابة صوتياً"):
+                if st.button("🔊 استماع", key=f"tts_{i}", help="تشغيل الإجابة صوتياً"):
                     try:
                         from engine.audio import text_to_speech_arabic
                         audio_bytes = text_to_speech_arabic(msg["content"])
@@ -566,6 +723,127 @@ if st.session_state.page == "chat":
             st.session_state.messages.append({"role": "assistant", "content": answer})
             save_history(st.session_state.messages)
             st.rerun()
+
+# ─────────────────────────────────────────────────────────────
+# PAGE: VISION
+# ─────────────────────────────────────────────────────────────
+elif st.session_state.page == "vision":
+    st.markdown('<h1 class="main-title">🔬 تحليل الصور</h1>', unsafe_allow_html=True)
+    st.markdown('<p style="color:#5A6072;">تحليل متقدم للصور الطبية باستخدام تقنيات الذكاء الاصطناعي (Dermato / X-Ray / Brain MRI). هذا النظام لا يعوض زيارة الطبيب المختص.</p>', unsafe_allow_html=True)
+    
+    st.markdown('<div class="data-card">', unsafe_allow_html=True)
+    
+    disclaimer_agreed = st.checkbox(
+        "أوافق على أن هذه الأداة تجريبية للأغراض التعليمية فقط ولا تعطي تشخيصاً طبياً نهائياً. ⚠️ تنبيه مهم: هذه المعلومات للتوعية الصحية فقط ولا تغني عن استشارة الطبيب المختص.",
+        key="vision_disclaimer"
+    )
+    
+    if not disclaimer_agreed:
+        st.info("يرجى الموافقة على الشروط أعلاه لتفعيل الفحص.")
+    else:
+        col1, col2 = st.columns([1, 2])
+        
+        with col1:
+            vision_type_ar = st.selectbox(
+                "نوع الصورة",
+                ["🔴 فحص الجلد", "🫁 أشعة الصدر", "🧠 رنين الدماغ"]
+            )
+            
+            type_mapping = {
+                "🔴 فحص الجلد": "dermato",
+                "🫁 أشعة الصدر": "xray",
+                "🧠 رنين الدماغ": "brain_mri"
+            }
+            vision_type = type_mapping[vision_type_ar]
+            
+            uploaded_img = st.file_uploader(
+                "تحميل الصورة",
+                type=["jpg", "jpeg", "png"]
+            )
+            
+            if uploaded_img:
+                st.image(uploaded_img, caption="الصورة الأصلية", use_container_width=True)
+                
+            analyze_btn = st.button("تحليل الصورة", type="primary", use_container_width=True)
+            
+        with col2:
+            if analyze_btn and uploaded_img:
+                with st.spinner("جاري التحليل..."):
+                    img_pil = PILImage.open(uploaded_img)
+                    
+                    @st.cache_resource(show_spinner=False)
+                    def get_vision_router():
+                        from engine.vision_router import VisionRouter
+                        return VisionRouter()
+                        
+                    try:
+                        router = get_vision_router()
+                        result = router.analyze(img_pil, vision_type)
+                        
+                        if result:
+                            conf = result.get("confidence", 0.0)
+                            
+                            color_map = {
+                                "critique": "#DC3545",
+                                "élevée": "#FF9800",
+                                "modérée": "#FFC107",
+                                "faible": "#28A745",
+                                "indéfini": "#6C757D"
+                            }
+                            color = color_map.get(result.get("severity", "indéfini"), "#6C757D")
+                            
+                            st.markdown(f"""
+                            <div style="text-align:center; padding:20px; border-radius:16px;
+                                        background:{color}11; border:2px solid {color}; margin-bottom:10px;">
+                                <h3 style="color:{color}; margin:0;">{result.get('class', 'غير معروف')}</h3>
+                            </div>
+                            """, unsafe_allow_html=True)
+                            
+                            st.metric("نسبة الثقة", f"{conf * 100:.1f}%")
+                            
+                            if conf < 0.60:
+                                st.warning("⚠️ نسبة الثقة منخفضة — يُنصح بإعادة التصوير أو استشارة الطبيب")
+                                
+                            st.markdown(f"""
+                            <div style="background:rgba(30,41,59,0.4); padding:15px; border-radius:12px; border-right:4px solid #38BDF8; margin-bottom:15px;">
+                                <h4 style="margin-top:0;">توصية طبية</h4>
+                                <span style="font-size:15px; color:#E2E8F0;">{result.get('recommendation_ar', '')}</span>
+                                <br><br>
+                                <small style="color:#94A3B8;">⚠️ تنبيه مهم: هذه المعلومات للتوعية الصحية فقط ولا تغني عن استشارة الطبيب المختص.</small>
+                            </div>
+                            """, unsafe_allow_html=True)
+                            
+                            st.markdown("#### توزيع الاحتمالات")
+                            probs_df = pd.DataFrame({
+                                "الاحتمال (%)": [p * 100 for p in result.get("all_probs", {}).values()],
+                                "الفئة": list(result.get("all_probs", {}).keys())
+                            }).set_index("الفئة")
+                            st.bar_chart(probs_df)
+                            
+                            if result.get("gradcam") is not None:
+                                st.markdown("#### خريطة التركيز (Grad-CAM)")
+                                try:
+                                    import cv2
+                                    import numpy as np
+                                    
+                                    cam_np = result["gradcam"]
+                                    img_np = np.array(img_pil.convert('RGB').resize((cam_np.shape[1], cam_np.shape[0])))
+                                    
+                                    heatmap = cv2.applyColorMap(np.uint8(255 * cam_np), cv2.COLORMAP_JET)
+                                    heatmap = cv2.cvtColor(heatmap, cv2.COLOR_BGR2RGB)
+                                    overlay = img_np * 0.6 + heatmap * 0.4
+                                    
+                                    st.image(overlay.astype(np.uint8), caption="مناطق التنشيط (Heatmap)", use_container_width=True)
+                                except Exception as e:
+                                    logger.error(f"GradCAM plot error: {e}")
+                                    st.error("تعذر عرض خريطة التركيز.")
+                    except Exception as e:
+                        st.error(f"حدث خطأ أثناء تحميل النموذج: {str(e)}")
+            
+            elif analyze_btn and not uploaded_img:
+                st.warning("يرجى تحميل الصورة أولاً.")
+                
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────────────────────
 # PAGE: SYMPTOM SCANNER

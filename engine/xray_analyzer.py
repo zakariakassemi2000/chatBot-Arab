@@ -1,109 +1,145 @@
 # -*- coding: utf-8 -*-
 """
-Chest X-Ray Classifier — Vision Transformer (ViT) (Hugging Face)
-Model: codewithdark/vit-chest-xray
-Input:  Chest X-ray images -> [224, 224, 3]
-Output: 5 classes (Cardiomegaly, Edema, Consolidation, Pneumonia, No Finding)
-Accuracy: 98.46%
-Dataset: CheXpert (Stanford)
+Chest X-Ray Classifier — TorchXRayVision (Ultra-light)
+Model: DenseNet121-res224-all (trained on 5 datasets)
+Input:  Chest X-ray images
+Output: 18 pathologies probabilities
+Size: ~50MB parameters
 """
 
 import os
 import numpy as np
+from PIL import Image
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
 
-# Class definitions
-CLASS_NAMES = ["Cardiomegaly", "Edema", "Consolidation", "Pneumonia", "No Finding"]
+# Arabized generic classes
 CLASS_LABELS_AR = {
     "Cardiomegaly": "تضخم القلب (Cardiomegaly)",
     "Edema": "وذمة رئوية (Edema)",
     "Consolidation": "تصلب رئوي (Consolidation)",
     "Pneumonia": "التهاب رئوي (Pneumonia)",
-    "No Finding": "لا توجد مشاكل (سليم)",
-}
-CLASS_ICONS = {
-    "Cardiomegaly": "🫀",
-    "Edema": "💧",
-    "Consolidation": "🫁",
-    "Pneumonia": "🔴",
-    "No Finding": "🟢",
+    "Effusion": "انصباب جنبي (Effusion)",
+    "Pneumothorax": "استرواح الصدر (Pneumothorax)",
+    "Atelectasis": "انخماص الرئة (Atelectasis)",
+    "Mass": "كتلة (Mass)",
+    "Nodule": "عقدة (Nodule)",
+    "Infiltration": "ارتشاح (Infiltration)",
+    "Lung Opacity": "عتامة الرئة (Opacity)",
+    "Fracture": "كسر (Fracture)",
 }
 
-HF_MODEL_ID = "codewithdark/vit-chest-xray"
+# General threshold for detection
+THRESHOLD = 0.5
 
 
 class ChestXrayAnalyzer:
     """
-    Chest X-ray classifier using Vision Transformer (ViT) from Hugging Face.
-    Classifies chest X-ray images into 5 categories.
-    Uses the CheXpert-trained model with 98.46% validation accuracy.
+    Ultra-light Chest X-ray classifier using TorchXRayVision.
+    Predicts 18 pathologies.
     """
 
     def __init__(self):
         self.model = None
-        self.processor = None
+        self.transform = None
+        self.pathologies = []
         self.load_error = None
         self._load_model()
 
     def _load_model(self):
-        """Load the ViT model from Hugging Face."""
+        """Load TorchXRayVision DenseNet."""
         try:
-            from transformers import AutoImageProcessor, AutoModelForImageClassification
-            import torch
+            import torchxrayvision as xrv
+            import torchvision
 
-            hf_token = os.environ.get("HF_TOKEN", None)
-
-            logger.info("Loading chest X-ray model: %s", HF_MODEL_ID)
-            self.processor = AutoImageProcessor.from_pretrained(
-                HF_MODEL_ID, token=hf_token
-            )
-            self.model = AutoModelForImageClassification.from_pretrained(
-                HF_MODEL_ID, token=hf_token
-            )
+            logger.info("Loading chest X-ray model: torchxrayvision DenseNet")
+            self.model = xrv.models.DenseNet(weights="densenet121-res224-all")
             self.model.eval()
+            self.pathologies = self.model.pathologies
+            
+            # XRV transform resizes to 224x224 and normalizes to [-1024, 1024]
+            self.transform = torchvision.transforms.Compose([
+                xrv.datasets.XRayCenterCrop(),
+                xrv.datasets.XRayResizer(224)
+            ])
+            
             self.load_error = None
-            logger.info("ChestXrayAnalyzer initialized: %s", HF_MODEL_ID)
+            logger.info("ChestXrayAnalyzer initialized (XRV DenseNet)")
 
         except Exception as e:
             self.load_error = str(e)
             self.model = None
-            self.processor = None
-            logger.error("ChestXrayAnalyzer failed to load", exc_info=True)
+            self.transform = None
+            logger.error(f"ChestXrayAnalyzer failed to load: {e}", exc_info=True)
 
     def predict_image(self, pil_image):
         """
-        Predict chest condition from a PIL Image (chest X-ray).
-        Returns a dict with class probabilities.
+        Predict chest condition using XRV.
+        Returns probabilities for all pathologies.
         """
-        if self.model is None or self.processor is None:
+        if self.model is None:
             return None
 
         try:
             import torch
 
-            img = pil_image.convert("RGB")
-            inputs = self.processor(images=img, return_tensors="pt")
+            # Convert PIL to standard format for XRV (1-channel grayscale)
+            img = pil_image.convert('L')
+            img_array = np.array(img)
+            
+            # Normalize to [-1024, 1024] which is XRV standard for 8-bit images
+            # formula: (x / 255.0) * 2048.0 - 1024.0
+            img_array = (img_array / 255.0) * 2048.0 - 1024.0
+            
+            # Add color channel
+            img_array = img_array[None, ...] # (1, H, W)
+            
+            # Resize
+            img_array = self.transform(img_array)
+            
+            # Convert to PyTorch Tensor and add batch dim
+            img_tensor = torch.from_numpy(img_array).unsqueeze(0)
 
             with torch.no_grad():
-                outputs = self.model(**inputs)
-                logits = outputs.logits
-                probs = torch.softmax(logits, dim=-1).cpu().numpy()[0]
+                outputs = self.model(img_tensor)[0]
+                
+            probs = outputs.cpu().numpy()
+            
+            # Store all probabilities
+            all_probs = {}
+            for i, p in enumerate(self.pathologies):
+                all_probs[p] = float(probs[i])
+                
+            # Find the top pathology (ignore some non-specific ones if you want, but here we take max)
+            max_idx = np.argmax(probs)
+            max_class = self.pathologies[max_idx]
+            max_prob = float(probs[max_idx])
+            
+            # Also determine if "No Finding"
+            # If all probabilities are below THRESHOLD, we consider it No Finding
+            is_healthy = np.all(probs < THRESHOLD)
 
-            class_idx = int(np.argmax(probs))
-            class_name = CLASS_NAMES[class_idx]
+            if is_healthy:
+                top_class = "No Finding"
+                confidence = 1.0 - max_prob # Confidence of being healthy
+            else:
+                top_class = max_class
+                confidence = max_prob
 
             result = {
-                "class_name": class_name,
-                "class_label_ar": CLASS_LABELS_AR[class_name],
-                "icon": CLASS_ICONS[class_name],
-                "confidence": float(probs[class_idx]),
+                "class_name": top_class,
+                "confidence": confidence,
+                "all_probs": all_probs,
+                "is_healthy": is_healthy
             }
-
-            for i, name in enumerate(CLASS_NAMES):
-                result[f"prob_{name.lower().replace(' ', '_')}"] = float(probs[i])
-
+            
+            # Add specific prob fields used in tests/pages
+            result["prob_cardiomegaly"] = all_probs.get("Cardiomegaly", 0.0)
+            result["prob_edema"] = all_probs.get("Edema", 0.0)
+            result["prob_consolidation"] = all_probs.get("Consolidation", 0.0)
+            result["prob_pneumonia"] = all_probs.get("Pneumonia", 0.0)
+            
             return result
 
         except Exception as e:
@@ -112,48 +148,35 @@ class ChestXrayAnalyzer:
 
     def interpret_result(self, prediction: dict):
         """
-        Interpret the chest X-ray classification result.
-        Returns: (label_ar, explanation_ar, risk_level, style)
+        Interpret the X-ray result. Returns: (label_ar, explanation_ar, risk_level, style)
         """
         if prediction is None:
             return "غير متاح", "تعذر التحليل", "unknown", "error"
 
-        cls = prediction["class_name"]
-        conf = prediction["confidence"] * 100
-        icon = prediction["icon"]
-
-        if cls == "No Finding":
+        if prediction.get("is_healthy", False) or prediction["class_name"] == "No Finding":
             return (
-                f"{icon} سليم — لا توجد مشاكل ({conf:.1f}%)",
-                "لم يتم اكتشاف أي مؤشرات مرضية في صورة الأشعة السينية. يُنصح بالفحص الدوري.",
+                "🟢 سليم — لا توجد مشاكل",
+                "لم يتم اكتشاف أي مؤشرات واضحة للأمراض في صورة الأشعة السينية. يُنصح بالمتابعة في حال استمرار الأعراض.",
                 "normal",
                 "success"
             )
-        elif cls == "Pneumonia":
+
+        cls = prediction["class_name"]
+        conf = prediction["confidence"] * 100
+        
+        ar_name = CLASS_LABELS_AR.get(cls, cls)
+        
+        if cls in ["Cardiomegaly", "Pneumonia", "Edema", "Pneumothorax", "Mass"]:
             return (
-                f"{icon} التهاب رئوي — Pneumonia ({conf:.1f}%)",
-                "رُصدت مؤشرات لالتهاب رئوي. يتطلب مراجعة طبيب أمراض صدرية وعلاج فوري.",
+                f"🔴 {ar_name} ({conf:.1f}%)",
+                f"تم رصد مؤشرات لـ {ar_name}. هذا يتطلب تدخلاً ومراجعة طبية عاجلة.",
                 "high",
                 "danger"
             )
-        elif cls == "Cardiomegaly":
+        else:
             return (
-                f"{icon} تضخم القلب — Cardiomegaly ({conf:.1f}%)",
-                "رُصدت مؤشرات لتضخم في عضلة القلب. يتطلب مراجعة أخصائي قلب فوراً.",
-                "high",
-                "danger"
-            )
-        elif cls == "Edema":
-            return (
-                f"{icon} وذمة رئوية — Edema ({conf:.1f}%)",
-                "رُصدت مؤشرات لوذمة رئوية (تجمع سوائل). يتطلب تقييماً طبياً عاجلاً.",
-                "high",
-                "danger"
-            )
-        else:  # Consolidation
-            return (
-                f"{icon} تصلب رئوي — Consolidation ({conf:.1f}%)",
-                "رُصدت مؤشرات لتصلب في أنسجة الرئة. قد يدل على عدوى أو التهاب. يتطلب مراجعة طبيب.",
+                f"🟠 {ar_name} ({conf:.1f}%)",
+                f"تم رصد مؤشرات لـ {ar_name}. يُرجى مراجعة طبيب مختص للتشخيص النهائي.",
                 "moderate",
                 "warning"
             )

@@ -1,14 +1,15 @@
 import streamlit as st
 import sys
 import os
+import base64
 from PIL import Image as PILImage
 
 # Ensure parent directory is in path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from models.multimodal.med_flamingo import MedFlamingoAnalyzer
+from engine.llm import GroqVision
 
-st.set_page_config(page_title="المساعد الفلامنجو (Med-Flamingo)", page_icon="🦩", layout="wide")
+st.set_page_config(page_title="المساعد البصري المتطور", page_icon="👁️", layout="wide")
 
 st.markdown("""
 <style>
@@ -30,26 +31,21 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown('<h1 class="main-title">المساعد متعدد الوسائط (Med-Flamingo)</h1>', unsafe_allow_html=True)
-st.markdown('<p style="color:#5A6072;">نموذج <b>9 مليار بارامتر</b> مدرب خصيصاً للتفكير المنطقي حول الصور الطبية (Medical VQA).</p>', unsafe_allow_html=True)
+st.markdown('<h1 class="main-title">المساعد البصري التفاعلي (Groq Vision)</h1>', unsafe_allow_html=True)
+st.markdown('<p style="color:#5A6072;">نموذج ذكاء اصطناعي فائق السرعة <b>Llama-3.2 Vision</b> قادر على التفكير المنطقي حول الصور الطبية.</p>', unsafe_allow_html=True)
 
 st.markdown('<div class="data-card">', unsafe_allow_html=True)
 
 @st.cache_resource
-def get_flamingo_analyzer():
-    # ModelManager will automatically evict other models (X-Ray, Skin) 
-    # from VRAM to make room for this massive 9B model!
-    return MedFlamingoAnalyzer()
+def get_vision_analyzer():
+    return GroqVision()
 
-try:
-    with st.spinner("جاري تهيئة نموذج Med-Flamingo (هذا قد يستغرق وقتاً طويلاً)..."):
-        flamingo_detector = get_flamingo_analyzer()
-    st.success("وحدة التحليل جاهزة — med-flamingo/med-flamingo-9b")
-except Exception as e:
-    st.error("**نموذج فلامنجو غير متاح أو تنقصه المكتبات**")
-    st.warning("يتطلب هذا النموذج تثبيت open-flamingo و bitsandbytes. راجع السجلات للتفاصيل.")
-    st.info(f"الخطأ: {e}")
+vision_analyzer = get_vision_analyzer()
+if not vision_analyzer.client:
+    st.error("❌ مفتاح `GROQ_API_KEY` مفقود أو غير صالح. يرجى إضافته في الإعدادات أو ملف `.env`.")
     st.stop()
+else:
+    st.success("✅ وحدة التحليل البصري جاهزة — Llama-3.2-90b-Vision")
 
 st.markdown("---")
 
@@ -57,7 +53,7 @@ col_img, col_chat = st.columns([1, 2])
 
 with col_img:
     uploaded_img = st.file_uploader(
-        "رفع صورة طبية (أشعة، رنين، جلدية...)",
+        "رفع صورة (أشعة، رنين، تقرير، إلخ...)",
         type=["jpg", "jpeg", "png"]
     )
     if uploaded_img:
@@ -65,42 +61,41 @@ with col_img:
 
 with col_chat:
     st.markdown("#### اسأل المساعد عن الصورة")
-    if "flamingo_history" not in st.session_state:
-        st.session_state.flamingo_history = []
+    if "vision_history" not in st.session_state:
+        st.session_state.vision_history = []
         
-    for msg in st.session_state.flamingo_history:
+    for msg in st.session_state.vision_history:
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
             
-    if prompt := st.chat_input("ما هو التشخيص المحتمل لهذه الصورة؟"):
+    if prompt := st.chat_input("ما هو التشخيص المحتمل أو ماذا ترى في هذه الصورة؟"):
         if not uploaded_img:
-            st.warning("يرجى تحميل صورة أولاً ليبدأ المساعد في تحليلها.")
+            st.warning("⚠️ يرجى تحميل صورة أولاً ليبدأ المساعد في تحليلها.")
             st.stop()
             
-        st.session_state.flamingo_history.append({"role": "user", "content": prompt})
+        st.session_state.vision_history.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
             st.markdown(prompt)
 
         with st.chat_message("assistant"):
             response_placeholder = st.empty()
-            with st.spinner("جاري التحليل واستنتاج الإجابة..."):
-                img_pil = PILImage.open(uploaded_img)
-                # Format specific to Flamingo: it requires <image> tags matching the input images
-                flamingo_prompt = f"<image>Question: {prompt} Answer:"
-                
+            with st.spinner("جاري التحليل واستنتاج الإجابة بسرعة فائقة..."):
                 try:
-                    # Analyze text and image
-                    answer = flamingo_detector.analyze([img_pil], flamingo_prompt)
+                    # Convert uploaded image to base64
+                    bytes_data = uploaded_img.getvalue()
+                    base64_img = base64.b64encode(bytes_data).decode('utf-8')
                     
-                    # Clean up Flamingo's raw output which includes the prompt
-                    answer_clean = answer.split("Answer:")[-1].strip()
-                    if "<|endofchunk|>" in answer_clean:
-                        answer_clean = answer_clean.split("<|endofchunk|>")[0]
-                        
-                    response_placeholder.markdown(answer_clean)
-                    st.session_state.flamingo_history.append({"role": "assistant", "content": answer_clean})
+                    # Ensure the AI responds in Arabic and acts as a medical assistant
+                    system_prompt = f"أنت مساعد طبي ذكي. تأمل الصورة بعناية وأجب باللغة العربية الفصحى على هذا السؤال: {prompt}"
+                    
+                    # Analyze text and image
+                    answer = vision_analyzer.analyze_image(base64_image=base64_img, prompt=system_prompt)
+                    
+                    response_placeholder.markdown(answer)
+                    st.session_state.vision_history.append({"role": "assistant", "content": answer})
                     
                 except Exception as e:
-                    response_placeholder.error(f"حدث خطأ أثناء معالجة السؤال: {e}")
+                    response_placeholder.error(f"حدث خطأ أثناء معالجة الصورة أو الاتصال بخادم Groq: {e}")
 
 st.markdown('</div>', unsafe_allow_html=True)
+

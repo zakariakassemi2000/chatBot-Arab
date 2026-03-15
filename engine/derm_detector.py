@@ -10,13 +10,15 @@ For educational purposes only — NOT for clinical diagnosis.
 """
 
 import os
-import numpy as np
+import io
+import requests
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
 
 # ── Model config ──
-HF_MODEL_ID = "Jayanth2002/dinov2-base-finetuned-SkinDisease"
+# Free Inference API endpoint for the Skin Disease model
+API_URL = "https://api-inference.huggingface.co/models/Jayanth2002/dinov2-base-finetuned-SkinDisease"
 
 # ── 31 disease classes with Arabic labels and risk levels ──
 CLASS_INFO = {
@@ -56,102 +58,79 @@ CLASS_INFO = {
 
 class DermDetector:
     """
-    Skin disease classifier using DinoV2 from Hugging Face.
-    Classifies skin images into 31 dermatological conditions.
-    Trained on ISIC 2018 + Atlas Dermatology — accuracy: 95.57%.
-    For educational purposes only — not a diagnostic tool.
+    Skin disease classifier using the FREE Hugging Face Inference API.
+    Zero local VRAM usage.
     """
 
     def __init__(self):
-        self.model = None
-        self.processor = None
-        self.load_error = None
-        self.id2label = None
-        self._load_model()
-
-    def _load_model(self):
-        """Load the DinoV2 skin disease model from Hugging Face."""
-        try:
-            from transformers import AutoImageProcessor, AutoModelForImageClassification
-            import torch
-
-            hf_token = os.environ.get("HF_TOKEN", None)
-            model_id = HF_MODEL_ID
-
-            logger.info("Loading skin disease model: %s", model_id)
-            self.processor = AutoImageProcessor.from_pretrained(
-                model_id, token=hf_token
-            )
-            self.model = AutoModelForImageClassification.from_pretrained(
-                model_id, token=hf_token
-            )
-            logger.info("DermDetector initialized: %s", model_id)
-
-            self.model.eval()
-            self.id2label = self.model.config.id2label
-            self.load_error = None
-
-        except Exception as e:
-            self.load_error = str(e)
-            self.model = None
-            self.processor = None
-            self.id2label = None
-            logger.error("DermDetector failed to load", exc_info=True)
+        self.hf_token = os.environ.get("HF_TOKEN")
+        # Ensure the model attribute exists to satisfy the UI check `if derm_detector.model is None`
+        self.model = True if self.hf_token else None
+        
+        if not self.hf_token:
+            logger.error("HF_TOKEN manquante. DermDetector ne fonctionnera pas.")
 
     def predict_image(self, pil_image):
         """
-        Predict skin disease from a PIL Image.
-        Returns a dict with top prediction and all probabilities.
+        Predict skin disease from a PIL Image by calling HF Inference API.
         """
-        if self.model is None or self.processor is None:
+        if not self.hf_token:
+            logger.error("Predict failed: HF_TOKEN is missing")
             return None
 
         try:
-            import torch
+            # Convert image to bytes
+            img_byte_arr = io.BytesIO()
+            pil_image.save(img_byte_arr, format='JPEG')
+            img_bytes = img_byte_arr.getvalue()
 
-            img = pil_image.convert("RGB")
-            inputs = self.processor(images=img, return_tensors="pt")
+            headers = {"Authorization": f"Bearer {self.hf_token}"}
+            
+            # Call HF Inference API
+            response = requests.post(API_URL, headers=headers, data=img_bytes)
+            
+            if response.status_code != 200:
+                logger.error(f"HF API Error: {response.text}")
+                return None
+                
+            predictions = response.json()
+            
+            if not predictions or not isinstance(predictions, list):
+                logger.error("Invalid response format from HF API")
+                return None
 
-            with torch.no_grad():
-                outputs = self.model(**inputs)
-                logits = outputs.logits
-                probs = torch.softmax(logits, dim=-1).cpu().numpy()[0]
-
-            class_idx = int(np.argmax(probs))
-            class_name = self.id2label.get(str(class_idx), self.id2label.get(class_idx, f"class_{class_idx}"))
+            # Top prediction is the first item
+            top_pred = predictions[0]
+            class_name = top_pred.get("label", "unknown")
+            confidence = float(top_pred.get("score", 0.0))
+            
             info = CLASS_INFO.get(class_name, {"ar": class_name, "risk": "unknown"})
 
             # Build top-5 predictions for display
-            top5_idx = np.argsort(probs)[-5:][::-1]
             top5 = []
-            for idx in top5_idx:
-                label = self.id2label.get(str(idx), self.id2label.get(idx, f"class_{idx}"))
+            for pred in predictions[:5]:
+                label = pred.get("label", "unknown")
+                prob = float(pred.get("score", 0.0))
                 linfo = CLASS_INFO.get(label, {"ar": label, "risk": "unknown"})
                 top5.append({
                     "class_name": label,
                     "class_label_ar": linfo["ar"],
                     "risk": linfo["risk"],
-                    "probability": float(probs[idx]),
+                    "probability": prob,
                 })
 
             result = {
                 "class_name": class_name,
                 "class_label_ar": info["ar"],
                 "risk_level": info["risk"],
-                "confidence": float(probs[class_idx]),
+                "confidence": confidence,
                 "top5": top5,
             }
-
-            # Add individual probabilities for all classes
-            for idx_str, label in self.id2label.items():
-                i = int(idx_str)
-                safe_key = label.lower().replace(" ", "_").replace("-", "_").replace("'", "")
-                result[f"prob_{safe_key}"] = float(probs[i]) if i < len(probs) else 0.0
 
             return result
 
         except Exception as e:
-            logger.error("DermDetector prediction failed", exc_info=True)
+            logger.error(f"DermDetector prediction API failed: {e}", exc_info=True)
             return None
 
     def interpret_result(self, prediction: dict):

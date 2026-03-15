@@ -116,6 +116,28 @@ BOUNDARY_RESPONSE = """⚕️ **حدود الخدمة**
 """
 
 
+# ═══════════════════════════════════════════════════════════════════
+#  🔍 POST-LLM CHECK — Patterns to catch in LLM-generated responses
+# ═══════════════════════════════════════════════════════════════════
+POST_LLM_FORBIDDEN = [
+    # Prescription indicators
+    r"أصف\s+لك",
+    r"الجرعة\s+هي",
+    r"خذ\s+\d+\s+ملغ",
+    r"تناول\s+\d+",
+    r"وصفة\s+طبية",
+    # Hard diagnosis
+    r"مصاب\s+بـ?",
+    r"لديك\s+مرض",
+    r"تشخيصك\s+هو",
+]
+
+POST_LLM_REPLACEMENT = (
+    "\n\n> ⚕️ *تذكير: هذه المعلومات للتوعية الصحية العامة فقط."
+    " يُرجى استشارة طبيب مختص قبل اتخاذ أي قرار طبي.*"
+)
+
+
 class SafetyGuard:
     """
     Multi-layer safety system for the Arabic medical chatbot.
@@ -188,3 +210,25 @@ class SafetyGuard:
     def format_caution_response(answer: str) -> str:
         """Prepend caution notice to a normal answer."""
         return CAUTION_RESPONSE + "\n" + answer
+
+    @staticmethod
+    def post_check(response: str) -> str:
+        """
+        Scan the LLM-generated response for forbidden patterns
+        (prescriptions, hard diagnoses) and append a safety notice if found.
+
+        This is a secondary safety net in case the LLM ignores its system prompt.
+        It does NOT remove the content, but flags it visibly.
+        """
+        import re
+        if not response:
+            return response
+
+        for pattern in POST_LLM_FORBIDDEN:
+            if re.search(pattern, response):
+                # Append warning if not already present
+                if "تذكير: هذه المعلومات" not in response:
+                    response += POST_LLM_REPLACEMENT
+                break
+
+        return response
