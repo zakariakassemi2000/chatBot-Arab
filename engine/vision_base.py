@@ -67,6 +67,66 @@ class VisionBase(ABC):
         """Doit retourner le type de vision (ex: 'dermato', 'xray', 'brain_mri')."""
         pass
 
+    @property
+    def MIN_CONFIDENCE(self) -> float:
+        vt = self.get_vision_type()
+        if vt == "dermato": return 0.45
+        if vt == "xray": return 0.50
+        if vt == "brain_mri": return 0.45
+        return 0.45
+
+    def is_medical_image(self, image: Image.Image) -> dict:
+        """
+        Détecte si l'image est médicalement pertinente avant toute inférence.
+        Retourne : { "valid": bool, "reason": str }
+        """
+        try:
+            # Niveau 2 : Aspect ratio et résolution
+            w, h = image.size
+            if w < 100 or h < 100:
+                return {"valid": False, "reason": "Résolution insuffisante (< 100x100)"}
+            
+            ratio = w / h
+            if ratio < 0.5 or ratio > 2.0:
+                return {"valid": False, "reason": "Aspect ratio invalide"}
+
+            # Niveau 1 : Analyse colorimétrique
+            img_rgb = np.array(image.convert('RGB'))
+            vt = self.get_vision_type()
+
+            if vt == "dermato":
+                img_hsv = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2HSV)
+                h_chan = img_hsv[:, :, 0]
+                s_chan = img_hsv[:, :, 1]
+                # OpenCV Hue: [0-180]. 0-30 -> 0-15, 330-360 -> 165-180
+                skin_mask = (((h_chan >= 0) & (h_chan <= 15)) | ((h_chan >= 165) & (h_chan <= 180))) & (s_chan > 20)
+                if np.sum(skin_mask) / skin_mask.size < 0.15: # Seuil ajusté à 15%
+                    return {"valid": False, "reason": "Image non reconnue comme de la peau (dominante non colorée)"}
+                    
+            elif vt == "xray":
+                img_float = img_rgb.astype(np.float32)
+                r, g, b = img_float[:, :, 0], img_float[:, :, 1], img_float[:, :, 2]
+                if np.std(r - g) >= 15 or np.std(g - b) >= 15:
+                    return {"valid": False, "reason": "Image couleur dominante (les rayons X doivent être en niveaux de gris)"}
+                # Check grayscale dominance
+                gray = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2GRAY)
+                diff = np.abs(img_rgb - gray[:, :, None].repeat(3, axis=2))
+                if np.mean(diff) > 20:
+                    return {"valid": False, "reason": "Image non grayscale"}
+                    
+            elif vt == "brain_mri":
+                img_float = img_rgb.astype(np.float32)
+                r, g, b = img_float[:, :, 0], img_float[:, :, 1], img_float[:, :, 2]
+                if np.std(r - g) >= 20 or np.std(g - b) >= 20:
+                    return {"valid": False, "reason": "Déséquilibre de couleur détecté pour une IRM"}
+                gray = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2GRAY)
+                if np.std(gray) <= 40:
+                    return {"valid": False, "reason": "Contraste trop faible pour une IRM"}
+
+            return {"valid": True, "reason": "OK"}
+        except Exception as e:
+            return {"valid": False, "reason": f"Erreur validation: {str(e)}"}
+
     def _build_transform(self) -> transforms.Compose:
         """
         Construit le pipeline de transformation standardisé ImageNet.

@@ -38,11 +38,7 @@ from engine.classifier import IntentClassifier, format_response
 from engine.safety import SafetyGuard
 from engine.llm import GroqGenerator
 from engine.audio import speech_to_text_arabic, convert_audio_to_wav
-from engine.cancer_detector import BreastCancerDetector
-from engine.breast_density_detector import BreastDensityDetector
-from engine.brain_tumor_detector import BrainTumorDetector
-from engine.xray_analyzer import ChestXrayAnalyzer
-from engine.derm_detector import DermDetector
+from engine.vision_router import VisionRouter
 from utils.gradcam import generate_gradcam_heatmap, is_available as gradcam_available
 from utils.image_validator import validate_medical_image
 
@@ -437,6 +433,58 @@ st.markdown(f"""
         color: #94A3B8 !important;
     }}
 
+    /* Landing Page Specific */
+    .shifa-title {{
+        font-size: 3.5rem;
+        font-weight: 900;
+        text-align: center;
+        background: linear-gradient(90deg, #E53935, #ff6b6b, #E53935);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: shine 3s linear infinite;
+        margin-bottom: 0.5rem;
+    }}
+    @keyframes shine {{
+        to {{ background-position: 200% center; }}
+    }}
+    .tagline {{
+        text-align: center;
+        color: #94A3B8;
+        font-size: 1.2rem;
+        margin-bottom: 3rem;
+    }}
+    .landing-card {{
+        background: rgba(30, 41, 59, 0.4);
+        border: 1px solid rgba(255,255,255,0.05);
+        border-radius: 20px;
+        padding: 24px;
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+    }}
+    .landing-card:hover {{
+        transform: translateY(-8px);
+        background: rgba(229, 57, 53, 0.1);
+        border-color: rgba(229, 57, 53, 0.3);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.2);
+    }}
+    .card-icon {{
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+    }}
+    .card-title {{
+        color: #FFFFFF;
+        font-weight: 700;
+        font-size: 1.1rem;
+    }}
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -450,48 +498,22 @@ def load_medical_system():
         c = IntentClassifier()
         g = SafetyGuard()
         ai = GroqGenerator()
-        bc = BreastCancerDetector()
-        bd = BreastDensityDetector()
+        v = VisionRouter()
         db_ok = r.load()
         if db_ok: c.load()
-        return r, c, g, ai, bc, bd, db_ok
+        return r, c, g, ai, v, db_ok
     except Exception as e:
         st.error(f"Error loading system: {e}")
-        return None, None, None, None, None, None, False
+        return None, None, None, None, None, False
 
-retriever, classifier, guard, ai_engine, cancer_detector, density_detector, DB_STATUS = load_medical_system()
-
-# Lazy-load heavy models only when their page is accessed
-@st.cache_resource(show_spinner=False)
-def load_brain_tumor_detector():
-    try:
-        return BrainTumorDetector()
-    except Exception as e:
-        st.error(f"Brain Tumor model error: {e}")
-        return None
-
-@st.cache_resource(show_spinner=False)
-def load_xray_analyzer():
-    try:
-        return ChestXrayAnalyzer()
-    except Exception as e:
-        st.error(f"X-Ray model error: {e}")
-        return None
-
-@st.cache_resource(show_spinner=False)
-def load_derm_detector():
-    try:
-        return DermDetector()
-    except Exception as e:
-        st.error(f"Derm model error: {e}")
-        return None
+retriever, classifier, guard, ai_engine, vision_router, DB_STATUS = load_medical_system()
 
 AI_STATUS = bool(ai_engine and ai_engine.api_key)
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "page" not in st.session_state:
-    st.session_state.page = "chat"
+    st.session_state.page = "home"
 if "session_id" not in st.session_state:
     st.session_state.session_id = str(time.time())
 if "quick_question" not in st.session_state:
@@ -513,17 +535,17 @@ with st.sidebar:
     """, unsafe_allow_html=True)
 
     pages = [
-        ("chat",            "", "المحادثة السريعة (القديمة)"),
-        ("vision",          "", "🔬 تحليل الصور"),
-        ("scanner",         "", "فاحص الأعراض"),
-        ("cancer_scanner",  "", "كثافة الثدي (MONAI)"),
-        ("calculators",     "", "حاسبات طبية"),
-        ("database",        "", "قاعدة المعرفة"),
-        ("history",         "", "سجل الاستشارات"),
+        ("home",            "🏠", "الرئيسية"),
+        ("chat",            "💬", "المحادثة الطبية"),
+        ("vision",          "🔬", "تحليل الصور"),
+        ("scanner",         "🩺", "فاحص الأعراض"),
+        ("calculators",     "📊", "حاسبات طبية"),
+        ("database",        "📚", "قاعدة المعرفة"),
+        ("history",         "📜", "سجل الاستشارات"),
     ]
     for page_id, icon, label in pages:
         is_active = st.session_state.page == page_id
-        if st.button(f"{label}", use_container_width=True,
+        if st.button(f"{icon} {label}", use_container_width=True,
                      type="primary" if is_active else "secondary",
                      key=f"nav_{page_id}"):
             st.session_state.page = page_id
@@ -558,9 +580,44 @@ with st.sidebar:
     st.info("للمعلومات الطبية فقط. لا يُغني عن استشارة الطبيب.")
 
 # ─────────────────────────────────────────────────────────────
+# PAGE: HOME (LANDING)
+# ─────────────────────────────────────────────────────────────
+if st.session_state.page == "home":
+    st.markdown('<div class="shifa-title">شفاء AI</div>', unsafe_allow_html=True)
+    st.markdown('<p class="tagline">مساعدك الطبي الذكي — تشخيص، تحليل، إرشاد</p>', unsafe_allow_html=True)
+    
+    if LOGO_SRC:
+        st.markdown(f'<div style="text-align:center; margin-bottom:3rem;"><img src="{LOGO_SRC}" style="width:180px; filter:drop-shadow(0 10px 20px rgba(229,57,53,0.3));"></div>', unsafe_allow_html=True)
+    
+    # ── Landing Cards ──
+    cols = st.columns(5)
+    
+    cards = [
+        ("🤖 محادثة طبية", "chat"),
+        ("🔬 تحليل الصور", "vision"),
+        ("🎙️ المساعد الصوتي", "chat"),
+        ("💊 فحص الأدوية", "scanner"), # Using scanner as drug/symptom check
+        ("📊 الحاسبات الطبية", "calculators")
+    ]
+    
+    for i, (title, target) in enumerate(cards):
+        with cols[i]:
+            st.markdown(f"""
+                <div class="landing-card">
+                    <div class="card-title">{title}</div>
+                </div>
+            """, unsafe_allow_html=True)
+            if st.button("دخول", key=f"btn_home_{i}", use_container_width=True):
+                st.session_state.page = target
+                st.rerun()
+
+    st.markdown("<br><br>", unsafe_allow_html=True)
+    st.info("💡 SHIFA AI يجمع بين قوة الذكاء الاصطناعي وخبرة قواعد البيانات الطبية الضخمة لتقديم أدق النتائج.")
+
+# ─────────────────────────────────────────────────────────────
 # PAGE: CHAT (MAIN)
 # ─────────────────────────────────────────────────────────────
-if st.session_state.page == "chat":
+elif st.session_state.page == "chat":
     logo_tag = f'<img src="{LOGO_SRC}" style="width: 60px; margin-bottom: 10px;">' if LOGO_SRC else ''
     st.markdown(f"""
         <div style="text-align: center; margin-bottom: 2rem;">
@@ -746,13 +803,15 @@ elif st.session_state.page == "vision":
         with col1:
             vision_type_ar = st.selectbox(
                 "نوع الصورة",
-                ["🔴 فحص الجلد", "🫁 أشعة الصدر", "🧠 رنين الدماغ"]
+                ["🔴 فحص الجلد", "🫁 أشعة الصدر", "🧠 رنين الدماغ", "🩺 كشف السرطان", "🔬 كثافة الثدي"]
             )
             
             type_mapping = {
                 "🔴 فحص الجلد": "dermato",
                 "🫁 أشعة الصدر": "xray",
-                "🧠 رنين الدماغ": "brain_mri"
+                "🧠 رنين الدماغ": "brain_mri",
+                "🩺 كشف السرطان": "cancer",
+                "🔬 كثافة الثدي": "breast"
             }
             vision_type = type_mapping[vision_type_ar]
             
@@ -770,75 +829,68 @@ elif st.session_state.page == "vision":
             if analyze_btn and uploaded_img:
                 with st.spinner("جاري التحليل..."):
                     img_pil = PILImage.open(uploaded_img)
-                    
-                    @st.cache_resource(show_spinner=False)
-                    def get_vision_router():
-                        from engine.vision_router import VisionRouter
-                        return VisionRouter()
-                        
                     try:
-                        router = get_vision_router()
-                        result = router.analyze(img_pil, vision_type)
-                        
+                        result = vision_router.analyze(img_pil, vision_type)
                         if result:
-                            conf = result.get("confidence", 0.0)
-                            
-                            color_map = {
-                                "critique": "#DC3545",
-                                "élevée": "#FF9800",
-                                "modérée": "#FFC107",
-                                "faible": "#28A745",
-                                "indéfini": "#6C757D"
-                            }
-                            color = color_map.get(result.get("severity", "indéfini"), "#6C757D")
-                            
-                            st.markdown(f"""
-                            <div style="text-align:center; padding:20px; border-radius:16px;
-                                        background:{color}11; border:2px solid {color}; margin-bottom:10px;">
-                                <h3 style="color:{color}; margin:0;">{result.get('class', 'غير معروف')}</h3>
-                            </div>
-                            """, unsafe_allow_html=True)
-                            
-                            st.metric("نسبة الثقة", f"{conf * 100:.1f}%")
-                            
-                            if conf < 0.60:
-                                st.warning("⚠️ نسبة الثقة منخفضة — يُنصح بإعادة التصوير أو استشارة الطبيب")
+                            if not result.get("valid", True):
+                                st.warning(result.get("recommendation_ar", "تحقق من جودة الصورة."))
+                                if result.get("rejection_reason"):
+                                    st.caption(f"Reason: {result['rejection_reason']}")
+                            else:
+                                conf = result.get("confidence", 0.0)
+                                color_map = {
+                                    "critique": "#DC3545",
+                                    "élevée": "#FF9800",
+                                    "modérée": "#FFC107",
+                                    "faible": "#28A745",
+                                    "indéfini": "#6C757D"
+                                }
+                                color = color_map.get(result.get("severity", "indéfini"), "#6C757D")
                                 
-                            st.markdown(f"""
-                            <div style="background:rgba(30,41,59,0.4); padding:15px; border-radius:12px; border-right:4px solid #38BDF8; margin-bottom:15px;">
-                                <h4 style="margin-top:0;">توصية طبية</h4>
-                                <span style="font-size:15px; color:#E2E8F0;">{result.get('recommendation_ar', '')}</span>
-                                <br><br>
-                                <small style="color:#94A3B8;">⚠️ تنبيه مهم: هذه المعلومات للتوعية الصحية فقط ولا تغني عن استشارة الطبيب المختص.</small>
-                            </div>
-                            """, unsafe_allow_html=True)
-                            
-                            st.markdown("#### توزيع الاحتمالات")
-                            probs_df = pd.DataFrame({
-                                "الاحتمال (%)": [p * 100 for p in result.get("all_probs", {}).values()],
-                                "الفئة": list(result.get("all_probs", {}).keys())
-                            }).set_index("الفئة")
-                            st.bar_chart(probs_df)
-                            
-                            if result.get("gradcam") is not None:
-                                st.markdown("#### خريطة التركيز (Grad-CAM)")
-                                try:
-                                    import cv2
-                                    import numpy as np
+                                st.markdown(f"""
+                                <div style="text-align:center; padding:20px; border-radius:16px;
+                                            background:{color}11; border:2px solid {color}; margin-bottom:10px;">
+                                    <h3 style="color:{color}; margin:0;">{result.get('class', 'غير معروف')}</h3>
+                                </div>
+                                """, unsafe_allow_html=True)
+                                
+                                st.metric("نسبة الثقة", f"{conf * 100:.1f}%")
+                                
+                                if conf < 0.60:
+                                    st.warning("⚠️ نسبة الثقة منخفضة — يُنصح بإعادة التصوير أو استشارة الطبيب")
                                     
-                                    cam_np = result["gradcam"]
-                                    img_np = np.array(img_pil.convert('RGB').resize((cam_np.shape[1], cam_np.shape[0])))
-                                    
-                                    heatmap = cv2.applyColorMap(np.uint8(255 * cam_np), cv2.COLORMAP_JET)
-                                    heatmap = cv2.cvtColor(heatmap, cv2.COLOR_BGR2RGB)
-                                    overlay = img_np * 0.6 + heatmap * 0.4
-                                    
-                                    st.image(overlay.astype(np.uint8), caption="مناطق التنشيط (Heatmap)", use_container_width=True)
-                                except Exception as e:
-                                    logger.error(f"GradCAM plot error: {e}")
-                                    st.error("تعذر عرض خريطة التركيز.")
+                                st.markdown(f"""
+                                <div style="background:rgba(30,41,59,0.4); padding:15px; border-radius:12px; border-right:4px solid #38BDF8; margin-bottom:15px;">
+                                    <h4 style="margin-top:0;">توصية طبية</h4>
+                                    <span style="font-size:15px; color:#E2E8F0;">{result.get('recommendation_ar', '')}</span>
+                                    <br><br>
+                                    <small style="color:#94A3B8;">⚠️ تنبيه مهم: هذه المعلومات للتوعية الصحية فقط ولا تغني عن استشارة الطبيب المختص.</small>
+                                </div>
+                                """, unsafe_allow_html=True)
+                                
+                                st.markdown("#### توزيع الاحتمالات")
+                                probs_df = pd.DataFrame({
+                                    "الاحتمال (%)": [p * 100 for p in result.get("all_probs", {}).values()],
+                                    "الفئة": list(result.get("all_probs", {}).keys())
+                                }).set_index("الفئة")
+                                st.bar_chart(probs_df)
+                                
+                                if result.get("gradcam") is not None:
+                                    st.markdown("#### خريطة التركيز (Grad-CAM)")
+                                    try:
+                                        import cv2
+                                        import numpy as np
+                                        cam_np = result["gradcam"]
+                                        img_np = np.array(img_pil.convert('RGB').resize((cam_np.shape[1], cam_np.shape[0])))
+                                        heatmap = cv2.applyColorMap(np.uint8(255 * cam_np), cv2.COLORMAP_JET)
+                                        heatmap = cv2.cvtColor(heatmap, cv2.COLOR_BGR2RGB)
+                                        overlay = img_np * 0.6 + heatmap * 0.4
+                                        st.image(overlay.astype(np.uint8), caption="مناطق التنشيط (Heatmap)", use_container_width=True)
+                                    except Exception as e:
+                                        logger.error(f"GradCAM plot error: {e}")
+                                        st.error("تعذر عرض خريطة التركيز.")
                     except Exception as e:
-                        st.error(f"حدث خطأ أثناء تحميل النموذج: {str(e)}")
+                        st.error(f"حدث خطأ أثناء التحليل: {str(e)}")
             
             elif analyze_btn and not uploaded_img:
                 st.warning("يرجى تحميل الصورة أولاً.")
@@ -953,639 +1005,15 @@ elif st.session_state.page == "database":
         st.error("تعذر تحميل بيانات المصادر حالياً.")
 
 # ─────────────────────────────────────────────────────────────
-# PAGE: BREAST DENSITY SCANNER (MONAI InceptionV3 — BI-RADS)
+# GLOBAL FOOTER
 # ─────────────────────────────────────────────────────────────
-elif st.session_state.page == "cancer_scanner":
-    st.markdown('<h1 class="main-title">فاحص كثافة الثدي (MONAI)</h1>', unsafe_allow_html=True)
-    st.markdown('<p style="color:#5A6072;">نموذج ذكاء اصطناعي من <b>MONAI / Hugging Face</b> مبني على <b>InceptionV3</b> لتصنيف كثافة أنسجة الثدي في صور الماموغرام وفق معايير <b>BI-RADS</b> الدولية (الفئات A إلى D).</p>', unsafe_allow_html=True)
+st.markdown("""
+<div style="text-align:center; color:rgba(255,255,255,0.3);
+font-size:0.75rem; padding:20px; border-top:1px solid
+rgba(0,212,170,0.1); margin-top:40px;">
+  شفاء AI · للمساعدة الطبية فقط · ليس بديلاً عن الطبيب
+  <br>SHIFA AI v1.0 · 2025
+</div>
+""", unsafe_allow_html=True)
 
-    st.markdown('<div class="data-card">', unsafe_allow_html=True)
 
-    # ── Model Status Banner ──
-    if density_detector is None or density_detector.model is None:
-        st.error("**نموذج كثافة الثدي غير متاح**")
-        err_msg = density_detector.load_error if density_detector else "لم يتم تحميل الكاشف"
-        st.warning(f"تنبيه تقني: {err_msg}")
-        st.info("""
-        **لتشغيل النموذج:**
-        1. تأكد من أن المكتبات التالية مثبتة: `monai`, `torchvision`, `huggingface_hub`
-        2. تأكد من وجود `HF_TOKEN` في ملف `.env`
-        3. النموذج سيتم تحميله تلقائياً من Hugging Face عند أول استخدام (~101 ميجابايت)
-        """)
-    else:
-        st.success("وحدة التحليل جاهزة — MONAI InceptionV3")
-
-    st.markdown("---")
-
-    # ── BI-RADS Info Card ──
-    st.markdown("""
-    <div style="background:linear-gradient(135deg, #f8f9fa, #fff5f5); border-radius:14px; padding:18px; margin-bottom:16px; border:1px solid #f0e0e0;">
-        <h4 style="margin:0 0 10px; color:#1E2028;">تصنيفات كثافة الثدي (BI-RADS)</h4>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-            <div style="background:#e8f5e9; padding:10px 14px; border-radius:10px;">
-                <b style="color:#2e7d32;">🟢 فئة A</b> — دهني بالكامل<br>
-                <small style="color:#555;">كثافة منخفضة، سهولة قراءة الماموغرام</small>
-            </div>
-            <div style="background:#fff8e1; padding:10px 14px; border-radius:10px;">
-                <b style="color:#f9a825;">🟡 فئة B</b> — ليفي غدي متناثر<br>
-                <small style="color:#555;">كثافة متوسطة منخفضة</small>
-            </div>
-            <div style="background:#fff3e0; padding:10px 14px; border-radius:10px;">
-                <b style="color:#ef6c00;">🟠 فئة C</b> — كثيف غير متجانس<br>
-                <small style="color:#555;">قد يُخفي آفات صغيرة</small>
-            </div>
-            <div style="background:#ffebee; padding:10px 14px; border-radius:10px;">
-                <b style="color:#c62828;">🔴 فئة D</b> — كثيف للغاية<br>
-                <small style="color:#555;">يُقلل حساسية الماموغرام</small>
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    # ── Disclaimer ──
-    disclaimer_agreed = st.checkbox(
-        "أوافق على أن هذه الأداة تجريبية للأغراض التعليمية فقط ولا تعطي تشخيصاً طبياً نهائياً.",
-        key="cancer_disclaimer_v2"
-    )
-
-    if not disclaimer_agreed:
-        st.info("يرجى الموافقة على الشروط أعلاه لتفعيل رفع صور الماموغرام.")
-    else:
-        uploaded_img = st.file_uploader(
-            "تحميل صورة الماموغرام (Mammogram)",
-            type=["jpg", "jpeg", "png"]
-        )
-
-        if st.button("تحليل كثافة الثدي", use_container_width=True, type="primary"):
-            if not uploaded_img:
-                st.warning("يرجى تحميل صورة ماموغرام أولاً.")
-            elif density_detector is None or density_detector.model is None:
-                st.error("النموذج غير متاح. تحقق من التثبيت.")
-            else:
-                with st.spinner("جاري تحليل كثافة الثدي..."):
-                    img_pil = PILImage.open(uploaded_img)
-                    prediction = None
-
-                    # ── Image Gatekeeper ──
-                    validation = validate_medical_image(img_pil, expected_type="mammogram")
-                    if not validation["valid"]:
-                        st.error(validation["reason"])
-                        if validation.get("medical_score"):
-                            st.caption(f"درجة الثقة الطبية: {validation['medical_score']*100:.0f}%")
-                    else:
-                        if not validation.get("type_match", True):
-                            st.warning(validation["reason"])
-
-                        prediction = density_detector.predict_image(img_pil)
-                        label, explanation, risk_level, style = density_detector.interpret_density(prediction)
-
-                col1, col2 = st.columns([1, 1])
-                with col1:
-                    st.image(uploaded_img, caption="صورة الماموغرام المُحلَّلة", use_container_width=True)
-
-                with col2:
-                    if prediction:
-                        color_map = {
-                            "success": "#28A745",
-                            "info": "#FFC107",
-                            "warning": "#FF9800",
-                            "danger": "#DC3545",
-                            "error": "#6C757D",
-                        }
-                        color = color_map.get(style, "#6C757D")
-
-                        st.markdown(f"""
-                        <div style="text-align:center; padding:20px; border-radius:16px;
-                                    background:{color}11; border:2px solid {color}; margin-top:10px;">
-                            <h3 style="color:{color}; margin:0;">{label}</h3>
-                            <p style="color:#1E2028; margin-top:10px; font-size:15px;">{explanation}</p>
-                        </div>
-                        """, unsafe_allow_html=True)
-
-                        # Probability breakdown
-                        st.markdown("#### توزيع الاحتمالات")
-                        st.progress(prediction["prob_A"], text=f"🟢 A — دهني: {prediction['prob_A']*100:.1f}%")
-                        st.progress(prediction["prob_B"], text=f"🟡 B — ليفي متناثر: {prediction['prob_B']*100:.1f}%")
-                        st.progress(prediction["prob_C"], text=f"🟠 C — كثيف غير متجانس: {prediction['prob_C']*100:.1f}%")
-                        st.progress(prediction["prob_D"], text=f"🔴 D — كثيف للغاية: {prediction['prob_D']*100:.1f}%")
-
-                        # Risk-based recommendations
-                        if risk_level == "high":
-                            st.error("كثافة عالية: يُوصى بشدة بإجراء فحوصات تكميلية (MRI / أمواج فوق صوتية).")
-                        elif risk_level == "moderate_high":
-                            st.warning("كثافة متوسطة-عالية: يُنصح بمتابعة دورية وفحوصات إضافية حسب توجيه الطبيب.")
-                        elif risk_level == "moderate_low":
-                            st.info("كثافة متوسطة-منخفضة: يُنصح بالفحص الدوري المعتاد.")
-                        else:
-                            st.success("كثافة منخفضة: الماموغرام سهل القراءة. استمر في الفحص الدوري.")
-                    else:
-                        st.error("تعذّر تحليل الصورة. تأكد من أنها صورة ماموغرام صالحة.")
-
-    # ── System Diagnostics ──
-    with st.expander("تشخيص النظام"):
-        if density_detector:
-            status_color = "green" if density_detector.model else "red"
-            model_status = "Connected (InceptionV3 MONAI)" if density_detector.model else "Unavailable"
-            st.markdown(
-                f"**Model Status:** <span style='color:{status_color};'>{model_status}</span>",
-                unsafe_allow_html=True
-            )
-            if density_detector.load_error:
-                st.warning(f"خطأ تقني: {density_detector.load_error}")
-            device_info = str(density_detector.device) if density_detector.device else "غير محدد"
-            st.caption(f"البنية: InceptionV3 (MONAI) | المصدر: Hugging Face | الفئات: A/B/C/D (BI-RADS) | الجهاز: {device_info}")
-        else:
-            st.error("لم يتم تهيئة كاشف كثافة الثدي.")
-
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# ─────────────────────────────────────────────────────────────
-# ⚖️ PAGE: MEDICAL CALCULATORS
-# ─────────────────────────────────────────────────────────────
-elif st.session_state.page == "calculators":
-    st.markdown('<h1 class="main-title">حاسبات طبية ذكية</h1>', unsafe_allow_html=True)
-    st.markdown('<p style="color:#5A6072;">مجموعة من الأدوات الدقيقة لتقييم صحتك ومؤشرات جسمك.</p>', unsafe_allow_html=True)
-
-    st.markdown('<div class="data-card">', unsafe_allow_html=True)
-    tabs = st.tabs(["BMI", "ماء يومي", "BMR", "سعرات TDEE"])
-    
-    with tabs[0]:
-        st.subheader("مؤشر كتلة الجسم (BMI)")
-        st.caption("يقيس العلاقة بين وزنك وطولك.")
-        c1, c2 = st.columns(2)
-        weight = c1.number_input("الوزن (كجم)", 30.0, 300.0, 70.0, step=0.5, key="bmi_w")
-        height = c2.number_input("الطول (سم)", 100.0, 250.0, 170.0, step=0.5, key="bmi_h")
-        if st.button("احسب BMI", use_container_width=True, key="calc_bmi"):
-            bmi = weight / ((height / 100) ** 2)
-            if bmi < 18.5:   cat, icon, col = "نقص الوزن", "△", "#FF9800"
-            elif bmi < 25:   cat, icon, col = "وزن مثالي", "●", "#4CAF50"
-            elif bmi < 30:   cat, icon, col = "زيادة الوزن", "△", "#FF9800"
-            else:            cat, icon, col = "سمنة", "■", "#F44336"
-            st.markdown(f"""
-                <div style="text-align:center; padding:20px; border-radius:16px;
-                            background:{col}15; border:2px solid {col}; margin:10px 0;">
-                    <div style="font-size:40px;">{icon}</div>
-                    <div style="font-size:34px; font-weight:900; color:{col};">{bmi:.1f}</div>
-                    <div style="font-size:14px; color:#555;">{cat}</div>
-                </div>
-            """, unsafe_allow_html=True)
-                    
-    with tabs[1]:
-        st.subheader("الاحتياج اليومي للماء")
-        weight_water = st.number_input("الوزن (كجم)", 30.0, 300.0, 70.0, key="water_w")
-        activity = st.selectbox("مستوى النشاط", [
-            "خفيف (عمل مكتبي، بدون رياضة)",
-            "متوسط (رياضة 3-4 أيام/أسبوع)",
-            "عالي (رياضة يومية أو عمل مجهد)"
-        ])
-        if st.button("احسب احتياج الماء", use_container_width=True, key="calc_water"):
-            base = weight_water * 35
-            if "متوسط" in activity: base += 500
-            elif "عالي" in activity: base += 1000
-            liters = base / 1000
-            cups = round(base / 250)
-            st.success(f"احتياجك اليومي: **{liters:.1f} لتر** ({cups} كوب تقريباً)")
-            st.progress(min(liters / 4.0, 1.0), text=f"{liters:.1f}L / 4L")
-            
-    with tabs[2]:
-        st.subheader("معدل الأيض الأساسي (BMR)")
-        st.caption("السعرات التي يحرقها جسمك في حالة الراحة التامة.")
-        gender_bmr = st.radio("الجنس", ["ذكر", "أنثى"], horizontal=True, key="bmr_gender")
-        c1, c2, c3 = st.columns(3)
-        weight_b = c1.number_input("الوزن (كجم)", 30.0, 300.0, 70.0, key="bmr_w")
-        height_b = c2.number_input("الطول (سم)", 100.0, 250.0, 170.0, key="bmr_h")
-        age_b    = c3.number_input("العمر", 10, 120, 30, key="bmr_a")
-        if st.button("احسب BMR", use_container_width=True, key="calc_bmr"):
-            if gender_bmr == "ذكر":
-                bmr = 88.362 + (13.397 * weight_b) + (4.799 * height_b) - (5.677 * age_b)
-            else:
-                bmr = 447.593 + (9.247 * weight_b) + (3.098 * height_b) - (4.330 * age_b)
-            st.success(f"معدل الأيض الأساسي: **{bmr:.0f} سعرة/يوم**")
-
-    with tabs[3]:
-        st.subheader("السعرات الكلية اليومية (TDEE)")
-        st.caption("إجمالي ما تحرقه يومياً — الأساس لأي هدف غذائي.")
-        gender_t = st.radio("الجنس", ["ذكر", "أنثى"], horizontal=True, key="tdee_g")
-        ct1, ct2, ct3 = st.columns(3)
-        wt = ct1.number_input("الوزن (كجم)", 30.0, 300.0, 70.0, key="tdee_w")
-        ht = ct2.number_input("الطول (سم)", 100.0, 250.0, 170.0, key="tdee_h")
-        at = ct3.number_input("العمر", 10, 100, 30, key="tdee_a")
-        activity_t = st.selectbox("مستوى النشاط", [
-            "مستقر (لا رياضة)",
-            "خفيف (1-3 أيام/أسبوع)",
-            "متوسط (3-5 أيام/أسبوع)",
-            "عالي (6-7 أيام/أسبوع)",
-            "شديد جداً (رياضة مكثفة + عمل بدني)"
-        ], key="tdee_act")
-        goal = st.selectbox("هدفك", ["الحفاظ على الوزن", "إنقاص الوزن", "زيادة الوزن"], key="tdee_goal")
-        if st.button("احسب TDEE", use_container_width=True, key="calc_tdee"):
-            if gender_t == "ذكر":
-                bmr_t = 88.362 + (13.397 * wt) + (4.799 * ht) - (5.677 * at)
-            else:
-                bmr_t = 447.593 + (9.247 * wt) + (3.098 * ht) - (4.330 * at)
-            factors = {"مستقر": 1.2, "خفيف": 1.375, "متوسط": 1.55, "عالي": 1.725, "شديد": 1.9}
-            factor = next((v for k, v in factors.items() if k in activity_t), 1.55)
-            tdee = bmr_t * factor
-            if "إنقاص" in goal:   target = tdee - 500
-            elif "زيادة" in goal: target = tdee + 400
-            else:                  target = tdee
-            st.markdown(f"""
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px;">
-                    <div style="background:#fff3e0; border-radius:14px; padding:16px; text-align:center;">
-                        <div style="font-size:12px; color:#888;">الحرق اليومي الكلي</div>
-                        <div style="font-size:28px; font-weight:900; color:#FF9800;">{tdee:.0f}</div>
-                        <div style="font-size:11px; color:#aaa;">سعرة/يوم</div>
-                    </div>
-                    <div style="background:#e8f5e9; border-radius:14px; padding:16px; text-align:center;">
-                        <div style="font-size:12px; color:#888;">{goal}</div>
-                        <div style="font-size:28px; font-weight:900; color:#4CAF50;">{target:.0f}</div>
-                        <div style="font-size:11px; color:#aaa;">سعرة مستهدفة/يوم</div>
-                    </div>
-                </div>
-            """, unsafe_allow_html=True)
-
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# ─────────────────────────────────────────────────────────────
-# 🧠 PAGE: BRAIN TUMOR MRI SCANNER
-# ─────────────────────────────────────────────────────────────
-elif st.session_state.page == "brain_mri":
-    st.markdown('<h1 class="main-title">فاحص أورام الدماغ (MRI)</h1>', unsafe_allow_html=True)
-    st.markdown('<p style="color:#5A6072;">نموذج ذكاء اصطناعي <b>Swin Transformer</b> لتصنيف صور الرنين المغناطيسي وكشف أورام الدماغ — Glioma / Meningioma / Pituitary / No Tumor.</p>', unsafe_allow_html=True)
-
-    st.markdown('<div class="data-card">', unsafe_allow_html=True)
-
-    # Lazy load model only when page is accessed
-    brain_detector = load_brain_tumor_detector()
-
-    if brain_detector is None or brain_detector.model is None:
-        st.error("**نموذج أورام الدماغ غير متاح**")
-        err_msg = brain_detector.load_error if brain_detector else "لم يتم تحميل الكاشف"
-        st.warning(f"تنبيه تقني: {err_msg}")
-        st.info("النموذج يتم تحميله تلقائياً من Hugging Face عند أول استخدام (~110 ميجابايت)")
-    else:
-        st.success("وحدة التحليل جاهزة — Swin Transformer")
-
-    st.markdown("---")
-
-    # ── Tumor Types Info ──
-    st.markdown("""
-    <div style="background:linear-gradient(135deg, #f8f9fa, #f0f4ff); border-radius:14px; padding:18px; margin-bottom:16px; border:1px solid #e0e8f0;">
-        <h4 style="margin:0 0 10px; color:#1E2028;">أنواع الأورام المكتشفة</h4>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-            <div style="background:#ffebee; padding:10px 14px; border-radius:10px;">
-                <b style="color:#c62828;">🔴 ورم دبقي (Glioma)</b><br>
-                <small style="color:#555;">ورم في الخلايا الدبقية — عادةً خبيث</small>
-            </div>
-            <div style="background:#fff3e0; padding:10px 14px; border-radius:10px;">
-                <b style="color:#ef6c00;">🟠 ورم سحائي (Meningioma)</b><br>
-                <small style="color:#555;">ورم في الأغشية السحائية — عادةً حميد</small>
-            </div>
-            <div style="background:#fff8e1; padding:10px 14px; border-radius:10px;">
-                <b style="color:#f9a825;">🟡 ورم نخامي (Pituitary)</b><br>
-                <small style="color:#555;">ورم في الغدة النخامية</small>
-            </div>
-            <div style="background:#e8f5e9; padding:10px 14px; border-radius:10px;">
-                <b style="color:#2e7d32;">🟢 سليم (No Tumor)</b><br>
-                <small style="color:#555;">لا توجد مؤشرات أورام</small>
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    disclaimer_agreed = st.checkbox(
-        "أوافق على أن هذه الأداة تجريبية للأغراض التعليمية فقط ولا تعطي تشخيصاً طبياً نهائياً.",
-        key="brain_disclaimer"
-    )
-
-    if not disclaimer_agreed:
-        st.info("يرجى الموافقة على الشروط أعلاه لتفعيل رفع صور MRI.")
-    else:
-        uploaded_img = st.file_uploader(
-            "تحميل صورة الرنين المغناطيسي (MRI)",
-            type=["jpg", "jpeg", "png"],
-            key="brain_uploader"
-        )
-
-        if st.button("تحليل صورة MRI", use_container_width=True, type="primary", key="brain_analyze"):
-            if not uploaded_img:
-                st.warning("يرجى تحميل صورة MRI أولاً.")
-            elif brain_detector is None or brain_detector.model is None:
-                st.error("النموذج غير متاح.")
-            else:
-                with st.spinner("جاري تحليل صورة الرنين المغناطيسي..."):
-                    img_pil = PILImage.open(uploaded_img)
-                    prediction = None
-
-                    # ── Image Gatekeeper ──
-                    validation = validate_medical_image(img_pil, expected_type="mri")
-                    if not validation["valid"]:
-                        st.error(validation["reason"])
-                        if validation.get("medical_score"):
-                            st.caption(f"درجة الثقة الطبية: {validation['medical_score']*100:.0f}%")
-                    else:
-                        if not validation.get("type_match", True):
-                            st.warning(validation["reason"])
-
-                        prediction = brain_detector.predict_image(img_pil)
-                        label, explanation, risk_level, style = brain_detector.interpret_result(prediction)
-
-                col1, col2 = st.columns([1, 1])
-                with col1:
-                    st.image(uploaded_img, caption="صورة MRI المُحلَّلة", use_container_width=True)
-                    # Grad-CAM heatmap
-                    if gradcam_available() and brain_detector.model and brain_detector.processor:
-                        with st.spinner("توليد خريطة التنشيط (Grad-CAM)..."):
-                            heatmap = generate_gradcam_heatmap(
-                                brain_detector.model, brain_detector.processor,
-                                img_pil, target_class_idx=prediction.get("class_name") and list(prediction.keys()).index("class_name") or None
-                            )
-                            if heatmap:
-                                st.image(heatmap, caption="خريطة Grad-CAM — مناطق تركيز النموذج", use_container_width=True)
-
-                with col2:
-                    if prediction:
-                        color_map = {"success": "#28A745", "warning": "#FF9800", "danger": "#DC3545", "error": "#6C757D"}
-                        color = color_map.get(style, "#6C757D")
-                        st.markdown(f"""
-                        <div style="text-align:center; padding:20px; border-radius:16px;
-                                    background:{color}11; border:2px solid {color}; margin-top:10px;">
-                            <h3 style="color:{color}; margin:0;">{label}</h3>
-                            <p style="color:#1E2028; margin-top:10px; font-size:15px;">{explanation}</p>
-                        </div>
-                        """, unsafe_allow_html=True)
-
-                        st.markdown("#### توزيع الاحتمالات")
-                        st.progress(prediction["prob_glioma"], text=f"🔴 Glioma: {prediction['prob_glioma']*100:.1f}%")
-                        st.progress(prediction["prob_meningioma"], text=f"🟠 Meningioma: {prediction['prob_meningioma']*100:.1f}%")
-                        st.progress(prediction["prob_no_tumor"], text=f"🟢 سليم: {prediction['prob_no_tumor']*100:.1f}%")
-                        st.progress(prediction["prob_pituitary"], text=f"🟡 Pituitary: {prediction['prob_pituitary']*100:.1f}%")
-
-                        if risk_level == "high":
-                            st.error("يُرجى مراجعة أخصائي جراحة أعصاب فوراً.")
-                        elif risk_level == "moderate":
-                            st.warning("يُنصح بمراجعة طبيب أعصاب لتقييم الحالة.")
-                        else:
-                            st.success("لم تُرصد مؤشرات أورام. يُنصح بالمتابعة الدورية.")
-                    else:
-                        st.error("تعذّر تحليل الصورة.")
-
-    with st.expander("تشخيص النظام"):
-        if brain_detector:
-            status_color = "green" if brain_detector.model else "red"
-            model_status = "Connected (Swin Transformer)" if brain_detector.model else "Unavailable"
-            st.markdown(f"**Model Status:** <span style='color:{status_color};'>{model_status}</span>", unsafe_allow_html=True)
-            if brain_detector.load_error:
-                st.warning(f"خطأ تقني: {brain_detector.load_error}")
-            st.caption("البنية: Swin Transformer | المصدر: Hugging Face | الفئات: Glioma/Meningioma/Pituitary/No Tumor")
-        else:
-            st.error("لم يتم تهيئة الكاشف.")
-
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# ─────────────────────────────────────────────────────────────
-# 🩻 PAGE: CHEST X-RAY SCANNER
-# ─────────────────────────────────────────────────────────────
-elif st.session_state.page == "xray_scanner":
-    st.markdown('<h1 class="main-title">تحليل الأشعة السينية (X-Ray)</h1>', unsafe_allow_html=True)
-    st.markdown('<p style="color:#5A6072;">نموذج <b>Vision Transformer (ViT)</b> مُدرّب على بيانات <b>CheXpert (Stanford)</b> لتصنيف أمراض الصدر — دقة 98.46%.</p>', unsafe_allow_html=True)
-
-    st.markdown('<div class="data-card">', unsafe_allow_html=True)
-
-    # Lazy load
-    xray_detector = load_xray_analyzer()
-
-    if xray_detector is None or xray_detector.model is None:
-        st.error("**نموذج الأشعة السينية غير متاح**")
-        err_msg = xray_detector.load_error if xray_detector else "لم يتم تحميل الكاشف"
-        st.warning(f"تنبيه تقني: {err_msg}")
-        st.info("النموذج يتم تحميله تلقائياً من Hugging Face عند أول استخدام (~350 ميجابايت)")
-    else:
-        st.success("وحدة التحليل جاهزة — ViT Chest X-Ray (CheXpert)")
-
-    st.markdown("---")
-
-    # ── Conditions Info ──
-    st.markdown("""
-    <div style="background:linear-gradient(135deg, #f8f9fa, #f0f8ff); border-radius:14px; padding:18px; margin-bottom:16px; border:1px solid #e0e8f0;">
-        <h4 style="margin:0 0 10px; color:#1E2028;">الحالات المكتشفة</h4>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-            <div style="background:#ffebee; padding:10px 14px; border-radius:10px;">
-                <b style="color:#c62828;">🔴 التهاب رئوي (Pneumonia)</b><br>
-                <small style="color:#555;">عدوى تصيب الحويصلات الهوائية</small>
-            </div>
-            <div style="background:#fce4ec; padding:10px 14px; border-radius:10px;">
-                <b style="color:#ad1457;">🫀 تضخم القلب (Cardiomegaly)</b><br>
-                <small style="color:#555;">تضخم في عضلة القلب</small>
-            </div>
-            <div style="background:#e3f2fd; padding:10px 14px; border-radius:10px;">
-                <b style="color:#1565c0;">💧 وذمة رئوية (Edema)</b><br>
-                <small style="color:#555;">تجمع سوائل في الرئتين</small>
-            </div>
-            <div style="background:#fff3e0; padding:10px 14px; border-radius:10px;">
-                <b style="color:#ef6c00;">🫁 تصلب رئوي (Consolidation)</b><br>
-                <small style="color:#555;">تصلب في أنسجة الرئة</small>
-            </div>
-            <div style="background:#e8f5e9; padding:12px 14px; border-radius:10px; grid-column: span 2;">
-                <b style="color:#2e7d32;">🟢 سليم — No Finding</b><br>
-                <small style="color:#555;">لا توجد مؤشرات مرضية في الأشعة</small>
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    disclaimer_agreed = st.checkbox(
-        "أوافق على أن هذه الأداة تجريبية للأغراض التعليمية فقط ولا تعطي تشخيصاً طبياً نهائياً.",
-        key="xray_disclaimer"
-    )
-
-    if not disclaimer_agreed:
-        st.info("يرجى الموافقة على الشروط أعلاه لتفعيل رفع صور الأشعة.")
-    else:
-        uploaded_img = st.file_uploader(
-            "تحميل صورة الأشعة السينية (Chest X-Ray)",
-            type=["jpg", "jpeg", "png"],
-            key="xray_uploader"
-        )
-
-        if st.button("تحليل الأشعة السينية", use_container_width=True, type="primary", key="xray_analyze"):
-            if not uploaded_img:
-                st.warning("يرجى تحميل صورة أشعة سينية أولاً.")
-            elif xray_detector is None or xray_detector.model is None:
-                st.error("النموذج غير متاح.")
-            else:
-                with st.spinner("جاري تحليل صورة الأشعة السينية..."):
-                    img_pil = PILImage.open(uploaded_img)
-                    prediction = None
-
-                    # ── Image Gatekeeper ──
-                    validation = validate_medical_image(img_pil, expected_type="xray")
-                    if not validation["valid"]:
-                        st.error(validation["reason"])
-                        if validation.get("medical_score"):
-                            st.caption(f"درجة الثقة الطبية: {validation['medical_score']*100:.0f}%")
-                    else:
-                        if not validation.get("type_match", True):
-                            st.warning(validation["reason"])
-
-                        prediction = xray_detector.predict_image(img_pil)
-                        label, explanation, risk_level, style = xray_detector.interpret_result(prediction)
-
-                col1, col2 = st.columns([1, 1])
-                with col1:
-                    st.image(uploaded_img, caption="صورة الأشعة المُحلَّلة", use_container_width=True)
-                    # Grad-CAM heatmap
-                    if gradcam_available() and xray_detector.model and xray_detector.processor:
-                        with st.spinner("توليد خريطة التنشيط (Grad-CAM)..."):
-                            heatmap = generate_gradcam_heatmap(
-                                xray_detector.model, xray_detector.processor,
-                                img_pil
-                            )
-                            if heatmap:
-                                st.image(heatmap, caption="خريطة Grad-CAM — مناطق تركيز النموذج", use_container_width=True)
-
-                with col2:
-                    if prediction:
-                        color_map = {"success": "#28A745", "warning": "#FF9800", "danger": "#DC3545", "error": "#6C757D"}
-                        color = color_map.get(style, "#6C757D")
-                        st.markdown(f"""
-                        <div style="text-align:center; padding:20px; border-radius:16px;
-                                    background:{color}11; border:2px solid {color}; margin-top:10px;">
-                            <h3 style="color:{color}; margin:0;">{label}</h3>
-                            <p style="color:#1E2028; margin-top:10px; font-size:15px;">{explanation}</p>
-                        </div>
-                        """, unsafe_allow_html=True)
-
-                        st.markdown("#### توزيع الاحتمالات")
-                        prob_items = [
-                            ("🫀 تضخم القلب", prediction.get("prob_cardiomegaly", 0)),
-                            ("💧 وذمة رئوية", prediction.get("prob_edema", 0)),
-                            ("🫁 تصلب رئوي", prediction.get("prob_consolidation", 0)),
-                            ("🔴 التهاب رئوي", prediction.get("prob_pneumonia", 0)),
-                            ("🟢 سليم", prediction.get("prob_no_finding", 0)),
-                        ]
-                        for plabel, prob in prob_items:
-                            st.progress(prob, text=f"{plabel}: {prob*100:.1f}%")
-
-                        if risk_level == "high":
-                            st.error("يُرجى مراجعة أخصائي أمراض صدرية فوراً.")
-                        elif risk_level == "moderate":
-                            st.warning("يُنصح بمراجعة طبيب لتقييم الحالة.")
-                        else:
-                            st.success("لم تُرصد مؤشرات مرضية. يُنصح بالمتابعة الدورية.")
-                    else:
-                        st.error("تعذّر تحليل الصورة.")
-
-    with st.expander("تشخيص النظام"):
-        if xray_detector:
-            status_color = "green" if xray_detector.model else "red"
-            model_status = "Connected (ViT CheXpert)" if xray_detector.model else "Unavailable"
-            st.markdown(f"**Model Status:** <span style='color:{status_color};'>{model_status}</span>", unsafe_allow_html=True)
-            if xray_detector.load_error:
-                st.warning(f"خطأ تقني: {xray_detector.load_error}")
-            st.caption("البنية: Vision Transformer (ViT) | المصدر: CheXpert (Stanford) | الفئات: 5 حالات صدرية | الدقة: 98.46%")
-        else:
-            st.error("لم يتم تهيئة الكاشف.")
-
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# ─────────────────────────────────────────────────────────────
-# 🩹 PAGE: DERMATOLOGY (SKIN LESIONS)
-# ─────────────────────────────────────────────────────────────
-elif st.session_state.page == "derm_scanner":
-    st.markdown('<h1 class="main-title">فاحص الأمراض الجلدية</h1>', unsafe_allow_html=True)
-    st.markdown('<p style="color:#5A6072;">نموذج <b>DinoV2</b> لتصنيف 31 حالة جلدية (ISIC 2018 + Atlas Dermatology) — دقة 95.57%. أداة تعليمية فقط، لا تُغني عن طبيب الجلد.</p>', unsafe_allow_html=True)
-
-    st.markdown('<div class="data-card">', unsafe_allow_html=True)
-
-    derm_detector = load_derm_detector()
-
-    if derm_detector is None or derm_detector.model is None:
-        st.error("**نموذج الجلد غير متاح**")
-        err_msg = derm_detector.load_error if derm_detector else "لم يتم تحميل الكاشف"
-        st.warning(f"تنبيه تقني: {err_msg}")
-        st.info("النموذج يتم تحميله تلقائياً من Hugging Face عند أول استخدام.")
-    else:
-        st.success("وحدة التحليل جاهزة — DinoV2 Skin Disease (31 فئة)")
-
-    st.markdown("---")
-    st.markdown("""
-    <div style="background:linear-gradient(135deg, #f8f9fa, #fff8f0); border-radius:14px; padding:18px; margin-bottom:16px; border:1px solid #f0e8e0;">
-        <h4 style="margin:0 0 10px; color:#1E2028;">الحالات المكتشفة (31 فئة)</h4>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-            <div style="background:#ffebee; padding:10px 14px; border-radius:10px;"><b style="color:#c62828;">خطورة عالية</b><br><small>الميلانوما، BCC، SCC، الجذام، الذئبة، الفطار الفطراني</small></div>
-            <div style="background:#fff3e0; padding:10px 14px; border-radius:10px;"><b style="color:#e65100;">خطورة متوسطة</b><br><small>الصدفية، الهربس، الحزاز المسطح، القوباء، التقرن السفعي</small></div>
-            <div style="background:#e8f5e9; padding:10px 14px; border-radius:10px;"><b style="color:#2e7d32;">خطورة منخفضة</b><br><small>الشامات، التقرن الدهني، النخالية الوردية، آفات وعائية</small></div>
-            <div style="background:#e3f2fd; padding:10px 14px; border-radius:10px;"><b style="color:#1565c0;">31 فئة إجمالية</b><br><small>ISIC 2018 + Atlas Dermatology | DinoV2 | 95.57%</small></div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    disclaimer_agreed = st.checkbox(
-        "أوافق على أن هذه الأداة تجريبية للأغراض التعليمية فقط ولا تعطي تشخيصاً طبياً نهائياً.",
-        key="derm_disclaimer"
-    )
-
-    if not disclaimer_agreed:
-        st.info("يرجى الموافقة على الشروط أعلاه لتفعيل رفع صور الجلد.")
-    else:
-        uploaded_img = st.file_uploader(
-            "تحميل صورة لِسْيونة جلدية",
-            type=["jpg", "jpeg", "png"],
-            key="derm_uploader"
-        )
-
-        if st.button("تحليل لِسْيونة الجلد", use_container_width=True, type="primary", key="derm_analyze"):
-            if not uploaded_img:
-                st.warning("يرجى تحميل صورة أولاً.")
-            elif derm_detector is None or derm_detector.model is None:
-                st.error("النموذج غير متاح.")
-            else:
-                with st.spinner("جاري تحليل الصورة..."):
-                    img_pil = PILImage.open(uploaded_img)
-                    prediction = None
-                    validation = validate_medical_image(img_pil, expected_type="derm")
-                    if not validation.get("valid", True):
-                        st.warning(validation.get("reason", "تحقق من صورة الجلد."))
-                    prediction = derm_detector.predict_image(img_pil)
-                    label, explanation, risk_level, style = derm_detector.interpret_result(prediction)
-
-                col1, col2 = st.columns([1, 1])
-                with col1:
-                    st.image(uploaded_img, caption="صورة الجلد المُحلَّلة", use_container_width=True)
-
-                with col2:
-                    if prediction:
-                        color_map = {"success": "#28A745", "warning": "#FF9800", "danger": "#DC3545", "error": "#6C757D"}
-                        color = color_map.get(style, "#6C757D")
-                        st.markdown(f"""
-                        <div style="text-align:center; padding:20px; border-radius:16px;
-                                    background:{color}11; border:2px solid {color}; margin-top:10px;">
-                            <h3 style="color:{color}; margin:0;">{label}</h3>
-                            <p style="color:#1E2028; margin-top:10px; font-size:15px;">{explanation}</p>
-                        </div>
-                        """, unsafe_allow_html=True)
-                        st.markdown("#### أعلى 5 احتمالات")
-                        top5 = prediction.get("top5", [])
-                        for item in top5:
-                            p = item["probability"]
-                            st.progress(p, text=f"{item['class_label_ar']}: {p*100:.1f}%")
-                        if risk_level == "high":
-                            st.error("يُرجى مراجعة طبيب جلدية فوراً.")
-                        elif risk_level == "moderate":
-                            st.warning("يُنصح بمراجعة طبيب جلدية.")
-                        else:
-                            st.success("يُنصح بالفحص الدوري عند طبيب الجلد.")
-                    else:
-                        st.error("تعذّر تحليل الصورة.")
-
-    with st.expander("تشخيص النظام"):
-        if derm_detector:
-            status_color = "green" if derm_detector.model else "red"
-            st.markdown(f"**Model Status:** <span style='color:{status_color};'>{'Connected' if derm_detector.model else 'Unavailable'}</span>", unsafe_allow_html=True)
-            if derm_detector.load_error:
-                st.warning(f"خطأ تقني: {derm_detector.load_error}")
-        else:
-            st.error("لم يتم تهيئة الكاشف.")
-
-    st.markdown('</div>', unsafe_allow_html=True)
