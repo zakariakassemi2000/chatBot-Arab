@@ -1,61 +1,67 @@
 # ============================================================
 # SHIFA AI · Vision Router
-# Description : Routeur central pour l'inférence des modèles de vision (Lazy Loading)
+# Description : Routeur central pour l'inférence des modèles de vision (Memory Optimized)
 # Auteur : SHIFA AI Team
 # ============================================================
 
 import logging
+import gc
+import torch
 from typing import Dict, Any
 from PIL import Image
-
-import streamlit as st
 
 logger = logging.getLogger(__name__)
 
 class VisionRouter:
     """
-    Routeur de modèles de vision. Charge dynamiquement les modèles demandés (Lazy Loading)
-    et unifie l'interface d'inférence pour toute l'application SHIFA AI.
+    Routeur de modèles de vision optimisé pour la mémoire (1GB RAM Streamlit Cloud).
+    Gère le chargement et le déchargement dynamique des modèles.
     """
     
     def __init__(self):
-        # Dict statique pour lazy loading classique hors Streamlit cache si besoin
         self._models = {}
 
-    @staticmethod
-    @st.cache_resource
-    def _get_model(vision_type: str):
+    def _get_model(self, vision_type: str):
         """
-        Charge et met en cache (Streamlit) le modèle spécifique de manière lazy.
+        Charge le modèle demandé et libère les autres pour économiser la RAM.
+        """
+        # 1. Libération de la mémoire des autres modèles
+        for key in list(self._models.keys()):
+            if key != vision_type:
+                logger.info(f"[VisionRouter] Déchargement du modèle: {key} pour libérer la RAM")
+                del self._models[key]
         
-        Args:
-            vision_type (str): Type de vision ('dermato', 'xray', 'brain_mri')
-            
-        Returns:
-            Instance héritant de VisionBase.
-        """
-        if vision_type == "dermato":
-            from engine.dermato import DermatoModel
-            return DermatoModel()
-        elif vision_type == "xray":
-            from engine.xray import XRayModel
-            return XRayModel()
-        elif vision_type == "brain_mri":
-            from engine.brain_mri import BrainMRIModel
-            return BrainMRIModel()
-        elif vision_type == "cancer":
-            from engine.cancer import CancerDetector
-            return CancerDetector()
-        elif vision_type == "breast":
-            from engine.breast import BreastDensityDetector
-            return BreastDensityDetector()
-        else:
-            raise ValueError(f"[VisionRouter] Type de vision inconnu: {vision_type}")
+        # Nettoyage profond
+        gc.collect()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+
+        # 2. Chargement du modèle cible s'il n'est pas déjà présent
+        if vision_type not in self._models:
+            logger.info(f"[VisionRouter] Chargement du modèle: {vision_type}")
+            if vision_type == "dermato":
+                from engine.dermato import DermatoModel
+                self._models[vision_type] = DermatoModel()
+            elif vision_type == "xray":
+                from engine.xray import XRayModel
+                self._models[vision_type] = XRayModel()
+            elif vision_type == "brain_mri":
+                from engine.brain_mri import BrainMRIModel
+                self._models[vision_type] = BrainMRIModel()
+            elif vision_type == "cancer":
+                from engine.cancer import CancerDetector
+                self._models[vision_type] = CancerDetector()
+            elif vision_type == "breast":
+                from engine.breast import BreastDensityDetector
+                self._models[vision_type] = BreastDensityDetector()
+            else:
+                raise ValueError(f"[VisionRouter] Type de vision inconnu: {vision_type}")
+        
+        return self._models[vision_type]
 
     def analyze(self, image: Image.Image, vision_type: str) -> Dict[str, Any]:
         """
-        Analyse l'image selon le modèle demandé et retourne un schéma standardisé.
-        Gère les validations strictes pour la sécurité médicale.
+        Analyse l'image selon le modèle demandé avec gestion stricte de la mémoire.
         """
         try:
             model = self._get_model(vision_type)
@@ -71,11 +77,11 @@ class VisionRouter:
                     "urgency": None,
                     "gradcam": None,
                     "recommendation_ar": "تعذّر تحليل الصورة — يرجى رفع صورة طبية واضحة",
-                    "rejection_reason": "Image non médicale détectée",
+                    "rejection_reason": validation["reason"],
                     "vision_type": vision_type
                 }
             
-            # Inférence seulement si image valide
+            # Inférence
             result = model.predict(image)
             result["valid"] = True
             
@@ -83,9 +89,6 @@ class VisionRouter:
             if result["confidence"] < model.MIN_CONFIDENCE:
                 result["valid"] = False
                 result["recommendation_ar"] = "⚠️ الصورة غير واضحة أو لا تتطابق مع النموذج المحدد"
-            
-            if result.get("gradcam") is None and result["valid"]:
-                logger.warning(f"[VisionRouter] Grad-CAM n'a pas pu être généré pour {vision_type}.")
             
             return result
             
