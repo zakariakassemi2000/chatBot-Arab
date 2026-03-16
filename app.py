@@ -938,16 +938,27 @@ elif st.session_state.page == "scanner":
                     analysis = ai_engine.generate_answer(
                         f"قم بتحليل هذه الأعراض وتقديم توجيهات أولية: {scan_prompt}", 
                         context, 
-                        "וصف_أعراض"
+                        "وصف_أعراض"
                     )
                 else:
-                    analysis = "تحليل النظام غير متوفر حالياً بدون مفتاح LLM. يرجى مراجعة الطبيب."
+                    analysis = None
+                
+                if not analysis:
+                    analysis = f"""بناءً على الأعراض المذكرة:
+                    
+**الأعراض:** {symptoms}
+**المدة:** {duration} | **الشدة:** {severity}
+
+**التوصية:** يرجى مراجعة طبيب مختص في أقرب وقت لإجراء فحص سريري كامل.
+
+**ملاحظة:** النظام الذكي غير متصل حالياً. هذه توصية عامة فقط."""
                 
                 st.markdown('<div class="data-card">', unsafe_allow_html=True)
                 st.subheader("نتيجة التحليل الأولي")
                 st.write(analysis)
                 st.markdown('</div>', unsafe_allow_html=True)
                 st.info("تذكر: هذا التحليل آلي ولا يغني عن الفحص السريري.")
+
 
 # ─────────────────────────────────────────────────────────────
 # PAGE: HISTORY
