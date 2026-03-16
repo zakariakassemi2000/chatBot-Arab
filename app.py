@@ -745,6 +745,37 @@ elif st.session_state.page == "chat":
             else:
                 try:
                     safe = guard.check(user_q)
+                    
+                    # CARDIAC EMERGENCY — bloc rouge animé + stop immédiat
+                    if safe.get("emergency"):
+                        placeholder.empty()
+                        st.markdown("""
+                        <div style="
+                          background: rgba(220,38,38,0.15);
+                          border: 2px solid #DC2626;
+                          border-radius: 16px;
+                          padding: 24px;
+                          text-align: center;
+                          direction: rtl;
+                          animation: pulse 1s infinite;
+                        ">
+                        <h2 style="color:#DC2626; margin:0;">🚨 حالة طوارئ</h2>
+                        <h3 style="color:#FCA5A5; margin:8px 0;">اتصل بالإسعاف فوراً — 📞 15</h3>
+                        </div>
+                        <style>
+                        @keyframes pulse {
+                          0%   { border-color: #DC2626; }
+                          50%  { border-color: #FCA5A5; }
+                          100% { border-color: #DC2626; }
+                        }
+                        </style>
+                        """, unsafe_allow_html=True)
+                        answer = safe["override_response"]
+                        st.markdown(answer)
+                        st.session_state.messages.append({"role": "assistant", "content": answer})
+                        save_history(st.session_state.messages)
+                        st.stop()
+                    
                     if safe["level"] in ("emergency", "boundary"):
                         answer = safe["override_response"]
                     else:

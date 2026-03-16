@@ -42,6 +42,32 @@ EMERGENCY_KEYWORDS = [
 ]
 
 # ═══════════════════════════════════════════════════════════════════
+#  ❤️ CARDIAC EMERGENCY — Multi-keyword threshold detection
+# ═══════════════════════════════════════════════════════════════════
+CARDIAC_KEYWORDS = [
+    "ألم في الصدر", "ضيق التنفس", "تعرق غزير",
+    "ألم في الذراع", "غثيان مفاجئ", "خفقان شديد",
+    "وجع الصدر", "ألم صدري", "نبضات سريعة",
+]
+
+CARDIAC_EMERGENCY_RESPONSE = """
+🚨 تحذير طبي عاجل
+
+الأعراض التي وصفتها قد تشير إلى أزمة قلبية حادة.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+🚑 اتصل بالإسعاف فوراً
+    📞 15 — SAMU Maroc
+━━━━━━━━━━━━━━━━━━━━━━━
+
+لا تنتظر. لا تقد السيارة. لا تأخذ دواء.
+اطلب المساعدة الآن.
+
+⚠️ هذا النظام لا يستطيع تشخيص حالتك.
+   فقط الطبيب في المستشفى يمكنه مساعدتك.
+"""
+
+# ═══════════════════════════════════════════════════════════════════
 #  🟡 YELLOW FLAGS — Caution keywords (recommend seeing a doctor)
 # ═══════════════════════════════════════════════════════════════════
 CAUTION_KEYWORDS = [
@@ -149,6 +175,8 @@ class SafetyGuard:
       4. Disclaimer injection → Always add medical disclaimer
     """
 
+    URGENCE_THRESHOLD = 2  # 2 cardiac keywords = emergency
+
     def __init__(self):
         # Compile forbidden patterns for speed
         self._forbidden_re = [re.compile(p) for p in FORBIDDEN_PATTERNS]
@@ -173,7 +201,16 @@ class SafetyGuard:
             "flags": [],
         }
 
-        # Layer 1: Emergency detection (HIGHEST PRIORITY)
+        # Layer 0: CARDIAC EMERGENCY (HIGHEST PRIORITY — threshold-based)
+        cardiac_emergency, cardiac_flags = self.detect_emergency(msg)
+        if cardiac_emergency:
+            result["level"] = "emergency"
+            result["emergency"] = True
+            result["override_response"] = CARDIAC_EMERGENCY_RESPONSE
+            result["flags"] = cardiac_flags
+            return result
+
+        # Layer 1: Emergency detection (single keyword match)
         for kw in EMERGENCY_KEYWORDS:
             if kw in msg:
                 result["level"] = "emergency"
@@ -197,6 +234,18 @@ class SafetyGuard:
                 # Don't override response, but add caution prefix later
 
         return result
+
+    def detect_emergency(self, text: str) -> tuple:
+        """
+        Détecte une urgence cardiaque par seuil de mots-clés.
+        Si >= URGENCE_THRESHOLD mots-clés cardiaques sont détectés,
+        c'est une urgence — ZERO appel LLM.
+        """
+        flags = []
+        for kw in CARDIAC_KEYWORDS:
+            if kw in text:
+                flags.append(f"❤️‍🔥 {kw}")
+        return len(flags) >= self.URGENCE_THRESHOLD, flags
 
     @staticmethod
     def add_disclaimer(response: str) -> str:
