@@ -71,18 +71,12 @@ def get_logo():
 
 def save_history(messages):
     if not messages: return
-    history = []
-    if os.path.exists(HISTORY_FILE):
-        try:
-            with open(HISTORY_FILE, "r", encoding="utf-8") as f:
-                history = json.load(f)
-        except Exception as e:
-            logger.error(f"[AppError] {e}")
-            st.error("حدث خطأ غير متوقع — يرجى إعادة المحاولة")
     
-    # Check if last session is already saved
+    if "local_history" not in st.session_state:
+        st.session_state["local_history"] = []
+        
     session_id = str(st.session_state.get("session_id", time.time()))
-    existing = next((idx for idx, s in enumerate(history) if s.get("id") == session_id), None)
+    existing = next((idx for idx, s in enumerate(st.session_state["local_history"]) if s.get("id") == session_id), None)
     
     entry = {
         "id": session_id,
@@ -92,12 +86,9 @@ def save_history(messages):
     }
     
     if existing is not None:
-        history[existing] = entry
+        st.session_state["local_history"][existing] = entry
     else:
-        history.insert(0, entry)
-        
-    with open(HISTORY_FILE, "w", encoding="utf-8") as f:
-        json.dump(history[:50], f, ensure_ascii=False, indent=2)
+        st.session_state["local_history"].insert(0, entry)
 
 # ─────────────────────────────────────────────────────────────
 # PAGE CONFIG & UI
@@ -734,9 +725,15 @@ elif st.session_state.page == "chat":
         logger.info("Voice input unavailable", exc_info=True)
 
     if user_q:
-        st.session_state.messages.append({"role": "user", "content": user_q})
-        with st.chat_message("user"):
-            st.markdown(user_q)
+        current_time = time.time()
+        last_request = st.session_state.get('last_request_time', 0)
+        if current_time - last_request < 4:
+            st.error("الرجاء الانتظار بضع ثوانٍ قبل إرسال رسالة أخرى.")
+        else:
+            st.session_state['last_request_time'] = current_time
+            st.session_state.messages.append({"role": "user", "content": user_q})
+            with st.chat_message("user"):
+                st.markdown(user_q)
 
         with st.chat_message("assistant", avatar=get_logo()):
             placeholder = st.empty()
@@ -1001,21 +998,18 @@ elif st.session_state.page == "scanner":
 elif st.session_state.page == "history":
     st.markdown('<h1 class="main-title">سجل الاستشارات الماضية</h1>', unsafe_allow_html=True)
     
-    if os.path.exists(HISTORY_FILE):
-        with open(HISTORY_FILE, "r", encoding="utf-8") as f:
-            history = json.load(f)
-            
-        if not history:
-            st.info("لا يوجد سجل استشارات حتى الآن.")
-        else:
-            for item in history:
-                with st.expander(f"{item['date']} | {item['title'][:40]}..."):
-                    for m in item['messages']:
-                        role = "الطبيب الذكي" if m['role'] == "assistant" else "أنت"
-                        st.markdown(f"**{role}:**")
-                        st.write(m['content'])
-                        st.markdown("---")
+    history = st.session_state.get("local_history", [])
+        
+    if not history:
+        st.info("لا يوجد سجل استشارات حتى الآن.")
     else:
+        for item in history:
+            with st.expander(f"{item['date']} | {item['title'][:40]}..."):
+                for m in item['messages']:
+                    role = "الطبيب الذكي" if m['role'] == "assistant" else "أنت"
+                    st.markdown(f"**{role}:**")
+                    st.write(m['content'])
+                    st.markdown("---")
         st.info("سجل الاستشارات فارغ حالياً.")
 
 # ─────────────────────────────────────────────────────────────
