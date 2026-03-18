@@ -71,7 +71,7 @@ class BrainMRIModel(VisionBase):
     def _load_model(self) -> torch.nn.Module:
         """Charge l'architecture ResNet-50 avec une tête à 4 classes."""
         try:
-            model = resnet50(weights=None)
+            model = resnet50(weights='DEFAULT')
             num_ftrs = model.fc.in_features
             model.fc = nn.Linear(num_ftrs, 4)
             return model

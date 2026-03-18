@@ -26,7 +26,7 @@ class XRayModel(VisionBase):
     def _load_model(self) -> torch.nn.Module:
         """Charge l'architecture DenseNet-121 avec une tête à 3 classes."""
         try:
-            model = densenet121(weights=None)
+            model = densenet121(weights='DEFAULT')
             num_ftrs = model.classifier.in_features
             model.classifier = nn.Sequential(
                 nn.Linear(num_ftrs, 256),

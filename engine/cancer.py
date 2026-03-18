@@ -1,49 +1,42 @@
 # ============================================================
-# SHIFA AI · Cancer Detector (Unified)
-# Description : Modèle MobileNetV2 pour la détection du cancer du sein (TF)
+# SHIFA AI · Cancer Detector (Standalone TF)
 # ============================================================
 
 import os
 import numpy as np
 import logging
 from PIL import Image
-from engine.vision_base import VisionBase
-from typing import Dict, Any, Optional, Tuple
+from typing import Dict, Any
 
 logger = logging.getLogger(__name__)
 
 # Désactiver les logs TF verbeux
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-class CancerDetector(VisionBase):
-    """
-    Détecteur de cancer du sein basé sur MobileNetV2 (TensorFlow/Keras).
-    Classes : Benign, Malignant, Normal.
-    """
 
+class CancerDetectorTF:
+    """Standalone TF detector — pas de VisionBase."""
+    
+    MIN_CONFIDENCE = 0.45
+    
     def __init__(self):
-        # On n'appelle pas super().__init__ car VisionBase est très orienté Torch
-        # On réimplémente le nécessaire manuellement pour TF
         self.target_size = (224, 224)
         self.model_path = "models/breast_cancer_model_v2.keras"
+        self.device = "cpu"  # TF gère seul
         self.model = self._load_model()
-        
+    
     def _load_model(self):
         if not os.path.exists(self.model_path):
             logger.warning(f"Modèle cancer non trouvé : {self.model_path}")
             return None
         try:
             import tensorflow as tf
-            model = tf.keras.saving.load_model(self.model_path)
-            logger.info(f"CancerDetector (TF) chargé depuis {self.model_path}")
+            model = tf.keras.models.load_model(self.model_path)
+            logger.info(f"CancerDetectorTF chargé depuis {self.model_path}")
             return model
         except Exception as e:
             logger.error(f"Erreur chargement CancerDetector: {e}")
             return None
-
-    def _get_target_layer(self):
-        # Grad-CAM non implémenté pour TF dans ce pattern unifié pour l'instant
-        return None
 
     def get_vision_type(self) -> str:
         return "cancer"
@@ -71,7 +64,7 @@ class CancerDetector(VisionBase):
         }
 
     def predict(self, image: Image.Image) -> Dict[str, Any]:
-        """Override predict car TF utilise un pipeline différent de Torch."""
+        """Inférence TF."""
         if self.model is None:
             raise RuntimeError("Modèle Cancer non chargé.")
 

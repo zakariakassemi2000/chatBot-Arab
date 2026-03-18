@@ -27,8 +27,9 @@ if sys.platform == 'win32' and not os.environ.get('_UTF8_FIX_APPLIED'):
         sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
         sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
         os.environ['_UTF8_FIX_APPLIED'] = '1'
-    except:
-        pass
+    except Exception as e:
+        logger.error(f"[AppError] {e}")
+        st.error("حدث خطأ غير متوقع — يرجى إعادة المحاولة")
 
 # ─────────────────────────────────────────────────────────────
 # IMPORT ENGINES
@@ -55,8 +56,9 @@ def get_b64(path):
         if os.path.exists(path):
             with open(path, "rb") as f:
                 return base64.b64encode(f.read()).decode()
-    except:
-        pass
+    except Exception as e:
+        logger.error(f"[AppError] {e}")
+        st.error("حدث خطأ غير متوقع — يرجى إعادة المحاولة")
     return None
 
 LOGO_B64 = get_b64(LOGO_PATH)
@@ -74,7 +76,9 @@ def save_history(messages):
         try:
             with open(HISTORY_FILE, "r", encoding="utf-8") as f:
                 history = json.load(f)
-        except: pass
+        except Exception as e:
+            logger.error(f"[AppError] {e}")
+            st.error("حدث خطأ غير متوقع — يرجى إعادة المحاولة")
     
     # Check if last session is already saved
     session_id = str(st.session_state.get("session_id", time.time()))

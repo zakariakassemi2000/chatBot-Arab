@@ -27,7 +27,7 @@ class DermatoModel(VisionBase):
     def _load_model(self) -> torch.nn.Module:
         """Charge l'architecture EfficientNet-B3 avec une tête de classification à 7 classes."""
         try:
-            model = efficientnet_b3(weights=None)
+            model = efficientnet_b3(weights='DEFAULT')
             # Remplacement de la tête de classification
             num_ftrs = model.classifier[1].in_features
             model.classifier = nn.Sequential(

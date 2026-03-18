@@ -144,7 +144,7 @@ def clean_text(text: str) -> str:
     text = re.sub(r'https?://\S+', '', text)
     # Normalise Arabic characters
     text = re.sub(r'[إأآ]', 'ا', text)
-    text = re.sub(r'ة', 'ه', text)
+    # SUPPRIMÉ — détruit la sémantique AraBERT
     text = re.sub(r'ى', 'ي', text)
     # Remove excess whitespace
     text = re.sub(r'\n{3,}', '\n\n', text)
