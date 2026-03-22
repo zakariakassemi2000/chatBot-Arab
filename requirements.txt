@@ -19,3 +19,5 @@ torchxrayvision>=1.0.0
 huggingface-hub
 Pillow
 opencv-python-headless
+
+requests==2.31.0
