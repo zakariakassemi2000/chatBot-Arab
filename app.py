@@ -6,6 +6,10 @@
 """
 
 import os, sys, io, base64, time, json
+
+# ── Suppress TensorFlow info/warning messages ──
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 import streamlit as st
 import pandas as pd
 from datetime import datetime
@@ -32,16 +36,10 @@ if sys.platform == 'win32' and not os.environ.get('_UTF8_FIX_APPLIED'):
         st.error("حدث خطأ غير متوقع — يرجى إعادة المحاولة")
 
 # ─────────────────────────────────────────────────────────────
-# IMPORT ENGINES
+# IMPORT AGENTS (modular architecture)
 # ─────────────────────────────────────────────────────────────
-from engine.retriever import FAISSRetriever
-from engine.classifier import IntentClassifier, format_response
-from engine.safety import SafetyGuard
-from engine.llm import GroqGenerator
+from agents.orchestrator import Orchestrator
 from engine.audio import speech_to_text_arabic, convert_audio_to_wav
-from engine.vision_router import VisionRouter
-from utils.gradcam import generate_gradcam_heatmap, is_available as gradcam_available
-from utils.image_validator import validate_medical_image
 
 
 
@@ -484,26 +482,20 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────────────────────
-# LOAD SYSTEM
+# LOAD SYSTEM (Agent-based orchestrator)
 # ─────────────────────────────────────────────────────────────
 @st.cache_resource(show_spinner=False)
 def load_medical_system():
     try:
-        r = FAISSRetriever()
-        c = IntentClassifier()
-        g = SafetyGuard()
-        ai = GroqGenerator()
-        v = VisionRouter()
-        db_ok = r.load()
-        if db_ok: c.load()
-        return r, c, g, ai, v, db_ok
+        return Orchestrator.load()
     except Exception as e:
+        logger.error(f"Orchestrator load failed: {e}", exc_info=True)
         st.error(f"Error loading system: {e}")
-        return None, None, None, None, None, False
+        return None
 
-retriever, classifier, guard, ai_engine, vision_router, DB_STATUS = load_medical_system()
-
-AI_STATUS = bool(ai_engine and ai_engine.api_key)
+orch = load_medical_system()
+DB_STATUS = orch.db_ready if orch else False
+AI_STATUS = orch.llm_ready if orch else False
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -532,6 +524,7 @@ with st.sidebar:
     pages = [
         ("home",            "🏠", "الرئيسية"),
         ("chat",            "💬", "المحادثة الطبية"),
+        ("voice",           "🎙️", "المحادثة الصوتية"),
         ("vision",          "🔬", "تحليل الصور"),
         ("scanner",         "🩺", "فاحص الأعراض"),
         ("calculators",     "📊", "حاسبات طبية"),
@@ -551,20 +544,17 @@ with st.sidebar:
     # ── Session Stats ──
     n_msgs = len(st.session_state.messages)
     n_user = sum(1 for m in st.session_state.messages if m["role"] == "user")
-    st.markdown(f"""
-        <div class="stat-badge">
-            <span class="stat-num">{n_user}</span>
-            <span class="stat-label">سؤال في هذه الجلسة</span>
-        </div>
-        <div class="stat-badge">
-            <span class="stat-num" style="color: {'#4CAF50' if AI_STATUS else '#ef5350'};">\u25cf</span>
-            <span class="stat-label">{'AI Engine: Connected' if AI_STATUS else 'AI Engine: Offline'}</span>
-        </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown("---")
-    use_whisper = os.getenv("USE_WHISPER", "").strip().lower() in ("1", "true", "yes")
-    st.caption(f"Voice Input: {'Whisper' if use_whisper else 'Google'}")
+    st.sidebar.markdown("""
+<div style="
+  position:absolute; bottom:20px; left:0; right:0;
+  text-align:center;
+  font-size:0.7rem;
+  color:rgba(255,255,255,0.15);
+  padding:8px;
+">
+  شفاء AI v1.0 · 🟢
+</div>
+""", unsafe_allow_html=True)
     st.markdown("---")
     if st.session_state.page == "chat" and st.session_state.messages:
         if st.button("مسح المحادثة", use_container_width=True, type="secondary"):
@@ -590,7 +580,7 @@ if st.session_state.page == "home":
     cards = [
         ("🤖 محادثة طبية", "chat"),
         ("🔬 تحليل الصور", "vision"),
-        ("🎙️ المساعد الصوتي", "chat"),
+        ("🎙️ المساعد الصوتي", "voice"),
         ("💊 فحص الأدوية", "scanner"), # Using scanner as drug/symptom check
         ("📊 الحاسبات الطبية", "calculators")
     ]
@@ -635,22 +625,8 @@ elif st.session_state.page == "chat":
 
             if st.button("بدء الإعداد", type="primary", use_container_width=True):
                 try:
-                    from data.knowledge_base import load_and_prepare_datasets
-                    from engine.retriever import FAISSRetriever
-                    from engine.classifier import IntentClassifier
-
-                    with st.spinner("جاري تنزيل وتجهيز البيانات..."):
-                        df = load_and_prepare_datasets(max_samples=max_samples)
-
-                    with st.spinner("جاري بناء فهرس البحث..."):
-                        r = FAISSRetriever()
-                        embeddings = r.build_index(df, verbose=False)
-                        r.save()
-
-                    with st.spinner("جاري تدريب المصنّف..."):
-                        c = IntentClassifier()
-                        c.train(embeddings, df["intent"].tolist(), verbose=False)
-                        c.save()
+                    with st.spinner("جاري تنزيل البيانات وبناء قاعدة المعرفة..."):
+                        orch.setup_knowledge_base(max_samples=max_samples)
 
                     st.success("تم إعداد قاعدة المعرفة بنجاح.")
                     st.rerun()
@@ -745,65 +721,25 @@ elif st.session_state.page == "chat":
                 answer = "عفواً، لم أفهم استفسارك. يرجى توضيح السؤال الطبي أو الأعراض بمزيد من التفاصيل."
             else:
                 try:
-                    safe = guard.check(user_q)
-                    
-                    # CARDIAC EMERGENCY — bloc rouge animé + stop immédiat
-                    if safe.get("emergency"):
+                    # ── Orchestrator handles everything ─────────
+                    history_ctx = st.session_state.messages[:-1]
+                    response = orch.handle(user_q, history=history_ctx)
+
+                    # Emergency UI override
+                    if response.override_ui:
                         placeholder.empty()
-                        st.markdown("""
-                        <div style="
-                          background: rgba(220,38,38,0.15);
-                          border: 2px solid #DC2626;
-                          border-radius: 16px;
-                          padding: 24px;
-                          text-align: center;
-                          direction: rtl;
-                          animation: pulse 1s infinite;
-                        ">
-                        <h2 style="color:#DC2626; margin:0;">🚨 حالة طوارئ</h2>
-                        <h3 style="color:#FCA5A5; margin:8px 0;">اتصل بالإسعاف فوراً — 📞 15</h3>
-                        </div>
-                        <style>
-                        @keyframes pulse {
-                          0%   { border-color: #DC2626; }
-                          50%  { border-color: #FCA5A5; }
-                          100% { border-color: #DC2626; }
-                        }
-                        </style>
-                        """, unsafe_allow_html=True)
-                        answer = safe["override_response"]
-                        st.markdown(answer)
-                        st.session_state.messages.append({"role": "assistant", "content": answer})
+                        st.markdown(response.override_ui, unsafe_allow_html=True)
+                        st.markdown(response.answer)
+                        
+                        from engine.nearby_care import render_nearby_care
+                        if getattr(response, "severity", None) in ["critique", "élevée"]:
+                            render_nearby_care(response.severity)
+                            
+                        st.session_state.messages.append({"role": "assistant", "content": response.answer})
                         save_history(st.session_state.messages)
                         st.stop()
-                    
-                    if safe["level"] in ("emergency", "boundary"):
-                        answer = safe["override_response"]
-                    else:
-                        enc = retriever.encode_query(user_q)
-                        try:
-                            intent, _ = classifier.predict(enc)
-                        except Exception:
-                            intent = "general"
 
-                        res = retriever.get_best_answer(user_q)
-                        if res:
-                            base, _, _, _ = res
-                            if AI_STATUS:
-                                # Pass conversation history for memory
-                                history_ctx = st.session_state.messages[:-1]  # exclude current user msg
-                                answer = ai_engine.generate_answer(user_q, base, intent,
-                                                                    history=history_ctx)
-                                if answer:
-                                    answer = guard.post_check(answer)
-                            else:
-                                answer = format_response(base, intent)
-
-                            if safe["level"] == "caution":
-                                answer = guard.format_caution_response(answer)
-                            answer = guard.add_disclaimer(answer)
-                        else:
-                            answer = "عذراً، لا أملك إجابة دقيقة حالياً. يرجى استشارة طبيب مختص."
+                    answer = response.answer
                 except Exception:
                     logger.error("Chat pipeline error", exc_info=True)
                     answer = "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى."
@@ -811,7 +747,47 @@ elif st.session_state.page == "chat":
             placeholder.markdown(answer)
             st.session_state.messages.append({"role": "assistant", "content": answer})
             save_history(st.session_state.messages)
-            st.rerun()
+            
+            if "عالية" in answer and ("الخطورة" in answer or "حالة طارئة" in answer):
+                from engine.nearby_care import render_nearby_care
+                render_nearby_care("élevée")
+                st.stop()
+            else:
+                st.rerun()
+
+# ─────────────────────────────────────────────────────────────
+# PAGE: VOICE (المحادثة الصوتية)
+# ─────────────────────────────────────────────────────────────
+elif st.session_state.page == "voice":
+    st.markdown('<h1 class="main-title">🎙️ المساعد الصوتي</h1>', unsafe_allow_html=True)
+    st.markdown('<p style="color:#5A6072;">تحدث مباشرة مع المساعد الطبي والحصول على إجابة صوتية.</p>', unsafe_allow_html=True)
+    
+    from engine.voice import VoicePipeline
+    voice_pipeline = VoicePipeline(orchestrator=orch)
+    
+    st.markdown('<div class="data-card" style="text-align: center; padding: 40px;">', unsafe_allow_html=True)
+    
+    audio_bytes = st.audio_input("تحدث إلى المساعد الطبي بالنقر على أيقونة الميكروفون:")
+    
+    if audio_bytes:
+        temp_in = "temp_input.wav"
+        with open(temp_in, "wb") as f:
+            f.write(audio_bytes.getbuffer())
+        
+        with st.spinner("جاري تحليل الصوت ومعالجة الإجابة... ⏳"):
+            result = voice_pipeline.process_audio(temp_in, "response.mp3")
+            
+            if result.success:
+                st.success("تم إنتاج الإجابة بنجاح!")
+                st.chat_message("user").write(result.user_text)
+                st.chat_message("assistant").write(result.bot_text)
+                
+                # Show audio player
+                st.audio(result.audio_path, format="audio/mp3", autoplay=True)
+            else:
+                st.error(f"حدث خطأ أثناء المعالجة الصوتية: {result.error}")
+                
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────────────────────
 # PAGE: VISION
@@ -862,7 +838,8 @@ elif st.session_state.page == "vision":
                 with st.spinner("جاري التحليل..."):
                     img_pil = PILImage.open(uploaded_img)
                     try:
-                        result = vision_router.analyze(img_pil, vision_type)
+                        vision_resp = orch.analyze_image(img_pil, vision_type)
+                        result = {"valid": vision_resp.success, **vision_resp.metadata, "recommendation_ar": vision_resp.answer, "severity": vision_resp.severity}
                         if result:
                             if not result.get("valid", True):
                                 st.warning(result.get("recommendation_ar", "تحقق من جودة الصورة."))
@@ -899,6 +876,10 @@ elif st.session_state.page == "vision":
                                     <small style="color:#94A3B8;">⚠️ تنبيه مهم: هذه المعلومات للتوعية الصحية فقط ولا تغني عن استشارة الطبيب المختص.</small>
                                 </div>
                                 """, unsafe_allow_html=True)
+                                
+                                from engine.nearby_care import render_nearby_care
+                                if result.get("severity") in ["critique", "élevée"]:
+                                    render_nearby_care(result.get("severity"))
                                 
                                 st.markdown("#### توزيع الاحتمالات")
                                 probs_df = pd.DataFrame({
@@ -962,18 +943,16 @@ elif st.session_state.page == "scanner":
                 التاريخ المرضي: {history if history else 'لا يوجد'}
                 """
                 
-                # Use retriever for context then LLM for analysis
-                res = retriever.get_best_answer(symptoms)
-                context = res[0] if res else "إرشادات عامة للمرض"
-                
-                if AI_STATUS:
-                    analysis = ai_engine.generate_answer(
-                        f"قم بتحليل هذه الأعراض وتقديم توجيهات أولية: {scan_prompt}", 
-                        context, 
-                        "وصف_أعراض"
-                    )
-                else:
-                    analysis = None
+                # Use orchestrator for structured symptom analysis
+                scan_resp = orch.scan_symptoms(
+                    symptoms,
+                    age=age,
+                    gender=gender,
+                    duration=duration,
+                    severity=severity,
+                    medical_history=history,
+                )
+                analysis = scan_resp.answer if scan_resp.success else None
                 
                 if not analysis:
                     analysis = f"""بناءً على الأعراض المذكرة:
@@ -1036,7 +1015,7 @@ elif st.session_state.page == "database":
         st.markdown("### البحث في المصادر")
         search_term = st.text_input("ابحث عن موضوع طبي...")
         if search_term:
-            res = retriever.get_best_answer(search_term)
+            res = orch.rag.get_raw_answer(search_term)
             if res:
                 st.markdown(f'<div class="data-card">{res[0]}</div>', unsafe_allow_html=True)
             else:

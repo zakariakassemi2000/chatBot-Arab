@@ -41,6 +41,23 @@ EMERGENCY_KEYWORDS = [
     "بدي اموت", "نفسي اخلص",
 ]
 
+MOROCCO_EMERGENCY = {
+    "SAMU"      : "15",
+    "Police"    : "19",
+    "Gendarmerie" : "177",
+    "Pompiers"  : "15",
+    "Urgences"  : "15"
+}
+
+EMERGENCY_FOOTER = """
+━━━━━━━━━━━━━━━━━━━
+🚑 أرقام الطوارئ — المغرب
+📞 SAMU / إسعاف : 15
+📞 الشرطة       : 19
+📞 الدرك        : 177
+━━━━━━━━━━━━━━━━━━━
+"""
+
 # ═══════════════════════════════════════════════════════════════════
 #  ❤️ CARDIAC EMERGENCY — Multi-keyword threshold detection
 # ═══════════════════════════════════════════════════════════════════
@@ -181,6 +198,29 @@ class SafetyGuard:
         # Compile forbidden patterns for speed
         self._forbidden_re = [re.compile(p) for p in FORBIDDEN_PATTERNS]
 
+    def format_response(self, result: str, severity: str) -> str:
+        base = result.strip()
+        
+        if severity == "critique":
+            return f"""{base}
+
+━━━━━━━━━━━━━━━━━━━
+🚨 حالة طارئة — اتصل فوراً
+📞 SAMU : 15
+━━━━━━━━━━━━━━━━━━━"""
+
+        elif severity == "élevée":
+            return f"""{base}
+
+⚠️ يُنصح بزيارة طبيب اليوم
+📞 إذا ساءت الأعراض : 15"""
+
+        else:
+            return f"""{base}
+
+⚠️ هذا التحليل آلي — استشر طبيباً مختصاً"""
+
+
     def check(self, user_message: str) -> dict:
         """
         Run all safety checks on the user's message.
@@ -194,6 +234,16 @@ class SafetyGuard:
             }
         """
         msg = user_message.strip()
+        
+        # Layer 0: Payload Size Validation (Billing & Memory Protection)
+        if len(msg) > 1200:
+            return {
+                "level": "blocked",
+                "override_response": "عفواً، النص المدخل طويل جداً للتحليل. يرجى اختصار طلبك في أقل من ١٢٠٠ حرف.",
+                "add_disclaimer": False,
+                "flags": ["PAYLOAD_TOO_LARGE"]
+            }
+            
         result = {
             "level": "safe",
             "override_response": None,

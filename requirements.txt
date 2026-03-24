@@ -21,3 +21,6 @@ Pillow
 opencv-python-headless
 
 requests==2.31.0
+folium>=0.14.0
+streamlit-folium>=0.15.0
+streamlit-geolocation>=0.0.10
