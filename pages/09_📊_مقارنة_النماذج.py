@@ -11,6 +11,14 @@ import numpy as np
 
 st.set_page_config(page_title="SHIFA AI | مقارنة النماذج", page_icon="📊", layout="wide")
 
+st.markdown("""
+<style>
+    [data-testid="stSidebarNav"] {display: none;}
+</style>
+""", unsafe_allow_html=True)
+with st.sidebar:
+    st.page_link("app.py", label="الرجوع للرئيسية", icon="🏠")
+
 # ── CSS ──
 st.markdown("""
 <style>
@@ -106,7 +114,7 @@ with tab1:
         })
 
     df = pd.DataFrame(table_data)
-    st.dataframe(df, use_container_width=True, hide_index=True)
+    st.dataframe(df, width="stretch", hide_index=True)
 
     # Best model card
     best_m = results[best_model]
@@ -157,7 +165,7 @@ with tab2:
         path = os.path.join(PLOTS_DIR, filename)
         if os.path.exists(path):
             st.markdown(f"#### {title}")
-            st.image(path, use_container_width=True)
+            st.image(path, width="stretch")
         else:
             st.info(f"الرسم البياني '{title}' غير متاح.")
 

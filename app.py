@@ -1,27 +1,45 @@
 # -*- coding: utf-8 -*-
 """
 ═══════════════════════════════════════════════════════════════════════
-  SHIFA AI — Enhanced Medical Platform
+  SHIFA AI — Enhanced Medical Platform (SaaS / Zellige Edition)
 ═══════════════════════════════════════════════════════════════════════
 """
 
-import os, sys, io, base64, time, json
+import os
+import sys
+import io
+import base64
+import time
+import json
+import logging
+from datetime import datetime
+from pathlib import Path
 
 # ── Suppress TensorFlow info/warning messages ──
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+
 import streamlit as st
 import pandas as pd
-from datetime import datetime
 from dotenv import load_dotenv
 import PIL.Image as PILImage
-from utils.logger import get_logger
 
-logger = get_logger("shifa.app")
+# ─────────────────────────────────────────────────────────────
+# LOGGER CONFIGURATION
+# ─────────────────────────────────────────────────────────────
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("shifa.app")
 
 # ─────────────────────────────────────────────────────────────
 # GLOBAL SAFETY & CONFIG
 # ─────────────────────────────────────────────────────────────
+st.set_page_config(
+    page_title="SHIFA AI | المنصة الطبية الذكية",
+    page_icon="⚜️",
+    layout="wide",
+    initial_sidebar_state="auto",
+)
+
 st.set_option('client.showErrorDetails', False)
 load_dotenv()
 
@@ -33,1006 +51,920 @@ if sys.platform == 'win32' and not os.environ.get('_UTF8_FIX_APPLIED'):
         os.environ['_UTF8_FIX_APPLIED'] = '1'
     except Exception as e:
         logger.error(f"[AppError] {e}")
-        st.error("حدث خطأ غير متوقع — يرجى إعادة المحاولة")
 
 # ─────────────────────────────────────────────────────────────
 # IMPORT AGENTS (modular architecture)
 # ─────────────────────────────────────────────────────────────
-from agents.orchestrator import Orchestrator
-from engine.audio import speech_to_text_arabic, convert_audio_to_wav
-
-
+try:
+    from agents.orchestrator import Orchestrator
+    from engine.audio import speech_to_text_arabic, convert_audio_to_wav
+except ImportError as e:
+    logger.error(f"Import error: {e}")
+    st.error("خطأ في تحميل المكونات الأساسية. يرجى التحقق من التثبيت.")
+    st.stop()
 
 # ─────────────────────────────────────────────────────────────
 # CONSTANTS & UTILS
 # ─────────────────────────────────────────────────────────────
-LOGO_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Stylized_Heart_and_Cross_Logo_for_SHIFA_AI__1_-removebg-preview.png")
-HISTORY_FILE = "consultation_history.json"
+BASE_DIR = Path(__file__).parent
+LOGO_PATH = BASE_DIR / "Stylized_Heart_and_Cross_Logo_for_SHIFA_AI__1_-removebg-preview.png"
+PATTERN_PATH = BASE_DIR / "pattern.png"
+HISTORY_FILE = BASE_DIR / "consultation_history.json"
 
-def get_b64(path):
+@st.cache_data
+def get_b64(path_str):
+    """Convert image to base64 string (Cached for performance)"""
+    path = Path(path_str)
     try:
-        if os.path.exists(path):
+        if path.exists():
             with open(path, "rb") as f:
                 return base64.b64encode(f.read()).decode()
     except Exception as e:
-        logger.error(f"[AppError] {e}")
-        st.error("حدث خطأ غير متوقع — يرجى إعادة المحاولة")
+        logger.error(f"Error loading logo: {e}")
     return None
 
-LOGO_B64 = get_b64(LOGO_PATH)
+LOGO_B64 = get_b64(str(LOGO_PATH))
 LOGO_SRC = f"data:image/png;base64,{LOGO_B64}" if LOGO_B64 else ""
 
-def get_logo():
-    if os.path.exists(LOGO_PATH):
-        return LOGO_PATH
-    return None
+PATTERN_B64 = get_b64(str(PATTERN_PATH))
+PATTERN_SRC = f"data:image/png;base64,{PATTERN_B64}" if PATTERN_B64 else ""
 
 def save_history(messages):
-    if not messages: return
+    """Save consultation history"""
+    if not messages:
+        return
     
     if "local_history" not in st.session_state:
         st.session_state["local_history"] = []
         
     session_id = str(st.session_state.get("session_id", time.time()))
-    existing = next((idx for idx, s in enumerate(st.session_state["local_history"]) if s.get("id") == session_id), None)
+    
+    existing_idx = next((idx for idx, s in enumerate(st.session_state["local_history"]) if s.get("id") == session_id), None)
     
     entry = {
         "id": session_id,
         "date": datetime.now().strftime("%Y-%m-%d %H:%M"),
-        "title": messages[0]["content"][:50] + "...",
+        "title": messages[0]["content"][:50] + "..." if messages else "استشارة جديدة",
         "messages": messages
     }
     
-    if existing is not None:
-        st.session_state["local_history"][existing] = entry
+    if existing_idx is not None:
+        st.session_state["local_history"][existing_idx] = entry
     else:
         st.session_state["local_history"].insert(0, entry)
 
 # ─────────────────────────────────────────────────────────────
-# PAGE CONFIG & UI
+# CSS FOR MODERN MOROCCAN SAAS UI / UX
 # ─────────────────────────────────────────────────────────────
-st.set_page_config(
-    page_title="SHIFA AI | Medical Intelligence Platform",
-    page_icon=get_logo(),
-    layout="centered",
-)
+def inject_custom_css():
+    st.markdown("""
+    <style>
+        /* Base Moroccan Typography */
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap');
 
-# ── ADVANCED UI CSS ──
-st.markdown(f"""
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Alexandria:wght@300;400;500;600;700&display=swap');
+        /* Theme Variables - Zellige & Deep Nights */
+        :root {
+            --z-green: #16a34a;
+            --z-green-hover: #15803d;
+            --z-green-light: rgba(22, 163, 74, 0.15);
+            --z-red: #dc2626;
+            --z-gold: #d4af37;
+            --z-beige: #fef3c7;
+            --z-bg: #0f172a;
+            --z-card: #1e293b;
+            --z-text: #f8fafc;
+            --z-muted: #94a3b8;
+        }
 
-    html, body, [class*="st-"] {{
-        font-family: 'Alexandria', 'Outfit', sans-serif !important;
-        direction: rtl !important;
-        text-align: right !important;
-    }}
+        /* RTL & Font Initialization (excluding icon fonts) */
+        html, body {
+            direction: rtl;
+            text-align: right;
+        }
+        
+        p, h1, h2, h3, h4, h5, h6, li, a {
+            font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
+            letter-spacing: 0.2px;
+        }
+        
+        /* Protect Streamlit internal Material Icons */
+        .material-symbols-rounded, 
+        .material-symbols-outlined, 
+        [data-testid="stIconMaterial"] {
+            font-family: 'Material Symbols Rounded' !important;
+            font-weight: normal;
+        }
+        
+        /* Hide Default Sidebar Nav for controlled routing */
+        [data-testid="stSidebarNav"] { display: none !important; }
 
-    /* Global Background */
-    .stApp {{
-        background: linear-gradient(120deg, #0B0E14 0%, #151A28 100%) !important;
-        background-attachment: fixed !important;
-        color: #E2E8F0 !important;
-    }}
-    
-    .stApp::before {{
-        content: "";
-        position: fixed;
-        top: -200px;
-        right: -200px;
-        width: 600px;
-        height: 600px;
-        border-radius: 50%;
-        background: radial-gradient(circle, rgba(229, 57, 53, 0.15) 0%, rgba(0,0,0,0) 70%);
-        z-index: 0;
-        pointer-events: none;
-    }}
+        /* The subtle Zellige App Background (Infinite Resolution CSS) */
+        .stApp {
+            background-color: #0A1628;  /* Deep navy */
+            background-image: 
+                /* Soft Teal glow */
+                radial-gradient(circle at 15% 50%, rgba(26, 139, 128, 0.08), transparent 40%),
+                /* Deep Red glow */
+                radial-gradient(circle at 85% 30%, rgba(160, 32, 47, 0.06), transparent 40%),
+                /* Cobalt Blue glow */
+                radial-gradient(circle at 50% 90%, rgba(26, 58, 128, 0.08), transparent 50%),
+                /* Ambient Gradient */
+                linear-gradient(135deg, rgba(10, 22, 40, 0) 0%, rgba(13, 30, 54, 0.9) 100%);
+            background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%;
+            background-attachment: fixed;
+            color: var(--z-text);
+        }
+        [data-testid="stHeader"] { background: transparent !important; }
 
-    .stApp::after {{
-        content: "";
-        position: fixed;
-        bottom: -200px;
-        left: -100px;
-        width: 500px;
-        height: 500px;
-        border-radius: 50%;
-        background: radial-gradient(circle, rgba(56, 189, 248, 0.1) 0%, rgba(0,0,0,0) 70%);
-        z-index: 0;
-        pointer-events: none;
-    }}
+        /* Sidebar Glassmorphism */
+        [data-testid="stSidebar"] {
+            background: rgba(15, 23, 42, 0.85) !important;
+            border-left: 1px solid var(--z-green-light) !important;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
 
-    [data-testid="stHeader"] {{
-        background: transparent !important;
-    }}
+        /* Native Streamlit Container -> Zellige Card Styling */
+        [data-testid="stVerticalBlockBorderWrapper"] {
+            border: 1px solid var(--z-green-light) !important;
+            background-color: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(8px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
 
-    /* ── Sidebar ── */
-    [data-testid="stSidebar"] {{
-        background: rgba(16, 23, 42, 0.6) !important;
-        backdrop-filter: blur(20px) !important;
-        -webkit-backdrop-filter: blur(20px) !important;
-        border-left: 1px solid rgba(255, 255, 255, 0.05) !important;
-        box-shadow: -10px 0 30px rgba(0,0,0,0.5) !important;
-    }}
+        /* 
+           Native Streamlit Buttons upgraded to Interactive Moroccan Cards 
+           We target secondary buttons to act as dynamic grid cards!
+        */
+        div[data-testid="stButton"] > button[kind="secondary"] {
+            background-color: var(--z-card);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            color: var(--z-text);
+            min-height: 85px;
+            font-size: 1.15rem;
+            font-weight: 600;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        div[data-testid="stButton"] > button[kind="secondary"]:hover {
+            border-color: var(--z-green);
+            background-color: rgba(22, 163, 74, 0.08);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px -5px rgba(22, 163, 74, 0.2);
+            color: var(--z-beige); /* Subtle gold text on hover */
+        }
+        div[data-testid="stButton"] > button[kind="secondary"] p {
+            font-size: 1.1rem;
+            margin: 0;
+            white-space: pre-wrap; /* allow nice text flow */
+        }
 
-    [data-testid="stSidebarNav"] {{
-        display: none !important;
-    }}
+        /* Primary CTA Buttons */
+        div[data-testid="stButton"] > button[kind="primary"] {
+            background: linear-gradient(135deg, var(--z-green), var(--z-green-hover));
+            color: #ffffff !important;
+            border: none;
+            border-radius: 12px;
+            min-height: 60px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(22, 163, 74, 0.25);
+        }
+        div[data-testid="stButton"] > button[kind="primary"]:hover {
+            background: linear-gradient(135deg, var(--z-green-hover), #14532d);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(22, 163, 74, 0.4);
+        }
 
-    /* Sidebar Buttons */
-    [data-testid="stSidebar"] .stButton > button {{
-        color: #94A3B8 !important;
-        background: rgba(255,255,255,0.02) !important;
-        border: 1px solid rgba(255,255,255,0.05) !important;
-        border-radius: 12px !important;
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
-        font-weight: 500 !important;
-        padding: 12px !important;
-        justify-content: flex-start !important;
-    }}
-    [data-testid="stSidebar"] .stButton > button:hover {{
-        background: rgba(229,57,53,0.15) !important;
-        border-color: rgba(229,57,53,0.4) !important;
-        color: #FFF !important;
-        transform: scale(1.02) translateX(-4px) !important;
-        box-shadow: 0 4px 15px rgba(229,57,53,0.2) !important;
-    }}
-    [data-testid="stSidebar"] .stButton > button[kind="primary"] {{
-        background: linear-gradient(135deg, #E53935 0%, #ef4444 100%) !important;
-        border: 1px solid rgba(255,255,255,0.1) !important;
-        color: white !important;
-        box-shadow: 0 8px 25px rgba(229,57,53,0.3) !important;
-        font-weight: 600 !important;
-    }}
-    
-    [data-testid="stSidebar"] p, [data-testid="stSidebar"] h3, [data-testid="stSidebar"] label {{
-        color: #e2e8f0 !important;
-    }}
-    
-    /* ── Typography & Cards ── */
-    .block-container {{
-        padding-top: 2.5rem !important;
-        padding-bottom: 6rem !important;
-        max-width: 900px !important;
-        z-index: 1;
-        position: relative;
-    }}
-    
-    .main-title {{
-        background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        font-size: 42px;
-        font-weight: 800;
-        margin: 0;
-        letter-spacing: -0.02em;
-        text-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    }}
-    
-    .welcome-card, .data-card {{
-        background: rgba(30, 41, 59, 0.5);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border-radius: 24px;
-        padding: 30px;
-        border: 1px solid rgba(255,255,255,0.08);
-        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-        margin-bottom: 24px;
-        transition: transform 0.4s ease, box-shadow 0.4s ease;
-        color: #E2E8F0 !important;
-    }}
-    .welcome-card:hover, .data-card:hover {{
-        transform: translateY(-5px);
-        box-shadow: 0 15px 45px rgba(0,0,0,0.4);
-        border: 1px solid rgba(255,255,255,0.12);
-    }}
+        /* Chat Input Field Focus Glow */
+        [data-testid="stChatInput"] {
+            border-radius: 16px;
+            border: 1px solid var(--z-green-light) !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+        }
+        [data-testid="stChatInput"]:focus-within {
+            border-color: var(--z-green) !important;
+            box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2) !important;
+        }
 
-    /* ── Suggestions ── */
-    .suggestion-btn {{
-        display: inline-block;
-        background: rgba(15, 23, 42, 0.6);
-        color: #94A3B8;
-        padding: 10px 20px;
-        border-radius: 20px;
-        margin: 5px;
-        font-size: 14px;
-        font-weight: 500;
-        cursor: pointer;
-        border: 1px solid rgba(255,255,255,0.05);
-        transition: all 0.3s ease;
-        backdrop-filter: blur(8px);
-    }}
-    .suggestion-btn:hover {{
-        background: linear-gradient(135deg, rgba(229,57,53,0.8), rgba(198,40,40,0.8));
-        color: white;
-        transform: translateY(-3px) scale(1.02);
-        box-shadow: 0 8px 20px rgba(229,57,53,0.3);
-        border-color: rgba(255,255,255,0.2);
-    }}
+        /* Chat Messages */
+        [data-testid="stChatMessage"] {
+            background: rgba(30,41,59,0.2) !important;
+            border-radius: 12px;
+            padding: 1.5rem !important;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(255,255,255,0.03);
+        }
+        /* Auth Screen Native Style */
+        .auth-card {
+            background-color: var(--z-card);
+            border-top: 4px solid var(--z-green);
+            border-radius: 16px;
+            padding: 3rem;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+        
+    </style>
+    """, unsafe_allow_html=True)
+    
+    if PATTERN_SRC:
+        st.markdown(f"""
+        <style>
+        .stApp::before {{
+            content: "";
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #C9A855; /* Force tinted Gold for this specific pattern! */
+            -webkit-mask-image: url("{PATTERN_SRC}");
+            mask-image: url("{PATTERN_SRC}");
+            -webkit-mask-size: 150px 150px;
+            mask-size: 150px 150px;
+            -webkit-mask-repeat: repeat;
+            mask-repeat: repeat;
+            opacity: 0.15;
+            z-index: -1;
+            pointer-events: none;
+        }}
+        </style>
+        """, unsafe_allow_html=True)
+    st.markdown("""
+    <style>
+        /* App Titles */
+        .moroccan-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--z-beige), #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            margin-bottom: 0px;
+            padding-bottom: 5px;
+        }
+        .moroccan-subtitle {
+            text-align: center;
+            color: var(--z-muted);
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 3rem;
+        }
 
-    /* ── Stats badge ── */
-    .stat-badge {{
-        background: rgba(15, 23, 42, 0.5);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255,255,255,0.05);
-        border-radius: 16px;
-        padding: 14px 18px;
-        margin: 8px 0;
-        text-align: center;
-        transition: all 0.3s ease;
-    }}
-    .stat-badge:hover {{
-        background: rgba(30, 41, 59, 0.8);
-        border-color: rgba(255,255,255,0.1);
-    }}
-    .stat-badge .stat-num {{
-        font-size: 26px;
-        font-weight: 800;
-        color: #E53935;
-        display: block;
-        text-shadow: 0 2px 10px rgba(229,57,53,0.3);
-    }}
-    .stat-badge .stat-label {{
-        font-size: 12px;
-        color: #94A3B8;
-        font-weight: 500;
-    }}
+        /* Minimal Zellige Emergency Alert */
+        .zellige-alert {
+            background: rgba(220, 38, 38, 0.05); /* very subtle red */
+            border-right: 4px solid var(--z-red);
+            border-radius: 12px;
+            padding: 1.2rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .zellige-alert-title { color: #f8fafc; font-weight: 700; font-size: 1.2rem; display: flex; align-items: center; gap: 0.8rem; }
+        .zellige-alert-text { color: var(--z-muted); font-size: 0.95rem; margin-top: 0.2rem; }
+        .zellige-alert-numbers { display:flex; gap: 10px; }
+        .zellige-alert-numbers span {
+            background: rgba(220, 38, 38, 0.15);
+            color: #fca5a5;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            font-weight: 700;
+            border: 1px solid rgba(220, 38, 38, 0.2);
+            letter-spacing: 0.5px;
+        }
+        
+    </style>
+    """, unsafe_allow_html=True)
 
-    /* ── Chat ── */
-    [data-testid="stChatMessage"] {{
-        animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        background: transparent !important;
-        padding: 1rem !important;
-    }}
-    
-    [data-testid="stChatMessageAvatarContainer"] img,
-    [data-testid="stChatMessageAvatarContainer"] div {{
-        border: none !important;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
-        background: #1E293B !important;
-        color: #F8FAFC !important;
-    }}
-    
-    [data-testid="stChatMessage"]:not(:has([data-testid="chatAvatarIcon-user"])) div[data-testid="stChatMessageContent"] {{
-        background: rgba(30, 41, 59, 0.6) !important;
-        backdrop-filter: blur(16px) !important;
-        border-right: 3px solid #E53935 !important;
-        border-bottom: 1px solid rgba(255,255,255,0.05) !important;
-        border-left: 1px solid rgba(255,255,255,0.05) !important;
-        border-top: 1px solid rgba(255,255,255,0.05) !important;
-        border-radius: 8px 24px 24px 24px !important;
-        box-shadow: 0 8px 30px rgba(0,0,0,0.2) !important;
-        color: #E2E8F0 !important;
-        padding: 1.2rem !important;
-    }}
-    
-    [data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) div[data-testid="stChatMessageContent"] {{
-        background: linear-gradient(135deg, rgba(229,57,53,0.15) 0%, rgba(229,57,53,0.05) 100%) !important;
-        backdrop-filter: blur(16px) !important;
-        border: 1px solid rgba(229,57,53,0.2) !important;
-        border-radius: 24px 8px 24px 24px !important;
-        color: #F8FAFC !important;
-        padding: 1.2rem !important;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.15) !important;
-    }}
-    
-    [data-testid="stChatInput"] {{
-        background: rgba(15, 23, 42, 0.8) !important;
-        backdrop-filter: blur(20px) !important;
-        border: 1px solid rgba(255,255,255,0.1) !important;
-        border-radius: 24px !important;
-        padding-bottom: 5px !important;
-        box-shadow: 0 -10px 40px rgba(0,0,0,0.3) !important;
-    }}
-    
-    .stChatInput textarea {{
-        background: transparent !important;
-        color: #F8FAFC !important;
-        border: none !important;
-        font-family: 'Alexandria', sans-serif !important;
-    }}
-    .stChatInput textarea:focus {{
-        box-shadow: none !important;
-    }}
+# ─────────────────────────────────────────────────────────────
+# AUTHENTICATION GATE
+# ─────────────────────────────────────────────────────────────
+def _check_auth() -> bool:
+    if st.session_state.get("_authenticated"):
+        return True
 
-    /* ── Animations ── */
-    @keyframes slideUpFade {{
-        from {{ opacity: 0; transform: translateY(20px); filter: blur(5px); }}
-        to   {{ opacity: 1; transform: translateY(0); filter: blur(0); }}
-    }}
-    @keyframes pulseGlow {{
-        0%, 100% {{ opacity: 1; box-shadow: 0 0 15px rgba(229,57,53,0.3); }}
-        50%      {{ opacity: 0.6; box-shadow: 0 0 5px rgba(229,57,53,0.1); }}
-    }}
-    .typing-indicator {{ 
-        display: inline-block;
-        padding: 5px 15px;
-        background: rgba(229,57,53,0.1);
-        border-radius: 20px;
-        color: #ff8a80;
-        font-weight: 500;
-        animation: pulseGlow 1.5s infinite; 
-    }}
+    try:
+        expected = st.secrets["APP_PASSWORD"]
+    except Exception:
+        expected = os.environ.get("APP_PASSWORD", "shifa2026")
 
-    /* ── Tabs ── */
-    .stTabs [data-baseweb="tab-list"] {{
-        background-color: transparent !important;
-        gap: 8px !important;
-    }}
-    .stTabs [data-baseweb="tab"] {{
-        background: rgba(30, 41, 59, 0.4) !important;
-        border: 1px solid rgba(255,255,255,0.05) !important;
-        border-radius: 12px 12px 0 0 !important;
-        font-weight: 600 !important;
-        color: #94A3B8 !important;
-        padding: 10px 20px !important;
-        transition: all 0.3s ease !important;
-    }}
-    .stTabs [aria-selected="true"] {{
-        background: rgba(229,57,53,0.1) !important;
-        color: #E53935 !important;
-        border-top: 2px solid #E53935 !important;
-        border-bottom: none !important;
-    }}
-    
-    /* Texts and Elements within dark mode */
-    h1, h2, h3, h4, h5, h6, p, span, div, label {{
-        color: inherit;
-    }}
-    
-    .stMarkdown p {{
-        color: #CBD5E1 !important;
-        line-height: 1.7 !important;
-        font-size: 1.05rem !important;
-    }}
-    
-    [data-testid="stAlert"] {{
-        background: rgba(30, 41, 59, 0.6) !important;
-        backdrop-filter: blur(10px) !important;
-        border: 1px solid rgba(255,255,255,0.08) !important;
-        border-radius: 16px !important;
-        color: #E2E8F0 !important;
-    }}
-    [data-testid="stAlert"] div[role="alert"] {{
-        color: #E2E8F0 !important;
-    }}
-    
-    /* Inputs */
-    .stNumberInput input, .stTextInput input, .stTextArea textarea, .stSelectbox select {{
-        background: rgba(15, 23, 42, 0.6) !important;
-        border: 1px solid rgba(255,255,255,0.1) !important;
-        color: #ffffff !important;
-        border-radius: 12px !important;
-    }}
-    .stNumberInput input:focus, .stTextInput input:focus, .stTextArea textarea:focus {{
-        border-color: #E53935 !important;
-        box-shadow: 0 0 0 2px rgba(229,57,53,0.2) !important;
-    }}
-    
-    /* Expander */
-    [data-testid="stExpander"] {{
-        background: rgba(30, 41, 59, 0.4) !important;
-        border: 1px solid rgba(255,255,255,0.05) !important;
-        border-radius: 16px !important;
-    }}
-    [data-testid="stExpander"] details {{
-        border-color: transparent !important;
-    }}
-    [data-testid="stExpander"] summary {{
-        color: #E2E8F0 !important;
-        font-weight: 600 !important;
-    }}
-    [data-testid="stExpander"] p {{
-        color: #94A3B8 !important;
-    }}
+    inject_custom_css()
 
-    /* Landing Page Specific */
-    .shifa-title {{
-        font-size: 3.5rem;
-        font-weight: 900;
-        text-align: center;
-        background: linear-gradient(90deg, #E53935, #ff6b6b, #E53935);
-        background-size: 200% auto;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        animation: shine 3s linear infinite;
-        margin-bottom: 0.5rem;
-    }}
-    @keyframes shine {{
-        to {{ background-position: 200% center; }}
-    }}
-    .tagline {{
-        text-align: center;
-        color: #94A3B8;
-        font-size: 1.2rem;
-        margin-bottom: 3rem;
-    }}
-    .landing-card {{
-        background: rgba(30, 41, 59, 0.4);
-        border: 1px solid rgba(255,255,255,0.05);
-        border-radius: 20px;
-        padding: 24px;
-        text-align: center;
-        transition: all 0.3s ease;
-        cursor: pointer;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 12px;
-    }}
-    .landing-card:hover {{
-        transform: translateY(-8px);
-        background: rgba(229, 57, 53, 0.1);
-        border-color: rgba(229, 57, 53, 0.3);
-        box-shadow: 0 12px 24px rgba(0,0,0,0.2);
-    }}
-    .card-icon {{
-        font-size: 2.5rem;
-        margin-bottom: 10px;
-    }}
-    .card-title {{
-        color: #FFFFFF;
-        font-weight: 700;
-        font-size: 1.1rem;
-    }}
+    col1, col2, col3 = st.columns([1, 1.2, 1])
+    with col2:
+        st.markdown("<div style='margin-bottom: 10vh;'></div>", unsafe_allow_html=True)
+        with st.container(border=True): # Streamlit native card!
+            if LOGO_SRC:
+                st.markdown(f"<div style='text-align:center;'><img src='{LOGO_SRC}' style='height:85px; margin-bottom:15px;'><br><h2 style='margin-bottom:0;'>SHIFA AI</h2><p style='color:#94a3b8; margin-bottom: 2rem;'>المنصة الطبية الذكية · Accès Sécurisé</p></div>", unsafe_allow_html=True)
+            else:
+                st.markdown(f"<div style='text-align:center;'><div style='font-size:3.5rem; color:#16a34a;'>⚜️</div><h2 style='margin-bottom:0;'>SHIFA AI</h2><p style='color:#94a3b8; margin-bottom: 2rem;'>المنصة الطبية الذكية · Accès Sécurisé</p></div>", unsafe_allow_html=True)
+            password = st.text_input("كلمة المرور / Mot de passe", type="password", placeholder="••••••••", label_visibility="collapsed")
+            if st.button("دخول / Connexion", type="primary", width="stretch"):
+                if password == expected:
+                    st.session_state["_authenticated"] = True
+                    st.rerun()
+                else:
+                    st.error("❌ كلمة المرور خاطئة / Mot de passe incorrect")
+            st.caption("<div style='text-align:center; margin-top:1rem; color:#64748b;'>للمحترفين الطبيين فقط</div>", unsafe_allow_html=True)
+    return False
 
-</style>
-""", unsafe_allow_html=True)
+if not _check_auth():
+    st.stop()
+
+inject_custom_css()
 
 # ─────────────────────────────────────────────────────────────
 # LOAD SYSTEM (Agent-based orchestrator)
 # ─────────────────────────────────────────────────────────────
+
+
 @st.cache_resource(show_spinner=False)
 def load_medical_system():
     try:
         return Orchestrator.load()
     except Exception as e:
         logger.error(f"Orchestrator load failed: {e}", exc_info=True)
-        st.error(f"Error loading system: {e}")
         return None
 
 orch = load_medical_system()
+
+# ─────────────────────────────────────────────────────────────
+# SESSION & RATE LIMITER
+# ─────────────────────────────────────────────────────────────
+defaults = {
+    "messages": [],
+    "page": "home",
+    "session_id": str(time.time()),
+    "quick_question": None,
+    "last_request_time": 0
+}
+for k, v in defaults.items():
+    if k not in st.session_state:
+        st.session_state[k] = v
+
+class RateLimiter:
+    def __init__(self, max_requests=10, time_window=60):
+        self.max_requests = max_requests
+        self.time_window = time_window
+        self.requests = []
+    
+    def can_proceed(self):
+        now = time.time()
+        self.requests = [t for t in self.requests if now - t < self.time_window]
+        if len(self.requests) < self.max_requests:
+            self.requests.append(now)
+            return True
+        return False
+
+if "rate_limiter" not in st.session_state:
+    st.session_state.rate_limiter = RateLimiter()
+
 DB_STATUS = orch.db_ready if orch else False
 AI_STATUS = orch.llm_ready if orch else False
 
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-if "page" not in st.session_state:
-    st.session_state.page = "home"
-if "session_id" not in st.session_state:
-    st.session_state.session_id = str(time.time())
-if "quick_question" not in st.session_state:
-    st.session_state.quick_question = None
-if "tts_last" not in st.session_state:
-    st.session_state.tts_last = None
+# ─────────────────────────────────────────────────────────────
+# TOP QUICK ACTIONS BAR (Visible when NOT on home)
+# ─────────────────────────────────────────────────────────────
+if st.session_state.page != "home":
+    # Layout with columns for clean navigation
+    cols_nav = st.columns([1.5, 1.5, 1.5, 1.5, 4]) # spacing
+    nav_actions = [
+        ("🏠 الرئيسية", "home", True),
+        ("🔍 فحص مبدئي", "scanner", True),
+        ("🎤 مساعد صوتي", "voice", True),
+        ("📍 الرعاية", "pages/10_🏥_الرعاية_القريبة.py", False)
+    ]
+    
+    for idx, (label, target, is_internal) in enumerate(nav_actions):
+        with cols_nav[idx]:
+            if st.button(label, key=f"top_nav_{idx}", width="stretch"):
+                if is_internal:
+                    st.session_state.page = target
+                    st.rerun()
+                else:
+                    st.switch_page(target)
+    st.markdown("<hr style='border:0; height:1px; background:linear-gradient(to right, transparent, #16a34a, transparent); opacity:0.3; margin-top:5px;'/>", unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────────────────────
-# SIDEBAR NAVIGATION
+# SIDEBAR
 # ─────────────────────────────────────────────────────────────
 with st.sidebar:
-    logo_img = f'<img src="{LOGO_SRC}" style="width:75px; filter:drop-shadow(0 4px 12px rgba(229,57,53,0.5));">' if LOGO_SRC else ''
-    st.markdown(f"""
-        <div style="text-align:center; padding: 1rem 0 1.5rem;">
-            {logo_img}
-            <h2 style="color:#ff6b6b; margin:8px 0 2px; font-size:22px; letter-spacing:2px;">SHIFA AI</h2>
-            <p style="color:#90a4ae; font-size:12px; margin:0;">المنصة الطبية الذكية</p>
-        </div>
+    if LOGO_SRC:
+        st.markdown(f"""
+            <div style="text-align:center; padding: 1rem 0;">
+                <img src="{LOGO_SRC}" style="height:90px; margin-bottom:10px;">
+                <h2 style="color:#d4af37; margin:8px 0 4px; font-family:'Cairo'; font-weight:800; font-size:1.6rem;">SHIFA AI</h2>
+                <p style="color:#94a3b8; font-size:0.9rem; margin:0;">الذكاء الاصطناعي الطبي</p>
+            </div>
+        """, unsafe_allow_html=True)
+    else:
+        st.markdown("""
+            <div style="text-align:center; padding: 1rem 0;">
+                <div style="font-size:3.5rem; color:#16a34a;">⚜️</div>
+                <h2 style="color:#d4af37; margin:8px 0 4px; font-family:'Cairo'; font-weight:800; font-size:1.6rem;">SHIFA AI</h2>
+                <p style="color:#94a3b8; font-size:0.9rem; margin:0;">الذكاء الاصطناعي الطبي</p>
+            </div>
+        """, unsafe_allow_html=True)
+    
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    if st.session_state.page != "home":
+        if st.button("⬅️ العودة للرئيسية", width="stretch", type="primary"):
+            st.session_state.page = "home"
+            st.rerun()
+    else:
+        st.info("✓ أنت في الصفحة الرئيسية")
+        
+    st.markdown("<hr style='border-color: rgba(22, 163, 74, 0.2);'/>", unsafe_allow_html=True)
+    
+    if st.session_state.messages:
+        st.caption(f"💬 المحادثة الحالية: {len(st.session_state.messages)} رسالة")
+        if st.button("🗑️ حوار جديد", width="stretch"):
+            st.session_state.messages = []
+            st.session_state.session_id = str(time.time())
+            st.rerun()
+            
+    # ── Link to Docteur+User Portal ──
+    st.markdown("<hr style='border-color: rgba(22, 163, 74, 0.2);'/>", unsafe_allow_html=True)
+    st.markdown("""
+    <div style="text-align:center; margin-bottom:0.5rem;">
+        <span style="color:#d4af37; font-size:1rem; font-weight:700;">🏥 فضاء الطبيب والمريض</span><br/>
+        <span style="color:#94a3b8; font-size:0.8rem;">إدارة المرضى · المواعيد · التحاليل</span>
+    </div>
+    """, unsafe_allow_html=True)
+    if st.button("🚀 تشغيل فضاء الطبيب", width="stretch"):
+        import subprocess as _sp
+        doctor_app = str(BASE_DIR / "partie Docteur+User" / "main.py")
+        _sp.Popen(
+            [sys.executable, "-m", "streamlit", "run", doctor_app, "--server.port", "8503"],
+            cwd=str(BASE_DIR / "partie Docteur+User")
+        )
+        st.success("✅ تم التشغيل! افتح http://localhost:8503")
+    st.link_button("🔗 فتح فضاء الطبيب", "http://localhost:8503", use_container_width=True)
+
+    st.markdown("""
+    <div style="background:rgba(22, 163, 74, 0.05); border-right:3px solid #16a34a; padding:12px; margin-top:2rem; border-radius:8px 0 0 8px;">
+        <p style="color:#a7f3d0; font-size:0.8rem; margin:0; line-height:1.5;">
+            <b>تنبيه إخلاء المسؤولية:</b><br/>
+            المنصة توفر دعماً معلوماتياً. لا تغني أبدًا عن استشارة الطبيب المختص أو زيارة العيادة.
+        </p>
+    </div>
     """, unsafe_allow_html=True)
 
-    pages = [
-        ("home",            "🏠", "الرئيسية"),
-        ("chat",            "💬", "المحادثة الطبية"),
-        ("voice",           "🎙️", "المحادثة الصوتية"),
-        ("vision",          "🔬", "تحليل الصور"),
-        ("scanner",         "🩺", "فاحص الأعراض"),
-        ("calculators",     "📊", "حاسبات طبية"),
-        ("database",        "📚", "قاعدة المعرفة"),
-        ("history",         "📜", "سجل الاستشارات"),
-    ]
-    for page_id, icon, label in pages:
-        is_active = st.session_state.page == page_id
-        if st.button(f"{icon} {label}", use_container_width=True,
-                     type="primary" if is_active else "secondary",
-                     key=f"nav_{page_id}"):
-            st.session_state.page = page_id
-            st.rerun()
-
-    st.markdown("---")
-
-    # ── Session Stats ──
-    n_msgs = len(st.session_state.messages)
-    n_user = sum(1 for m in st.session_state.messages if m["role"] == "user")
-    st.sidebar.markdown("""
-<div style="
-  position:absolute; bottom:20px; left:0; right:0;
-  text-align:center;
-  font-size:0.7rem;
-  color:rgba(255,255,255,0.15);
-  padding:8px;
-">
-  شفاء AI v1.0 · 🟢
-</div>
-""", unsafe_allow_html=True)
-    st.markdown("---")
-    if st.session_state.page == "chat" and st.session_state.messages:
-        if st.button("مسح المحادثة", use_container_width=True, type="secondary"):
-            st.session_state.messages = []
-            st.session_state.quick_question = None
-            st.rerun()
-
-    st.info("للمعلومات الطبية فقط. لا يُغني عن استشارة الطبيب.")
-
 # ─────────────────────────────────────────────────────────────
-# PAGE: HOME (LANDING)
+# PAGE: HOME (LANDING DASHBOARD)
 # ─────────────────────────────────────────────────────────────
 if st.session_state.page == "home":
-    st.markdown('<div class="shifa-title">شفاء AI</div>', unsafe_allow_html=True)
-    st.markdown('<p class="tagline">مساعدك الطبي الذكي — تشخيص، تحليل، إرشاد</p>', unsafe_allow_html=True)
+    st.markdown('<div class="moroccan-title">شفاء AI</div>', unsafe_allow_html=True)
+    st.markdown('<div class="moroccan-subtitle">مساعدك الطبي الذكي لتقييم الأعراض والتوجيه الصحي</div>', unsafe_allow_html=True)
+        
+    # ── Emergency Banner (Zellige Style) ──
+    st.markdown("""
+        <div class="zellige-alert">
+            <div class="zellige-alert-title">
+                <span style="font-size:1.8rem;">🚨</span>
+                <div>
+                    <div>تنبيه طوارئ طبية فعلية؟</div>
+                    <div class="zellige-alert-text">تواصل فورا مع خدمات الطوارئ لإنقاذ الحياة. لا تنتظر التطبيق.</div>
+                </div>
+            </div>
+            <div class="zellige-alert-numbers">
+                <span>🚑 الإسعاف: 15</span>
+                <span>🚓 الشرطة: 19</span>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
     
-    if LOGO_SRC:
-        st.markdown(f'<div style="text-align:center; margin-bottom:3rem;"><img src="{LOGO_SRC}" style="width:180px; filter:drop-shadow(0 10px 20px rgba(229,57,53,0.3));"></div>', unsafe_allow_html=True)
+    # ── Main CTA ──
+    col_cta1, col_cta2, col_cta3 = st.columns([1, 2, 1])
+    with col_cta2:
+        if st.button("🚀 ابدأ محادثة أو تشخيص جديد الآن", width="stretch", type="primary"):
+            st.session_state.page = "chat"
+            st.rerun()
+            
+    st.markdown("<br><br>", unsafe_allow_html=True)
     
-    # ── Landing Cards ──
-    cols = st.columns(5)
+    # ── System Metrics Panel (Native Elements) ──
+    st.subheader("📊 حالة الجاهزية والنظام")
+    cols_metrics = st.columns(4)
+    
+    with cols_metrics[0]:
+        with st.container(border=True):
+            st.markdown(f"<div style='text-align:center;'><h3>🧠</h3><p style='color:#94a3b8; margin:0;'>محرك التحليل</p><h4 style='color:{'#16a34a' if AI_STATUS else '#dc2626'}; margin:0;'>{'نشط ✔' if AI_STATUS else 'غير متصل ❌'}</h4></div>", unsafe_allow_html=True)
+        
+    with cols_metrics[1]:
+        with st.container(border=True):
+            st.markdown(f"<div style='text-align:center;'><h3>📚</h3><p style='color:#94a3b8; margin:0;'>قاعدة المعرفة</p><h4 style='color:{'#16a34a' if DB_STATUS else '#fbbf24'}; margin:0;'>{'محدثة بالكامل ✔' if DB_STATUS else 'جاري التحديث⏳'}</h4></div>", unsafe_allow_html=True)
+
+    with cols_metrics[2]:
+        msg_count = len(st.session_state.get("local_history", []))
+        with st.container(border=True):
+            st.markdown(f"<div style='text-align:center;'><h3>👥</h3><p style='color:#94a3b8; margin:0;'>استشاراتك</p><h4 style='color:#38bdf8; margin:0;'>{msg_count} محفوظ بنجاح</h4></div>", unsafe_allow_html=True)
+        
+    with cols_metrics[3]:
+        with st.container(border=True):
+            st.markdown("<div style='text-align:center;'><h3>⚡</h3><p style='color:#94a3b8; margin:0;'>الأداء والاستجابة</p><h4 style='color:#d4af37; margin:0;'>السرعة المستقرة</h4></div>", unsafe_allow_html=True)
+
+    st.markdown("<hr/>", unsafe_allow_html=True)
+    
+    # ── Interactive Services Menu (Native Buttons styled via CSS) ──
+    st.subheader("🛠️ باقة الخدمات الطبية المتقدمة")
     
     cards = [
-        ("🤖 محادثة طبية", "chat"),
-        ("🔬 تحليل الصور", "vision"),
-        ("🎙️ المساعد الصوتي", "voice"),
-        ("💊 فحص الأدوية", "scanner"), # Using scanner as drug/symptom check
-        ("📊 الحاسبات الطبية", "calculators")
+        ("💬", "محادثة طبية", "chat", None),
+        ("🎙️", "المساعد الصوتي", "voice", None),
+        ("🔬", "تحليل الصور", "vision", None),
+        ("🩺", "فاحص الأعراض", "scanner", None),
+        ("🧮", "الحاسبات الطبية", "calculators", None),
+        ("📚", "البحث المعرفي", "database", None),
+        ("🏥", "الرعاية القريبة", None, "pages/10_🏥_الرعاية_القريبة.py"),
+        ("💊", "التفاعلات", None, "pages/07_💊_التفاعلات_الدوائية.py"),
+        ("📑", "ترتيب التقارير", None, "pages/08_📋_ترتيب_التقارير.py"),
+        ("🦩", "ذكاء متعدد", None, "pages/06_🦩_المساعد_متعدد_الوسائط.py"),
+        ("📊", "مقارنة النماذج", None, "pages/09_📊_مقارنة_النماذج.py"),
+        ("📜", "الأرشيف", "history", None),
     ]
-    
-    for i, (title, target) in enumerate(cards):
-        with cols[i]:
-            st.markdown(f"""
-                <div class="landing-card">
-                    <div class="card-title">{title}</div>
-                </div>
-            """, unsafe_allow_html=True)
-            if st.button("دخول", key=f"btn_home_{i}", use_container_width=True):
-                st.session_state.page = target
-                st.rerun()
 
-    st.markdown("<br><br>", unsafe_allow_html=True)
-    st.info("💡 SHIFA AI يجمع بين قوة الذكاء الاصطناعي وخبرة قواعد البيانات الطبية الضخمة لتقديم أدق النتائج.")
+    for i in range(0, len(cards), 4):
+        cols = st.columns(4)
+        for j in range(4):
+            if i + j < len(cards):
+                c = cards[i + j]
+                with cols[j]:
+                    # Primary rendering of the card as a simple styled button
+                    if st.button(f"{c[0]}  {c[1]}", key=f"srv_btn_{i+j}", width="stretch"):
+                        if c[2]:
+                            st.session_state.page = c[2]
+                            st.rerun()
+                        elif c[3]:
+                            st.switch_page(c[3])
 
 # ─────────────────────────────────────────────────────────────
 # PAGE: CHAT (MAIN)
 # ─────────────────────────────────────────────────────────────
 elif st.session_state.page == "chat":
-    logo_tag = f'<img src="{LOGO_SRC}" style="width: 60px; margin-bottom: 10px;">' if LOGO_SRC else ''
-    st.markdown(f"""
-        <div style="text-align: center; margin-bottom: 2rem;">
-            {logo_tag}
-            <h1 class="main-title">مساعدك الطبي الذكي</h1>
-            <p style="color: #5A6072;">تحدث معي باللغة العربية حول أي موضوع صحي</p>
-        </div>
-    """, unsafe_allow_html=True)
-
+    st.markdown('<div class="moroccan-title" style="font-size:2.8rem;">المساعد الطبي الذكي</div>', unsafe_allow_html=True)
+    st.markdown("<div class='moroccan-subtitle'>اطرح أسئلتك وثق بمحرك SHIFA للإجابة الدقيقة والآمنة</div>", unsafe_allow_html=True)
+    
     if not DB_STATUS:
-        st.error("قاعدة المعرفة غير متاحة حالياً. يرجى إعداد النظام أولاً.")
-        st.info(
-            "يمكنك إعداد قاعدة المعرفة الآن (قد يستغرق وقتاً ويتطلب إنترنت)، "
-            "أو تشغيل التطبيق بعد نسخ مجلد `models/` الصحيح."
-        )
-
-        with st.expander("إعداد قاعدة المعرفة"):
-            max_samples = st.slider("حجم البيانات (max_samples)", 1000, 12000, 8000, step=500)
-            st.caption("سيتم تنزيل بيانات طبية عربية من Hugging Face ثم بناء FAISS وتدريب مصنّف النوايا.")
-
-            if st.button("بدء الإعداد", type="primary", use_container_width=True):
-                try:
-                    with st.spinner("جاري تنزيل البيانات وبناء قاعدة المعرفة..."):
-                        orch.setup_knowledge_base(max_samples=max_samples)
-
-                    st.success("تم إعداد قاعدة المعرفة بنجاح.")
-                    st.rerun()
-                except Exception as e:
-                    logger.error("KB setup failed", exc_info=True)
-                    st.error("فشل الإعداد. يرجى التحقق من الاتصال بالإنترنت والمحاولة مرة أخرى.")
-
+        st.error("⚠️ قاعدة المعرفة غير متاحة حالياً. يرجى إعداد النظام أولاً. (يتم التنزيل لمرة واحدة)")
+        if st.button("🔧 بناء قاعدة المعرفة الآن", type="primary"):
+            try:
+                with st.spinner("جاري تنزيل البيانات (قد يستغرق بضع دقائق)..."):
+                    if orch:
+                        orch.setup_knowledge_base(max_samples=5000)
+                st.success("تم إعداد قاعدة المعرفة بنجاح!")
+                st.rerun()
+            except Exception as e:
+                logger.error(f"KB setup failed: {e}")
+                st.error("فشل الإعداد. يرجى التحقق من الاتصال بالإنترنت.")
         st.stop()
-
-    # ── Quick suggestions when chat is empty ──
-    QUICK_QUESTIONS = [
-        "ما هي أعراض نزلة البرد؟",
-        "كيف أخفض ضغط الدم؟",
-        "ما هي فوائد الكركم؟",
-        "متى أذهب للطوارئ؟",
-        "ما أسباب الصداع المتكرر؟",
-        "كيف أحسّن نوعية النوم؟",
-    ]
-
+    
+    # ── Welcome / Quick Suggestions ──
     if not st.session_state.messages:
-        st.markdown("""
-            <div class="welcome-card">
-                <h3 style="color:#1E2028; font-weight:800; margin-bottom:8px;">كيف يمكنني مساعدتك اليوم؟</h3>
-                <p style="color:#5A6072; margin-bottom:16px;">اسألني عن الأعراض، الأدوية، التغذية، أو أي موضوع صحي.</p>
-                <p style="color:#888; font-size:13px; font-weight:600;">أسئلة سريعة:</p>
-                <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;">
-        """, unsafe_allow_html=True)
-        cols_q = st.columns(3)
-        for i, q in enumerate(QUICK_QUESTIONS):
-            with cols_q[i % 3]:
-                if st.button(q, key=f"quick_{i}", use_container_width=True):
-                    st.session_state.quick_question = q
-                    st.rerun()
-        st.markdown("</div></div>", unsafe_allow_html=True)
-
-    # Display Chat history
-    for i, msg in enumerate(st.session_state.messages):
-        with st.chat_message(msg["role"], avatar=get_logo() if msg["role"] == "assistant" else None):
+        with st.container(border=True):
+            st.markdown("<h4 style='color:var(--z-beige); margin-bottom:1rem;'>💡 اقتراحات للبدء:</h4>", unsafe_allow_html=True)
+            QUICK_QUESTIONS = [
+                "ما هي الأعراض المبكرة للسكري؟",
+                "كيف أعالج ضغط الدم المرتفع طبيعياً؟",
+                "متى يجب الذهاب للطوارئ عند ألم الصدر؟"
+            ]
+            cols_q = st.columns(3)
+            for i, q in enumerate(QUICK_QUESTIONS):
+                with cols_q[i]:
+                    if st.button(q, key=f"quick_{i}", width="stretch"):
+                        st.session_state.quick_question = q
+                        st.rerun()
+    
+    # ── Chat Display ──
+    for msg in st.session_state.messages:
+        avatar_icon = "👤" if msg["role"] == "user" else ("⚜️" if not LOGO_SRC else "🩺")
+        with st.chat_message(msg["role"], avatar=avatar_icon):
             st.markdown(msg["content"])
-            # TTS button for assistant messages
-            if msg["role"] == "assistant":
-                if st.button("🔊 استماع", key=f"tts_{i}", help="تشغيل الإجابة صوتياً"):
-                    try:
-                        from engine.audio import text_to_speech_arabic
-                        audio_bytes = text_to_speech_arabic(msg["content"])
-                        if audio_bytes:
-                            st.audio(audio_bytes, format="audio/mp3")
-                    except Exception:
-                        logger.warning("TTS failed", exc_info=True)
-
-    # Merge quick_question into user_q
-    user_q = st.chat_input("اكتب استفسارك هنا...")
+    
+    # ── Chat Input ──
+    user_input = st.chat_input("اكتب استفسارك الطبي هنا...")
     if st.session_state.quick_question:
-        user_q = st.session_state.quick_question
+        user_input = st.session_state.quick_question
         st.session_state.quick_question = None
-
-    # Voice input
-    try:
-        from audio_recorder_streamlit import audio_recorder
-        cols = st.columns([0.08, 0.92])
-        with cols[0]:
-            raw_audio = audio_recorder(text="", recording_color="#E53935",
-                                       neutral_color="#94A3B8", icon_size="1.2rem",
-                                       key="mic_chat")
-            if raw_audio and len(raw_audio) > 1000:
-                with st.spinner("جاري معالجة الصوت..."):
-                    wav = convert_audio_to_wav(raw_audio, src_format="wav")
-                    text_v, err = speech_to_text_arabic(wav)
-                    if text_v:
-                        user_q = text_v
-    except Exception:
-        logger.info("Voice input unavailable", exc_info=True)
-
-    if user_q:
-        current_time = time.time()
-        last_request = st.session_state.get('last_request_time', 0)
-        if current_time - last_request < 4:
-            st.error("الرجاء الانتظار بضع ثوانٍ قبل إرسال رسالة أخرى.")
-        else:
-            st.session_state['last_request_time'] = current_time
-            st.session_state.messages.append({"role": "user", "content": user_q})
-            with st.chat_message("user"):
-                st.markdown(user_q)
-
-        with st.chat_message("assistant", avatar=get_logo()):
-            placeholder = st.empty()
-            placeholder.markdown('<span class="typing-indicator">جاري التحليل...</span>',
-                                  unsafe_allow_html=True)
-
-            user_q_clean = user_q.strip()
-            if len(user_q_clean) < 3:
-                answer = "عفواً، لم أفهم استفسارك. يرجى توضيح السؤال الطبي أو الأعراض بمزيد من التفاصيل."
-            else:
+    
+    if user_input:
+        if not st.session_state.rate_limiter.can_proceed():
+            st.error("⚠️ لقد تجاوزت الحد المسموح. يرجى الانتظار دقيقة.")
+            st.stop()
+            
+        st.session_state.last_request_time = time.time()
+        
+        st.session_state.messages.append({"role": "user", "content": user_input})
+        with st.chat_message("user", avatar="👤"):
+            st.markdown(user_input)
+        
+        with st.chat_message("assistant", avatar=("⚜️" if not LOGO_SRC else "🩺")):
+            with st.spinner("يعمل محرك الاستدلال على الإجابة..."):
                 try:
-                    # ── Orchestrator handles everything ─────────
-                    history_ctx = st.session_state.messages[:-1]
-                    response = orch.handle(user_q, history=history_ctx)
-
-                    # Emergency UI override
-                    if response.override_ui:
-                        placeholder.empty()
-                        st.markdown(response.override_ui, unsafe_allow_html=True)
-                        st.markdown(response.answer)
-                        
-                        from engine.nearby_care import render_nearby_care
-                        if getattr(response, "severity", None) in ["critique", "élevée"]:
-                            render_nearby_care(response.severity)
-                            
-                        st.session_state.messages.append({"role": "assistant", "content": response.answer})
-                        save_history(st.session_state.messages)
-                        st.stop()
-
-                    answer = response.answer
-                except Exception:
-                    logger.error("Chat pipeline error", exc_info=True)
-                    answer = "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى."
-
-            placeholder.markdown(answer)
+                    if orch:
+                        response = orch.handle(user_input, history=st.session_state.messages[:-1])
+                        answer = response.answer if response else "عذراً، حدث خطأ داخلي في الخادم."
+                    else:
+                        answer = "النظام غير متصل لغياب مكون Orchestrator."
+                except Exception as e:
+                    logger.error(f"Chat error: {e}")
+                    answer = "حدث خطأ غير متوقع. يرجى المحاولة لاحقاً."
+            
+            st.markdown(answer)
             st.session_state.messages.append({"role": "assistant", "content": answer})
             save_history(st.session_state.messages)
-            
-            if "عالية" in answer and ("الخطورة" in answer or "حالة طارئة" in answer):
-                from engine.nearby_care import render_nearby_care
-                render_nearby_care("élevée")
-                st.stop()
-            else:
-                st.rerun()
+        st.rerun()
 
 # ─────────────────────────────────────────────────────────────
-# PAGE: VOICE (المحادثة الصوتية)
+# PAGE: VOICE
 # ─────────────────────────────────────────────────────────────
 elif st.session_state.page == "voice":
-    st.markdown('<h1 class="main-title">🎙️ المساعد الصوتي</h1>', unsafe_allow_html=True)
-    st.markdown('<p style="color:#5A6072;">تحدث مباشرة مع المساعد الطبي والحصول على إجابة صوتية.</p>', unsafe_allow_html=True)
+    st.markdown('<div class="moroccan-title" style="font-size:2.8rem;">المساعد الصوتي</div>', unsafe_allow_html=True)
+    st.markdown("<div class='moroccan-subtitle'>تحدث بصوتك مباشرة مع الذكاء الاصطناعي بدلاً من الكتابة</div>", unsafe_allow_html=True)
     
-    from engine.voice import VoicePipeline
-    voice_pipeline = VoicePipeline(orchestrator=orch)
-    
-    st.markdown('<div class="data-card" style="text-align: center; padding: 40px;">', unsafe_allow_html=True)
-    
-    audio_bytes = st.audio_input("تحدث إلى المساعد الطبي بالنقر على أيقونة الميكروفون:")
-    
-    if audio_bytes:
-        temp_in = "temp_input.wav"
-        with open(temp_in, "wb") as f:
-            f.write(audio_bytes.getbuffer())
-        
-        with st.spinner("جاري تحليل الصوت ومعالجة الإجابة... ⏳"):
-            result = voice_pipeline.process_audio(temp_in, "response.mp3")
-            
-            if result.success:
-                st.success("تم إنتاج الإجابة بنجاح!")
-                st.chat_message("user").write(result.user_text)
-                st.chat_message("assistant").write(result.bot_text)
-                
-                # Show audio player
-                st.audio(result.audio_path, format="audio/mp3", autoplay=True)
-            else:
-                st.error(f"حدث خطأ أثناء المعالجة الصوتية: {result.error}")
-                
-    st.markdown('</div>', unsafe_allow_html=True)
+    try:
+        import tempfile
+        from audio_recorder_streamlit import audio_recorder
+        from engine.audio import text_to_speech_arabic
+
+        with st.container(border=True):
+            st.markdown("<h3 style='text-align:center;'>🎙️ جهاز الاستقبال</h3>", unsafe_allow_html=True)
+            col1, col2, col3 = st.columns([1, 1, 1])
+            with col2:
+                audio_bytes = audio_recorder(text="انقر هنا لبدء التسجيل", recording_color="#dc2626", neutral_color="#16a34a")
+
+        if audio_bytes and len(audio_bytes) > 2000:
+            with st.spinner("التسجيل قيد المعالجة..."):
+                try:
+                    # Convert raw browser webm/ogg direct to WAV bytes
+                    wav_data = convert_audio_to_wav(audio_bytes)
+                    text, stt_err = speech_to_text_arabic(wav_data)
+                except Exception as e:
+                    text, stt_err = None, str(e)
+                    
+                if stt_err:
+                    st.error(f"⚠️ خطأ في التعرف على الصوت: {stt_err}")
+                elif text:
+                    st.info(f"🎤 سمعتك تقول: **{text}**")
+
+                    with st.spinner("🤖 جاري توليد إجابة مسموعة..."):
+                        response = orch.handle(text, history=[]) if orch else None
+
+                    if response:
+                        if response.override_ui:
+                            st.markdown(response.override_ui, unsafe_allow_html=True)
+                        if getattr(response, "severity", None) in ["critique", "élevée"]:
+                            from engine.nearby_care import render_nearby_care
+                            render_nearby_care(response.severity)
+                        answer = response.answer
+                    else:
+                        answer = "النظام لا يستطيع الإجابة حالياً."
+
+                    st.success(f"النتيجة: {answer}")
+
+                    audio_response = text_to_speech_arabic(answer)
+                    if audio_response:
+                        st.audio(audio_response, format="audio/mp3", autoplay=True)
+                else:
+                    st.warning("الصوت غير واضح تماماً. يرجى التحدث في بيئة هادئة.")
+    except ImportError:
+        st.error("⚠️ مكون التسجيل الصوتي غير مثبت (`audio_recorder_streamlit`).")
 
 # ─────────────────────────────────────────────────────────────
 # PAGE: VISION
 # ─────────────────────────────────────────────────────────────
 elif st.session_state.page == "vision":
-    st.markdown('<h1 class="main-title">🔬 تحليل الصور</h1>', unsafe_allow_html=True)
-    st.markdown('<p style="color:#5A6072;">تحليل متقدم للصور الطبية باستخدام تقنيات الذكاء الاصطناعي (Dermato / X-Ray / Brain MRI). هذا النظام لا يعوض زيارة الطبيب المختص.</p>', unsafe_allow_html=True)
+    st.markdown('<div class="moroccan-title" style="font-size:2.8rem;">معمل تحليل الصور</div>', unsafe_allow_html=True)
+    st.warning("🚨 **إخلاء مسؤولية تنظيمي:** هذا المعمل مخصص للأغراض الأكاديمية و المعرفية.")
+
+    _VISION_MAP = {
+        "🔴 الجلدية (Dermato / أمراض الجلد)": "dermato",
+        "🫁 أشعة الصدر (X-Ray)": "xray",
+        "🧠 رنين الدماغ المغناطيسي (MRI)": "brain_mri",
+        "🩺 تحاليل الأنسجة السرطانية": "cancer",
+        "🔬 تصوير الثدي الشعاعي": "breast",
+    }
     
-    st.markdown('<div class="data-card">', unsafe_allow_html=True)
-    
-    disclaimer_agreed = st.checkbox(
-        "أوافق على أن هذه الأداة تجريبية للأغراض التعليمية فقط ولا تعطي تشخيصاً طبياً نهائياً. ⚠️ تنبيه مهم: هذه المعلومات للتوعية الصحية فقط ولا تغني عن استشارة الطبيب المختص.",
-        key="vision_disclaimer"
-    )
-    
-    if not disclaimer_agreed:
-        st.info("يرجى الموافقة على الشروط أعلاه لتفعيل الفحص.")
-    else:
-        col1, col2 = st.columns([1, 2])
+    with st.container(border=True):
+        col_sel, col_up = st.columns([1, 1.5])
+        with col_sel:
+            vision_label = st.selectbox("حدد نوع الأشعة أو الصورة:", list(_VISION_MAP.keys()))
+            vision_type = _VISION_MAP[vision_label]
+        with col_up:
+            uploaded_file = st.file_uploader("قم برفع الصورة هنا (JPG, PNG)", type=["jpg", "jpeg", "png"])
+
+    if uploaded_file:
+        image = PILImage.open(uploaded_file)
         
-        with col1:
-            vision_type_ar = st.selectbox(
-                "نوع الصورة",
-                ["🔴 فحص الجلد", "🫁 أشعة الصدر", "🧠 رنين الدماغ", "🩺 كشف السرطان", "🔬 كثافة الثدي"]
-            )
+        with st.container(border=True):
+            col_img, col_res = st.columns([1, 1.5])
+            with col_img:
+                st.image(image, caption="الصورة الأصلية", width="stretch", clamp=True)
             
-            type_mapping = {
-                "🔴 فحص الجلد": "dermato",
-                "🫁 أشعة الصدر": "xray",
-                "🧠 رنين الدماغ": "brain_mri",
-                "🩺 كشف السرطان": "cancer",
-                "🔬 كثافة الثدي": "breast"
-            }
-            vision_type = type_mapping[vision_type_ar]
-            
-            uploaded_img = st.file_uploader(
-                "تحميل الصورة",
-                type=["jpg", "jpeg", "png"]
-            )
-            
-            if uploaded_img:
-                st.image(uploaded_img, caption="الصورة الأصلية", use_container_width=True)
-                
-            analyze_btn = st.button("تحليل الصورة", type="primary", use_container_width=True)
-            
-        with col2:
-            if analyze_btn and uploaded_img:
-                with st.spinner("جاري التحليل..."):
-                    img_pil = PILImage.open(uploaded_img)
-                    try:
-                        vision_resp = orch.analyze_image(img_pil, vision_type)
-                        result = {"valid": vision_resp.success, **vision_resp.metadata, "recommendation_ar": vision_resp.answer, "severity": vision_resp.severity}
-                        if result:
-                            if not result.get("valid", True):
-                                st.warning(result.get("recommendation_ar", "تحقق من جودة الصورة."))
-                                if result.get("rejection_reason"):
-                                    st.caption(f"Reason: {result['rejection_reason']}")
-                            else:
-                                conf = result.get("confidence", 0.0)
-                                color_map = {
-                                    "critique": "#DC3545",
-                                    "élevée": "#FF9800",
-                                    "modérée": "#FFC107",
-                                    "faible": "#28A745",
-                                    "indéfini": "#6C757D"
-                                }
-                                color = color_map.get(result.get("severity", "indéfini"), "#6C757D")
-                                
-                                st.markdown(f"""
-                                <div style="text-align:center; padding:20px; border-radius:16px;
-                                            background:{color}11; border:2px solid {color}; margin-bottom:10px;">
-                                    <h3 style="color:{color}; margin:0;">{result.get('class', 'غير معروف')}</h3>
-                                </div>
-                                """, unsafe_allow_html=True)
-                                
-                                st.metric("نسبة الثقة", f"{conf * 100:.1f}%")
-                                
-                                if conf < 0.60:
-                                    st.warning("⚠️ نسبة الثقة منخفضة — يُنصح بإعادة التصوير أو استشارة الطبيب")
+            with col_res:
+                if st.button("🚀 بدء فحص الشبكات العصبية", type="primary", width="stretch"):
+                    with st.spinner("يتم مطابقة الأنماط البيولوجية..."):
+                        try:
+                            if orch:
+                                result = orch.analyze_image(image, vision_type)
+                                if result.success:
+                                    conf = result.metadata.get("confidence", 0.0)
+                                    cls  = result.metadata.get("class", "غير محدد")
+                                    sev  = result.metadata.get("severity", "indéfini")
                                     
-                                st.markdown(f"""
-                                <div style="background:rgba(30,41,59,0.4); padding:15px; border-radius:12px; border-right:4px solid #38BDF8; margin-bottom:15px;">
-                                    <h4 style="margin-top:0;">توصية طبية</h4>
-                                    <span style="font-size:15px; color:#E2E8F0;">{result.get('recommendation_ar', '')}</span>
-                                    <br><br>
-                                    <small style="color:#94A3B8;">⚠️ تنبيه مهم: هذه المعلومات للتوعية الصحية فقط ولا تغني عن استشارة الطبيب المختص.</small>
-                                </div>
-                                """, unsafe_allow_html=True)
-                                
-                                from engine.nearby_care import render_nearby_care
-                                if result.get("severity") in ["critique", "élevée"]:
-                                    render_nearby_care(result.get("severity"))
-                                
-                                st.markdown("#### توزيع الاحتمالات")
-                                probs_df = pd.DataFrame({
-                                    "الاحتمال (%)": [p * 100 for p in result.get("all_probs", {}).values()],
-                                    "الفئة": list(result.get("all_probs", {}).keys())
-                                }).set_index("الفئة")
-                                st.bar_chart(probs_df)
-                                
-                                if result.get("gradcam") is not None:
-                                    st.markdown("#### خريطة التركيز (Grad-CAM)")
-                                    try:
-                                        import cv2
-                                        import numpy as np
-                                        cam_np = result["gradcam"]
-                                        img_np = np.array(img_pil.convert('RGB').resize((cam_np.shape[1], cam_np.shape[0])))
-                                        heatmap = cv2.applyColorMap(np.uint8(255 * cam_np), cv2.COLORMAP_JET)
-                                        heatmap = cv2.cvtColor(heatmap, cv2.COLOR_BGR2RGB)
-                                        overlay = img_np * 0.6 + heatmap * 0.4
-                                        st.image(overlay.astype(np.uint8), caption="مناطق التنشيط (Heatmap)", use_container_width=True)
-                                    except Exception as e:
-                                        logger.error(f"GradCAM plot error: {e}")
-                                        st.error("تعذر عرض خريطة التركيز.")
-                    except Exception as e:
-                        st.error(f"حدث خطأ أثناء التحليل: {str(e)}")
-            
-            elif analyze_btn and not uploaded_img:
-                st.warning("يرجى تحميل الصورة أولاً.")
-                
-    st.markdown('</div>', unsafe_allow_html=True)
+                                    # Mapped color logic based on Moroccan theme
+                                    _COLOR = {"critique":"#dc2626","élevée":"#f97316","modérée":"#d4af37","faible":"#16a34a"}
+                                    color = _COLOR.get(sev, "#94a3b8")
+                                    
+                                    st.markdown(f"""
+                                    <div style="padding:1.5rem; border-radius:12px; background:rgba(15,23,42,0.8); 
+                                                border-right: 6px solid {color}; margin-bottom:1rem;">
+                                      <h3 style="color:{color}; margin-top:0;">التشخيص المحوسب: {cls}</h3>
+                                      <div style="color:#d4af37; font-size:1.1rem;">درجة اليقين للخوارزمية: <b>{conf*100:.1f}%</b></div>
+                                    </div>
+                                    """, unsafe_allow_html=True)
+                                    
+                                    st.write(result.answer)
+                                    
+                                    if result.metadata.get("all_probs"):
+                                        probs_df = pd.DataFrame({
+                                            "نسبة التطابق (%)": [p*100 for p in result.metadata["all_probs"].values()],
+                                            "الفئة المتوقعة": list(result.metadata["all_probs"].keys())
+                                        }).set_index("الفئة المتوقعة")
+                                        st.bar_chart(probs_df, height=250)
+                                else:
+                                    st.warning(result.answer or "لم تتمكن النماذج من تقييم الصورة بوضوح.")
+                            else:
+                                st.error("علاجات الذكاء الصناعي معطلة.")
+                        except Exception as e:
+                            logger.error(f"Vision error: {e}")
+                            st.error("مشكلة برمجية أثناء التحليل.")
 
 # ─────────────────────────────────────────────────────────────
-# PAGE: SYMPTOM SCANNER
+# PAGE: SCANNER
 # ─────────────────────────────────────────────────────────────
 elif st.session_state.page == "scanner":
-    st.markdown('<h1 class="main-title">فاحص الأعراض المتقدم</h1>', unsafe_allow_html=True)
-    st.markdown('<p style="color:#5A6072;">يرجى ملء النموذج بدقة للحصول على تحليل أولي.</p>', unsafe_allow_html=True)
+    st.markdown('<div class="moroccan-title" style="font-size:2.8rem;">نظام التقييم السريري الذكي</div>', unsafe_allow_html=True)
+    st.markdown("<div class='moroccan-subtitle'>يقوم النظام الاستدلالي بالبحث عن ارتباطات الأعراض لاقتراح الحالات الممكنة</div>", unsafe_allow_html=True)
     
-    with st.form("scanner_form"):
-        col1, col2 = st.columns(2)
-        with col1:
-            age = st.number_input("العمر", 0, 120, 30)
-            gender = st.selectbox("الجنس", ["ذكر", "أنثى"])
-        with col2:
-            duration = st.selectbox("مدة الأعراض", ["أقل من يوم", "1-3 أيام", "أسبوع", "أكثر من أسبوع"])
-            severity = st.select_slider("شدة الألم/التعب", options=["خفيف", "متوسط", "شديد", "لا يطاق"])
+    with st.container(border=True):
+        with st.form("symptom_form"):
+            st.subheader("بيانات المريض والأعراض الأساسية")
+            col1, col2 = st.columns(2)
+            with col1:
+                age = st.number_input("عمر المريض", min_value=1, max_value=120, value=30)
+                gender = st.selectbox("الجنس البيولوجي", ["ذكر", "أنثى"])
+            with col2:
+                duration = st.selectbox("المدة الزمنية للأعراض", ["أقل من 24 ساعة", "من يوم إلى 3 أيام", "حوالي أسبوع", "أكثر من أسبوع"])
+                severity = st.select_slider("مدى حدة وقسوة الألم", options=["خفيف محتمل", "متوسط", "شديد ولا يطاق"])
             
-        symptoms = st.text_area("وصف الأعراض بالتفصيل (مثال: سعال جاف مع ألم في الصدر)", height=100)
-        history = st.text_input("هل تعاني من أمراض مزمنة؟ (اختياري)")
-        
-        submitted = st.form_submit_button("بدء التحليل الذكي", use_container_width=True)
+            symptoms = st.text_area("أعطنا وصفاً مفصلاً (المكان، طبيعة الوجع، الشدة...)", height=120, placeholder="مثال: أشعر بصداع نصفي نابض مع غثيان عند التعرض للضوء...")
+            history = st.text_input("الأمراض المزمنة أوالأدوية الحالية (إن وجد)")
+            
+            submitted = st.form_submit_button("إرسال للتحليل الذكي ✨", width="stretch")
         
     if submitted:
-        if not symptoms:
-            st.warning("يرجى وصف الأعراض أولاً.")
+        if len(symptoms.strip()) < 5:
+            st.warning("يرجى وصف الأعراض بدقة أكبر ليتمكن الذكاء من مساعدتك.")
         else:
-            with st.spinner("جاري تحليل الحالة..."):
-                scan_prompt = f"""
-                المريض: {gender}، العمر: {age}
-                المدة: {duration}، الشدة: {severity}
-                الأعراض الموصوفة: {symptoms}
-                التاريخ المرضي: {history if history else 'لا يوجد'}
-                """
-                
-                # Use orchestrator for structured symptom analysis
-                scan_resp = orch.scan_symptoms(
-                    symptoms,
-                    age=age,
-                    gender=gender,
-                    duration=duration,
-                    severity=severity,
-                    medical_history=history,
-                )
-                analysis = scan_resp.answer if scan_resp.success else None
-                
-                if not analysis:
-                    analysis = f"""بناءً على الأعراض المذكرة:
-                    
-**الأعراض:** {symptoms}
-**المدة:** {duration} | **الشدة:** {severity}
-
-**التوصية:** يرجى مراجعة طبيب مختص في أقرب وقت لإجراء فحص سريري كامل.
-
-**ملاحظة:** النظام الذكي غير متصل حالياً. هذه توصية عامة فقط."""
-                
-                st.markdown('<div class="data-card">', unsafe_allow_html=True)
-                st.subheader("نتيجة التحليل الأولي")
-                st.write(analysis)
-                st.markdown('</div>', unsafe_allow_html=True)
-                st.info("تذكر: هذا التحليل آلي ولا يغني عن الفحص السريري.")
-
+            with st.spinner("يتم الآن دمج البيانات ومقارنتها بقاعدة بيانات التشخيصات..."):
+                try:
+                    if orch:
+                        result = orch.scan_symptoms(
+                            symptoms, age=age, gender=gender, duration=duration, 
+                            severity=severity, medical_history=history
+                        )
+                        with st.container(border=True):
+                            st.markdown("<h3 style='color:#16a34a;'>📋 التقرير المبدئي</h3>", unsafe_allow_html=True)
+                            st.write(result.answer if result else "فشل تجميع التقرير.")
+                    else:
+                        st.error("النظام غير متصل.")
+                except Exception as e:
+                    logger.error(f"Scan error: {e}")
+                    st.error("حدث خطأ تقني داخلي أثناء المسح.")
 
 # ─────────────────────────────────────────────────────────────
-# PAGE: HISTORY
+# PAGE: CALCULATORS
 # ─────────────────────────────────────────────────────────────
-elif st.session_state.page == "history":
-    st.markdown('<h1 class="main-title">سجل الاستشارات الماضية</h1>', unsafe_allow_html=True)
+elif st.session_state.page == "calculators":
+    st.markdown('<div class="moroccan-title" style="font-size:2.8rem;">دوال وحسابات القياسات الحيوية</div>', unsafe_allow_html=True)
     
-    history = st.session_state.get("local_history", [])
+    with st.container(border=True):
+        calc_type = st.selectbox("اختر المعادلة الطبية المراد قياسها:", ["حاسبة مؤشر كتلة الجسم (BMI)", "حاسبة الاحتياج اليومي للسعرات", "مؤشر صحة القلب العام"])
         
-    if not history:
-        st.info("لا يوجد سجل استشارات حتى الآن.")
-    else:
-        for item in history:
-            with st.expander(f"{item['date']} | {item['title'][:40]}..."):
-                for m in item['messages']:
-                    role = "الطبيب الذكي" if m['role'] == "assistant" else "أنت"
-                    st.markdown(f"**{role}:**")
-                    st.write(m['content'])
-                    st.markdown("---")
-        st.info("سجل الاستشارات فارغ حالياً.")
+        if "BMI" in calc_type:
+            st.markdown("#### المتغيرات الحيوية:")
+            col1, col2 = st.columns(2)
+            with col1:
+                weight = st.number_input("الوزن الإجمالي بالميزان (KG)", min_value=20.0, max_value=300.0, value=75.0)
+            with col2:
+                height = st.number_input("طول القامة (CM)", min_value=100.0, max_value=250.0, value=175.0)
+            
+            if height > 0:
+                bmi = weight / ((height/100) ** 2)
+                st.markdown("<hr style='opacity:0.2'>", unsafe_allow_html=True)
+                
+                c1, c2 = st.columns([1, 2.5])
+                with c1:
+                    st.metric("مؤشر الكتلة BMI", f"{bmi:.1f} kg/m²")
+                with c2:
+                    if bmi < 18.5:
+                        st.info("نقص انحداري في الوزن. يوصى بمراجعة برنامج التغذية الخاص بك لضمان الحصول على المعادن الاساسية.")
+                    elif bmi < 25:
+                        st.success("الوزن ضمن النطاق الصحي والمثالي. حافظ على هذا المجهود الطيب!")
+                    elif bmi < 30:
+                        st.warning("زيادة في المؤشر. هذا جرس إنذار بسيط لتحسين اختيارات الأكل والحركة اليومية.")
+                    else:
+                        st.error("مؤشر يدل على السمنة المستوفاة. ترتبط السمنة بارتفاع فرص أمراض الضغط، ينصح بالمتابعة.")
+        else:
+            st.info("جاري تجميع الخوارزميات الحسابية لهذا القسم في التحديثات القادمة من المنصة.")
 
 # ─────────────────────────────────────────────────────────────
 # PAGE: DATABASE
 # ─────────────────────────────────────────────────────────────
 elif st.session_state.page == "database":
-    st.markdown('<h1 class="main-title">قاعدة المعرفة الطبية</h1>', unsafe_allow_html=True)
-    st.markdown('<p style="color:#5A6072;">اطلع على قائمة التصنيفات والبيانات التي يعتمد عليها النظام.</p>', unsafe_allow_html=True)
+    st.markdown('<div class="moroccan-title" style="font-size:2.8rem;">المستكشف البحثي</div>', unsafe_allow_html=True)
+    st.markdown("<div class='moroccan-subtitle'>بحث دقيق ومباشر في المراجع العلمية المؤرشفة الخاصة بالنظام</div>", unsafe_allow_html=True)
     
-    try:
-        from engine.retriever import FAISSRetriever
-        from data.knowledge_base import CATEGORY_KEYWORDS
-        
-        cols = st.columns(3)
-        cats = list(CATEGORY_KEYWORDS.keys())
-        for i, cat in enumerate(cats):
-            with cols[i % 3]:
-                st.markdown(f"""
-                    <div style="background:#F8F9FA; padding:15px; border-radius:12px; margin-bottom:10px; border-right:4px solid #E53935;">
-                        <h4 style="margin:0; font-size:14px;">{cat}</h4>
-                    </div>
-                """, unsafe_allow_html=True)
-                
-        st.markdown("### البحث في المصادر")
-        search_term = st.text_input("ابحث عن موضوع طبي...")
-        if search_term:
-            res = orch.rag.get_raw_answer(search_term)
-            if res:
-                st.markdown(f'<div class="data-card">{res[0]}</div>', unsafe_allow_html=True)
-            else:
-                st.info("لم نجد مراجع محددة لهذا البحث.")
-    except:
-        st.error("تعذر تحميل بيانات المصادر حالياً.")
+    with st.container(border=True):
+        search_term = st.text_input("أدخل المصطلح الطبي للتشريح الاسترشادي...", placeholder="مثال: التهاب الكبد الفيروسي، الفيروس المخلوي، الأسبرين...")
+    
+    if search_term:
+        with st.spinner("جاري مسح المراجع واستخلاص النصوص الدقيقة..."):
+            try:
+                if orch and hasattr(orch, 'llm'):
+                    # Prompt designed precisely to generate a highly professional encyclopedia entry
+                    prompt = f"""بصفتك الذكاء الاصطناعي الطبي الأساسي SHIFA، ابحث في قاعدة معارفك عن '{search_term}'.
+قم بتوفير تقرير طبي مرجعي دقيق جداً كالتالي (تجنب الإطالة):
+- التعريف التفصيلي للمرض أو المصطلح
+- الأسباب والأعراض
+- مضاعفات محتملة
+- طرق العلاج والمعايير السريرية
+
+اكتب بلغة علمية دقيقة جداً ومباشرة. لا تقم بالترحيب ولا تختم بأي عبارة ودية، فقط المرجع الأكاديمي."""
+                    
+                    response = orch.llm.run(query=prompt, context={"kb_context": "", "intent": "database_search", "history": None})
+                    
+                    if response and response.success:
+                        text_formatted = response.answer.replace('\\n', '<br/>').replace('\n', '<br/>')
+                        specialty = "الطب العام والأبحاث (Groq AI Model)"
+                        
+                        with st.container(border=True):
+                            st.markdown("<h3 style='color:#d4af37; margin-bottom:1.5rem;'>📑 المرجع الطبي المطابق (مُولّد الذكاء الاصطناعي):</h3>", unsafe_allow_html=True)
+                            
+                            bg_card = """
+                            <div style="background:rgba(15,23,42,0.6); padding:1.5rem 2rem; border-radius:12px; border-right:4px solid #16a34a; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
+                                <div style="display:flex; justify-content:space-between; margin-bottom:1rem; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:0.8rem;">
+                                    <span style="color:#94a3b8; font-size:0.95rem;">التصنيف المرجعي: <b style="color:#a7f3d0;">{specialty}</b></span>
+                                    <span style="color:#C9A855; font-size:0.95rem;">✦ SHIFA AI</span>
+                                </div>
+                                <div style="color:#f8fafc; line-height:1.9; font-size:1.05rem; white-space:pre-wrap;">
+                                    {content}
+                                </div>
+                            </div>
+                            """
+                            st.markdown(bg_card.format(specialty=specialty, content=text_formatted), unsafe_allow_html=True)
+                    else:
+                        st.warning("تعذر على محرك Groq الذكي استخراج النص، يرجى المحاولة لاحقاً.")
+                else:
+                    st.error("الاستعلام المعرفي متوقف مؤقتاً.")
+            except Exception as e:
+                logger.error(f"Search error: {e}")
+                st.error("فشل استخراج البيانات. قد يكون الملف مفقوداً.")
 
 # ─────────────────────────────────────────────────────────────
-# GLOBAL FOOTER
+# PAGE: HISTORY
+# ─────────────────────────────────────────────────────────────
+elif st.session_state.page == "history":
+    st.markdown('<div class="moroccan-title" style="font-size:2.8rem;">محفوظات الاستشارات</div>', unsafe_allow_html=True)
+    
+    history = st.session_state.get("local_history", [])
+    
+    if not history:
+        st.info("سجلاتك فارغة حالياً نظيفة.")
+    else:
+        for i, item in enumerate(history):
+            with st.expander(f"🕰️ الاستشارة رقم {i+1} : {item['date']} - {item['title']}", expanded=(i==0)):
+                for msg in item['messages']:
+                    if msg['role'] == 'user':
+                        st.markdown(f"**أنت:** {msg['content']}")
+                    else:
+                        st.markdown(f"**المحرك المساعد (SHIFA):** {msg['content']}")
+                st.markdown("---")
+
+# ─────────────────────────────────────────────────────────────
+# FOOTER
 # ─────────────────────────────────────────────────────────────
 st.markdown("""
-<div style="text-align:center; color:rgba(255,255,255,0.3);
-font-size:0.75rem; padding:20px; border-top:1px solid
-rgba(0,212,170,0.1); margin-top:40px;">
-  شفاء AI · للمساعدة الطبية فقط · ليس بديلاً عن الطبيب
-  <br>SHIFA AI v1.0 · 2025
+<div style="text-align:center; color:var(--z-muted); font-size:0.85rem; padding:2.5rem 0; margin-top:4rem; border-top: 1px solid rgba(22, 163, 74, 0.2);">
+  تمت البرمجة والتحسين والتصميم بواسطة فريق <b style="color:#d4af37;">SHIFA AI</b> © 2026<br/>
+  <span style="font-size:0.75rem;">تنويه: النظام للاستخدامات الثقافية والتجريبية ولا يغني عن الطب البشري المعتمد.</span>
 </div>
 """, unsafe_allow_html=True)
-
-

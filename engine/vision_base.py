@@ -249,6 +249,15 @@ class VisionBase(ABC):
         Returns:
             Dict[str, Any]: Dictionnaire au format standardisé.
         """
+        validation = self.is_medical_image(image)
+        if validation.get("valid", True) is False:
+            return {
+                "valid": False,
+                "rejection_reason": validation.get("reason", "Image non médicale"),
+                "confidence": 0.0,
+                "error": True
+            }
+
         tensor_image = self.preprocess(image)
         
         try:

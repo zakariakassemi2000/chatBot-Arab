@@ -9,6 +9,14 @@ from engine.ddi_detector import DrugInteractionDetector, DDI_TYPES, KNOWN_INTERA
 
 st.set_page_config(page_title="SHIFA AI | التفاعلات الدوائية", page_icon="💊", layout="centered")
 
+st.markdown("""
+<style>
+    [data-testid="stSidebarNav"] {display: none;}
+</style>
+""", unsafe_allow_html=True)
+with st.sidebar:
+    st.page_link("app.py", label="الرجوع للرئيسية", icon="🏠")
+
 # ── CSS ──
 st.markdown("""
 <style>
@@ -72,7 +80,7 @@ with tab1:
 
     context = st.text_input("📝 سياق إضافي (اختياري)", placeholder="مثال: مريض يتناول مميعات الدم")
 
-    if st.button("🔍 فحص التفاعل", use_container_width=True, type="primary"):
+    if st.button("🔍 فحص التفاعل", width="stretch", type="primary"):
         if not drug1 or not drug2:
             st.warning("يرجى إدخال اسم الدوائين.")
         else:
@@ -119,7 +127,7 @@ with tab2:
         label_visibility="collapsed",
     )
 
-    if st.button("🔍 فحص جميع التفاعلات", use_container_width=True, type="primary", key="check_all"):
+    if st.button("🔍 فحص جميع التفاعلات", width="stretch", type="primary", key="check_all"):
         drugs = [d.strip() for d in drugs_text.strip().split("\n") if d.strip()]
 
         if len(drugs) < 2:

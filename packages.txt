@@ -1,3 +1,15 @@
+# ══════════════════════════════════════════════════════════════
+#  SHIFA AI — System packages for Streamlit Cloud (Ubuntu)
+#  These are installed via apt-get before Python packages.
+# ══════════════════════════════════════════════════════════════
+
+# Audio processing (pydub, SpeechRecognition, gTTS)
 ffmpeg
 libsndfile1
+
+# OpenCV (opencv-python-headless needs these)
 libgl1
+libglib2.0-0
+
+# TorchXRayVision / MONAI (image processing)
+libgomp1

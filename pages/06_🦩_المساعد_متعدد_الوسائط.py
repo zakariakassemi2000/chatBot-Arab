@@ -13,6 +13,14 @@ st.set_page_config(page_title="المساعد البصري المتطور", page
 
 st.markdown("""
 <style>
+    [data-testid="stSidebarNav"] {display: none;}
+</style>
+""", unsafe_allow_html=True)
+with st.sidebar:
+    st.page_link("app.py", label="الرجوع للرئيسية", icon="🏠")
+
+st.markdown("""
+<style>
 .main-title {
     font-size: 32px;
     font-weight: 700;
@@ -57,7 +65,7 @@ with col_img:
         type=["jpg", "jpeg", "png"]
     )
     if uploaded_img:
-        st.image(uploaded_img, caption="الصورة المرفوعة", use_container_width=True)
+        st.image(uploaded_img, caption="الصورة المرفوعة", width="stretch")
 
 with col_chat:
     st.markdown("#### اسأل المساعد عن الصورة")

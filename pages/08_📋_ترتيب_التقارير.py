@@ -9,6 +9,14 @@ from engine.report_prioritizer import ReportPrioritizer, PRIORITY_LEVELS
 
 st.set_page_config(page_title="SHIFA AI | ترتيب التقارير", page_icon="📋", layout="centered")
 
+st.markdown("""
+<style>
+    [data-testid="stSidebarNav"] {display: none;}
+</style>
+""", unsafe_allow_html=True)
+with st.sidebar:
+    st.page_link("app.py", label="الرجوع للرئيسية", icon="🏠")
+
 # ── CSS ──
 st.markdown("""
 <style>
@@ -120,14 +128,14 @@ with tab1:
     cols_ex = st.columns(3)
     for i, (label, text) in enumerate(examples):
         with cols_ex[i]:
-            if st.button(label, key=f"example_{i}", use_container_width=True):
+            if st.button(label, key=f"example_{i}", width="stretch"):
                 st.session_state["report_example"] = text
                 st.rerun()
 
     if "report_example" in st.session_state:
         report_text = st.session_state.pop("report_example")
 
-    if st.button("🔍 تحليل الأولوية", use_container_width=True, type="primary"):
+    if st.button("🔍 تحليل الأولوية", width="stretch", type="primary"):
         if not report_text or len(report_text.strip()) < 10:
             st.warning("يرجى إدخال نص التقرير (10 أحرف على الأقل).")
         else:
@@ -174,7 +182,7 @@ with tab2:
         label_visibility="collapsed",
     )
 
-    if st.button("📋 ترتيب حسب الأولوية", use_container_width=True, type="primary", key="sort_all"):
+    if st.button("📋 ترتيب حسب الأولوية", width="stretch", type="primary", key="sort_all"):
         reports = [r.strip() for r in multi_reports.split("---") if r.strip() and len(r.strip()) > 10]
 
         if len(reports) < 2:

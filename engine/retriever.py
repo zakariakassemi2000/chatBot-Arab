@@ -122,6 +122,48 @@ def semantic_chunk(text: str, max_chunk: int = 512, overlap: int = 64) -> list[s
 
 
 # ═════════════════════════════════════════════════════════════════
+#  NLP Specialty Router (Zero-Shot Medical Domain Detection)
+# ═════════════════════════════════════════════════════════════════
+
+def detect_medical_specialty(query: str) -> str | None:
+    """
+    Detects the Arabic medical specialty from user query to enable strict domain filtering.
+    E.g. map 'التهاب الكبد' -> 'الجهاز الهضمي والكبد'
+    """
+    query_clean = query.lower()
+    
+    specialties_map = {
+        "الجهاز الهضمي والكبد": ["كبد", "معدة", "هضم", "قولون", "مرارة", "بنكرياس", "بلغم", "كبدية", "يرقان", "بواسير", "تقيؤ", "غثيان"],
+        "أنف، أذن وحنجرة": ["أذن", "حنجرة", "أنف", "جيوب", "سمع", "شخير", "لوزتين", "رعاف", "صوت", "طنين"],
+        "أمراض القلب والشرايين": ["قلب", "شريان", "ضغط", "وريد", "خفقان", "كولسترول", "جلطة", "صدرية", "نوبة"],
+        "أمراض الجهاز التنفسي": ["تنفس", "رئة", "ربو", "سعال", "شعب", "صدر", "بلغم", "سل", "التهاب رئوي", "زكام"],
+        "الأمراض الجلدية": ["جلد", "شعر", "صدفية", "حب شباب", "أظافر", "حكة", "حساسية", "ثعلبة", "بهاق", "اكزيما", "حروق", "جروح"],
+        "أمراض العيون": ["عين", "رؤية", "بصر", "شبكية", "قرنية", "جلوكوما", "ماء أبيض", "جفاف", "عدسة"],
+        "الأمراض النفسية": ["نفسي", "اكتئاب", "قلق", "توتر", "فصام", "وهم", "ذهان", "أرق", "نوم", "انفصام", "هلوسة", "تصلب"],
+        "أمراض النساء والتوليد": ["حمل", "دورة", "رحم", "مبيض", "ولادة", "طمث", "إجهاض", "مهبل", "ثدي", "عقم"],
+        "طب الأطفال": ["طفل", "رضيع", "نمو", "تطعيم", "حصبة", "جدري", "اطفال"],
+        "جراحة العظام والمفاصل": ["عظم", "مفصل", "كسر", "غضروف", "روماتيزم", "ظهر", "عمود فقري", "ديسك", "ورك", "ركبة", "عضلة", "هشاشة", "صلب"],
+        "المسالك البولية": ["بول", "كلى", "مثانة", "بروستاتا", "حصى", "خصية", "تناسلي", "تبول"],
+        "أمراض الدم": ["دم", "أنيميا", "فقر دم", "لوكيميا", "نزيف", "تخثر", "هيموجلوبين"],
+        "طب الأسنان": ["سن", "لثة", "ضرس", "عصب", "تسوس", "تقويم"],
+        "أمراض الغدد الصماء": ["غدة", "سكري", "هرمون", "دراقية", "سمنة", "نحافة", "نخامية", "كظرية"],
+        "الأمراض العصبية": ["عصب", "جلطة دماغية", "صرع", "شلل", "زهايمر", "صداع", "شقيقة", "دماغ", "رقبة", "نخاع"],
+        "الأورام والمناعة": ["سرطان", "ورم", "خبيث", "حميد", "مناعة", "نقص"],
+    }
+    
+    best_match = None
+    max_hits = 0
+    
+    for spec, keywords in specialties_map.items():
+        hits = sum(1 for kw in keywords if kw in query_clean)
+        if hits > max_hits:
+            max_hits = hits
+            best_match = spec
+            
+    return best_match
+
+
+# ═════════════════════════════════════════════════════════════════
 #  Hybrid Retriever
 # ═════════════════════════════════════════════════════════════════
 
@@ -412,7 +454,7 @@ class HybridRetriever:
                 "dense_rank": r["dense_rank"],
                 "bm25_score": 0.0,
                 "bm25_rank": 999,
-                "rrf_score": self.FAISS_WEIGHT / (k + r["dense_rank"]),
+                "rrf_score": (self.FAISS_WEIGHT / (k + r["dense_rank"])) * 100,
             }
 
         for r in sparse_results:
@@ -420,7 +462,7 @@ class HybridRetriever:
             if idx in fused:
                 fused[idx]["bm25_score"] = r["bm25_score"]
                 fused[idx]["bm25_rank"] = r["bm25_rank"]
-                fused[idx]["rrf_score"] += self.BM25_WEIGHT / (k + r["bm25_rank"])
+                fused[idx]["rrf_score"] += (self.BM25_WEIGHT / (k + r["bm25_rank"])) * 100
             else:
                 fused[idx] = {
                     "idx": idx,
@@ -428,7 +470,7 @@ class HybridRetriever:
                     "dense_rank": 999,
                     "bm25_score": r["bm25_score"],
                     "bm25_rank": r["bm25_rank"],
-                    "rrf_score": self.BM25_WEIGHT / (k + r["bm25_rank"]),
+                    "rrf_score": (self.BM25_WEIGHT / (k + r["bm25_rank"])) * 100,
                 }
 
         ranked = sorted(fused.values(), key=lambda x: x["rrf_score"], reverse=True)
@@ -509,8 +551,22 @@ class HybridRetriever:
             if len(answer) < min_answer_len:
                 continue
 
-            # Category filter
-            if category_filter and category != category_filter:
+            # NLP Medical Specialty Filtering (Avoid Topic Mismatch)
+            # If the user queried for Liver (Gastroenterology), penalize or reject ENT results massively!
+            if category_filter and category not in ["عام", "غير محدد"]:
+                # Token overlap overlap mechanism (since exact strings like 'أمراض الجهاز الهضمي' vs 'الجهاز الهضمي' can differ)
+                overlap = any(term in category for term in _tokenise_arabic(category_filter))
+                if not overlap and category_filter not in category:
+                    # Massive penalty for domain mismatch
+                    if c.get("dense_score", 0) < 0.65: # Allow really strong universal Semantic embeddings, otherwise Kill it!
+                        continue
+                    # Severely penalize scores if it sneaks through the threshold
+                    c["ce_score"] = float(c.get("ce_score", c.get("rrf_score", 0))) * 0.1
+                    c["rrf_score"] = float(c.get("rrf_score", 0)) * 0.1
+                    c["dense_score"] = float(c.get("dense_score", 0)) * 0.5
+                
+            # Hardware filter: Restrict absolute garbage semantic matches from passing through RRF
+            if not self._enable_reranker and c.get("dense_score", 0.0) < 0.45:
                 continue
 
             # Score threshold (use CE score if available, else RRF)
@@ -540,7 +596,7 @@ class HybridRetriever:
         threshold: float = 0.35,
         category: str | None = None,
     ) -> list[dict]:
-        """Full hybrid search pipeline.
+        """Full hybrid search pipeline with NLP Auto-Routing.
 
         Args:
             query:     Arabic text query.
@@ -552,6 +608,9 @@ class HybridRetriever:
             List of dicts with: question, answer, category, intent,
             final_score, dense_score, bm25_score, ce_score, rank.
         """
+        # 1. NLP Specialty routing override (if none provided by the flow, fallback to smart detection
+        detected_category = category if category else detect_medical_specialty(query)
+
         # Stage 1 + 2: parallel retrieval
         dense   = self._dense_search(query, top_k=20)
         sparse  = self._sparse_search(query, top_k=20)
@@ -565,7 +624,7 @@ class HybridRetriever:
         # Stage 5: metadata filtering + quality
         results = self._filter_and_score(
             reranked,
-            category_filter=category,
+            category_filter=detected_category,
             threshold=threshold,
         )
 

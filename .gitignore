@@ -20,3 +20,33 @@ models/
 requirements_freeze.txt
 requirements_freeze_utf8.txt
 fix_encoding.py
+
+# Fichiers lourds / binaires
+*.exe
+*.rar
+*.zip
+
+# Bases de données SQLite
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+logs.txt
+*.log
+logs/
+
+# Documents Word temporaires
+~$*.docx
+
+# Fichiers PDF dans storage
+partie Docteur+User/storage/
+
+# Fichiers image dans storage
+partie Docteur+User/pha/images/
+
+# Rapport volumineux (archivé séparément)
+RAPPORT/
+
+# Python installer
+python-installer.exe
