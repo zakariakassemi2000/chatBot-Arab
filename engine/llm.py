@@ -104,3 +104,166 @@ class GroqGenerator:
         except Exception as e:
             logger.error("Groq API error: %s", e, exc_info=True)
             return None
+
+
+# ─── GroqVision — Analyse d'images médicales ────────────────────────
+
+VISION_SYSTEM_PROMPT = """أنت مساعد طبي متخصص في تحليل الصور الطبية في نظام شفاء AI.
+
+عند تحليل أي صورة طبية، اتبع هذا الهيكل الإلزامي:
+
+**1. نوع الصورة:** (أشعة X / رنين مغناطيسي / صورة جلدية / فحص عيون / غير طبية)
+**2. الملاحظات الرئيسية:** ما تراه في الصورة بدقة (3-5 نقاط)
+**3. التشخيص المحتمل:** أكثر الاحتمالات الطبية منطقية
+**4. مستوى الخطورة:** خفيف / متوسط / مرتفع / حرج
+**5. التوصية الطبية:** خطوة واحدة واضحة ومحددة
+
+قواعد صارمة:
+- أجب دائماً باللغة العربية الفصحى
+- لا تؤكد التشخيص القاطع — استخدم "يُحتمل" أو "يُشير إلى"
+- أضف دائماً: "هذا التحليل لا يغني عن استشارة طبيب مختص"
+- إذا كانت الصورة غير طبية، قل ذلك بوضوح
+"""
+
+
+class GroqVision:
+    """
+    Client Groq Vision pour l'analyse d'images médicales.
+    Utilise le modèle llama-3.2-90b-vision-preview (Groq).
+    """
+
+    VISION_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct"
+
+    def __init__(self):
+        self.client = None
+        self.api_key = os.environ.get("GROQ_API_KEY")
+
+        if self.api_key:
+            try:
+                self.client = Groq(api_key=self.api_key)
+                logger.info("GroqVision initialized — model: %s", self.VISION_MODEL)
+            except Exception as e:
+                logger.error("GroqVision init error: %s", e)
+        else:
+            logger.warning("GROQ_API_KEY not found — GroqVision disabled.")
+
+    def analyze_image(
+        self,
+        base64_image: str,
+        prompt: str = "",
+        image_type: str = "auto",
+        history: list = None,
+    ) -> str:
+        """
+        Analyse une image médicale encodée en base64.
+
+        Args:
+            base64_image: Image encodée en base64.
+            prompt:       Question ou instruction de l'utilisateur.
+            image_type:   Type d'image ('xray', 'mri', 'dermato', 'auto').
+            history:      Historique de conversation précédent.
+
+        Returns:
+            Réponse textuelle en arabe, ou message d'erreur.
+        """
+        if not self.client:
+            return "❌ خدمة تحليل الصور غير متاحة — يرجى التحقق من مفتاح GROQ_API_KEY."
+
+        # Prompt automatique selon le type d'image
+        type_hints = {
+            "xray":    "هذه صورة أشعة X. حللها بدقة.",
+            "mri":     "هذه صورة رنين مغناطيسي (MRI). حللها بدقة.",
+            "dermato": "هذه صورة جلدية. حلل الحالة الجلدية الظاهرة.",
+            "eye":     "هذه صورة فحص عيون. حلل ما تراه.",
+            "auto":    "حلل هذه الصورة الطبية.",
+        }
+        type_hint = type_hints.get(image_type, type_hints["auto"])
+        user_question = prompt.strip() if prompt.strip() else type_hint
+
+        # Construction des messages
+        messages = [{"role": "system", "content": VISION_SYSTEM_PROMPT}]
+
+        # Historique de conversation (limite 6 derniers tours)
+        if history:
+            for msg in history[-6:]:
+                role = msg.get("role")
+                content = msg.get("content", "")
+                if role in ("user", "assistant") and content.strip():
+                    messages.append({"role": role, "content": content})
+
+        # Message avec image
+        messages.append({
+            "role": "user",
+            "content": [
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": f"data:image/jpeg;base64,{base64_image}"
+                    },
+                },
+                {
+                    "type": "text",
+                    "text": user_question,
+                },
+            ],
+        })
+
+        try:
+            response = self.client.chat.completions.create(
+                model=self.VISION_MODEL,
+                messages=messages,
+                temperature=0.2,
+                max_tokens=1024,
+            )
+            answer = response.choices[0].message.content
+            logger.info("GroqVision analysis completed (type=%s)", image_type)
+            return answer
+
+        except Exception as e:
+            logger.error("GroqVision API error: %s", e, exc_info=True)
+            return f"❌ حدث خطأ أثناء تحليل الصورة: {str(e)}"
+
+    def detect_image_type(self, base64_image: str) -> str:
+        """
+        Détecte automatiquement le type de l'image médicale.
+
+        Returns:
+            'xray' | 'mri' | 'dermato' | 'eye' | 'general' | 'non_medical'
+        """
+        if not self.client:
+            return "general"
+
+        detection_prompt = """انظر إلى هذه الصورة وحدد نوعها من بين الخيارات التالية فقط:
+- xray (أشعة X)
+- mri (رنين مغناطيسي)
+- dermato (صورة جلدية)
+- eye (فحص عيون)
+- dental (أسنان)
+- general (صورة طبية عامة)
+- non_medical (غير طبية)
+
+أجب بكلمة واحدة فقط من القائمة أعلاه."""
+
+        messages = [{
+            "role": "user",
+            "content": [
+                {
+                    "type": "image_url",
+                    "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"},
+                },
+                {"type": "text", "text": detection_prompt},
+            ],
+        }]
+
+        try:
+            response = self.client.chat.completions.create(
+                model=self.VISION_MODEL,
+                messages=messages,
+                temperature=0.0,
+                max_tokens=10,
+            )
+            result = response.choices[0].message.content.strip().lower()
+            valid = {"xray", "mri", "dermato", "eye", "dental", "general", "non_medical"}
+            return result if result in valid else "general"
+        except Exception:
+            return "general"
