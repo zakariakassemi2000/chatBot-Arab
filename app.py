@@ -15,6 +15,14 @@ import logging
 from datetime import datetime
 from pathlib import Path
 
+# ── Auth module ──
+try:
+    from core.user_auth import register_user, login_user, init_db, guest_session
+    init_db()
+except Exception as _auth_err:
+    logging.warning(f"[Auth] Module user_auth non chargé: {_auth_err}")
+    register_user = login_user = guest_session = None
+
 # ── Suppress TensorFlow info/warning messages ──
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
@@ -343,35 +351,226 @@ def inject_custom_css():
     """, unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────────────────────
-# AUTHENTICATION GATE
+# AUTHENTICATION GATE  (Login · Register · Guest)
 # ─────────────────────────────────────────────────────────────
 def _check_auth() -> bool:
+    """Retourne True si l'utilisateur est authentifié (compte ou invité)."""
     if st.session_state.get("_authenticated"):
         return True
 
-    try:
-        expected = st.secrets["APP_PASSWORD"]
-    except Exception:
-        expected = os.environ.get("APP_PASSWORD", "shifa2026")
-
     inject_custom_css()
 
-    col1, col2, col3 = st.columns([1, 1.2, 1])
+    # ── Extra CSS for animated auth card ──
+    st.markdown("""
+    <style>
+    @keyframes fadeSlideUp {
+        from { opacity: 0; transform: translateY(24px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+    .auth-wrapper {
+        animation: fadeSlideUp 0.5s cubic-bezier(0.16,1,0.3,1) both;
+    }
+    /* Tab styling override */
+    [data-baseweb="tab-list"] {
+        background: rgba(15,23,42,0.6) !important;
+        border-radius: 12px !important;
+        padding: 4px !important;
+        gap: 4px !important;
+    }
+    [data-baseweb="tab"] {
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+        font-size: 0.95rem !important;
+        padding: 0.5rem 1rem !important;
+        color: #94a3b8 !important;
+    }
+    [aria-selected="true"][data-baseweb="tab"] {
+        background: linear-gradient(135deg,#16a34a,#15803d) !important;
+        color: #fff !important;
+        box-shadow: 0 4px 12px rgba(22,163,74,0.35) !important;
+    }
+    /* Guest banner */
+    .guest-banner {
+        background: linear-gradient(135deg, rgba(212,175,55,0.12), rgba(212,175,55,0.06));
+        border: 1px solid rgba(212,175,55,0.3);
+        border-radius: 12px;
+        padding: 1rem 1.25rem;
+        margin-top: 0.75rem;
+        text-align: center;
+    }
+    .guest-pill {
+        display: inline-block;
+        background: rgba(212,175,55,0.2);
+        color: #d4af37;
+        border-radius: 20px;
+        padding: 2px 12px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        margin-bottom: 0.4rem;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    col1, col2, col3 = st.columns([1, 1.3, 1])
     with col2:
-        st.markdown("<div style='margin-bottom: 10vh;'></div>", unsafe_allow_html=True)
-        with st.container(border=True): # Streamlit native card!
-            if LOGO_SRC:
-                st.markdown(f"<div style='text-align:center;'><img src='{LOGO_SRC}' style='height:85px; margin-bottom:15px;'><br><h2 style='margin-bottom:0;'>SHIFA AI</h2><p style='color:#94a3b8; margin-bottom: 2rem;'>المنصة الطبية الذكية · Accès Sécurisé</p></div>", unsafe_allow_html=True)
-            else:
-                st.markdown(f"<div style='text-align:center;'><div style='font-size:3.5rem; color:#16a34a;'>⚜️</div><h2 style='margin-bottom:0;'>SHIFA AI</h2><p style='color:#94a3b8; margin-bottom: 2rem;'>المنصة الطبية الذكية · Accès Sécurisé</p></div>", unsafe_allow_html=True)
-            password = st.text_input("كلمة المرور / Mot de passe", type="password", placeholder="••••••••", label_visibility="collapsed")
-            if st.button("دخول / Connexion", type="primary", width="stretch"):
-                if password == expected:
+        st.markdown("<div style='margin-bottom: 8vh;'></div>", unsafe_allow_html=True)
+        st.markdown("<div class='auth-wrapper'>", unsafe_allow_html=True)
+
+        with st.container(border=True):
+            # ── Logo + header ──
+            logo_html = (
+                f"<img src='{LOGO_SRC}' style='height:80px; margin-bottom:10px;'>"
+                if LOGO_SRC else
+                "<div style='font-size:3rem;'>⚜️</div>"
+            )
+            st.markdown(f"""
+            <div style='text-align:center; padding-bottom: 0.25rem;'>
+                {logo_html}
+                <h2 style='margin:4px 0 2px; font-size:1.9rem; font-weight:800;
+                           background:linear-gradient(90deg,#d4af37,#fff);
+                           -webkit-background-clip:text; -webkit-text-fill-color:transparent;'>
+                    SHIFA AI
+                </h2>
+                <p style='color:#94a3b8; font-size:0.9rem; margin:0 0 1.25rem;'>
+                    المنصة الطبية الذكية &nbsp;·&nbsp; Plateforme Médicale IA
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
+
+            # ── 3 Tabs ──
+            tab_login, tab_register, tab_guest = st.tabs([
+                "🔑 تسجيل الدخول",
+                "📝 إنشاء حساب",
+                "👤 كزائر / Invité"
+            ])
+
+            # ════════════════════════════════════
+            # TAB 1 – LOGIN
+            # ════════════════════════════════════
+            with tab_login:
+                st.markdown("<div style='height:0.75rem;'></div>", unsafe_allow_html=True)
+                login_username = st.text_input(
+                    "اسم المستخدم / Nom d'utilisateur",
+                    placeholder="ex: dr_hassan",
+                    key="login_username"
+                )
+                login_password = st.text_input(
+                    "كلمة المرور / Mot de passe",
+                    type="password",
+                    placeholder="••••••••",
+                    key="login_password"
+                )
+                if st.button("🔑 دخول / Se connecter", type="primary", key="btn_login", use_container_width=True):
+                    if not login_username or not login_password:
+                        st.error("⚠️ Veuillez remplir tous les champs.")
+                    elif login_user is None:
+                        st.error("Module auth non disponible.")
+                    else:
+                        result = login_user(login_username, login_password)
+                        if result["success"]:
+                            st.session_state["_authenticated"] = True
+                            st.session_state["_user"] = result["user"]
+                            st.session_state["_is_guest"] = False
+                            st.success(f"✅ Bienvenue {result['user']['full_name']} !")
+                            st.rerun()
+                        else:
+                            st.error(f"❌ {result['message']}")
+                st.markdown(
+                    "<div style='text-align:center; margin-top:0.75rem;'>"
+                    "<span style='color:#64748b; font-size:0.8rem;'>للمحترفين الطبيين فقط</span></div>",
+                    unsafe_allow_html=True
+                )
+
+            # ════════════════════════════════════
+            # TAB 2 – REGISTER
+            # ════════════════════════════════════
+            with tab_register:
+                st.markdown("<div style='height:0.75rem;'></div>", unsafe_allow_html=True)
+                reg_full_name = st.text_input(
+                    "الاسم الكامل / Nom complet",
+                    placeholder="Dr. Hassan Alaoui",
+                    key="reg_full_name"
+                )
+                reg_username = st.text_input(
+                    "اسم المستخدم / Nom d'utilisateur *",
+                    placeholder="ex: dr_hassan",
+                    key="reg_username"
+                )
+                reg_email = st.text_input(
+                    "البريد الإلكتروني / Email (facultatif)",
+                    placeholder="hassan@example.com",
+                    key="reg_email"
+                )
+                reg_password = st.text_input(
+                    "كلمة المرور / Mot de passe * (min. 6 car.)",
+                    type="password",
+                    placeholder="••••••••",
+                    key="reg_password"
+                )
+                reg_password2 = st.text_input(
+                    "تأكيد كلمة المرور / Confirmer",
+                    type="password",
+                    placeholder="••••••••",
+                    key="reg_password2"
+                )
+                if st.button("📝 إنشاء الحساب / Créer", type="primary", key="btn_register", use_container_width=True):
+                    if not reg_username or not reg_password:
+                        st.error("⚠️ Les champs marqués * sont obligatoires.")
+                    elif reg_password != reg_password2:
+                        st.error("❌ Les mots de passe ne correspondent pas.")
+                    elif register_user is None:
+                        st.error("Module auth non disponible.")
+                    else:
+                        result = register_user(
+                            username=reg_username,
+                            password=reg_password,
+                            email=reg_email,
+                            full_name=reg_full_name
+                        )
+                        if result["success"]:
+                            st.success(f"✅ {result['message']}")
+                            st.info("👆 Cliquez maintenant sur l'onglet \"تسجيل الدخول\" pour vous connecter.")
+                        else:
+                            st.error(f"❌ {result['message']}")
+
+            # ════════════════════════════════════
+            # TAB 3 – GUEST
+            # ════════════════════════════════════
+            with tab_guest:
+                st.markdown("<div style='height:0.75rem;'></div>", unsafe_allow_html=True)
+                st.markdown("""
+                <div class='guest-banner'>
+                    <div class='guest-pill'>⚡ وضع الزائر</div>
+                    <p style='color:#f8fafc; font-size:0.95rem; margin:0.5rem 0 0.25rem; font-weight:600;'>
+                        استخدم المنصة بدون حساب
+                    </p>
+                    <p style='color:#94a3b8; font-size:0.82rem; margin:0;'>
+                        لن يتم حفظ محادثاتك &nbsp;·&nbsp; وصول محدود لبعض الميزات
+                    </p>
+                </div>
+                """, unsafe_allow_html=True)
+                st.markdown("<div style='height:0.5rem;'></div>", unsafe_allow_html=True)
+
+                # Features comparison
+                st.markdown("""
+                <div style='font-size:0.85rem; color:#94a3b8; margin-bottom:0.75rem;'>
+                    <b style='color:#f8fafc;'>✅ وضع الزائر يتيح:</b><br>
+                    ✔ المحادثة الطبية &nbsp;·&nbsp; ✔ فحص الأعراض<br>
+                    ✔ تحليل الصور &nbsp;·&nbsp; ✔ الحاسبات الطبية<br><br>
+                    <b style='color:#f8fafc;'>🔒 يتطلب حساباً:</b><br>
+                    ✗ حفظ التاريخ الطبي &nbsp;·&nbsp; ✗ المفضلة والتقارير
+                </div>
+                """, unsafe_allow_html=True)
+
+                if st.button("👤 المتابعة كزائر / Continuer en invité", key="btn_guest", use_container_width=True):
                     st.session_state["_authenticated"] = True
+                    st.session_state["_user"] = guest_session() if guest_session else {
+                        "id": None, "username": "Invité", "role": "guest"
+                    }
+                    st.session_state["_is_guest"] = True
                     st.rerun()
-                else:
-                    st.error("❌ كلمة المرور خاطئة / Mot de passe incorrect")
-            st.caption("<div style='text-align:center; margin-top:1rem; color:#64748b;'>للمحترفين الطبيين فقط</div>", unsafe_allow_html=True)
+
+        st.markdown("</div>", unsafe_allow_html=True)
     return False
 
 if not _check_auth():
@@ -473,6 +672,36 @@ with st.sidebar:
         """, unsafe_allow_html=True)
     
     st.markdown("<br>", unsafe_allow_html=True)
+
+    # ── User Profile Badge ──
+    _current_user = st.session_state.get("_user", {})
+    _is_guest     = st.session_state.get("_is_guest", False)
+    _uname        = _current_user.get("username", "مستخدم")
+    _ufull        = _current_user.get("full_name", _uname)
+
+    if _is_guest:
+        st.markdown("""
+        <div style="background:rgba(212,175,55,0.08); border:1px solid rgba(212,175,55,0.25);
+                    border-radius:10px; padding:0.6rem 1rem; text-align:center; margin-bottom:0.5rem;">
+            <span style="color:#d4af37; font-weight:700; font-size:0.85rem;">👤 وضع الزائر / Invité</span><br>
+            <span style="color:#64748b; font-size:0.75rem;">المحادثات غير محفوظة</span>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        st.markdown(f"""
+        <div style="background:rgba(22,163,74,0.08); border:1px solid rgba(22,163,74,0.2);
+                    border-radius:10px; padding:0.6rem 1rem; text-align:center; margin-bottom:0.5rem;">
+            <span style="color:#a7f3d0; font-weight:700; font-size:0.85rem;">✅ {_ufull}</span><br>
+            <span style="color:#64748b; font-size:0.75rem;">@{_uname}</span>
+        </div>
+        """, unsafe_allow_html=True)
+
+    if st.button("🚪 تسجيل الخروج / Déconnexion", use_container_width=True, key="sidebar_logout"):
+        for k in ["_authenticated", "_user", "_is_guest", "messages", "local_history"]:
+            st.session_state.pop(k, None)
+        st.rerun()
+
+    st.markdown("<hr style='border-color: rgba(22, 163, 74, 0.1);'/>", unsafe_allow_html=True)
     
     if st.session_state.page != "home":
         if st.button("⬅️ العودة للرئيسية", width="stretch", type="primary"):

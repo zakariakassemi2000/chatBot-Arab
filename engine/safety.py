@@ -302,11 +302,13 @@ class SafetyGuard:
 
     @staticmethod
     def add_disclaimer(response: str) -> str:
-        """Add a medical disclaimer to any bot response."""
-        disclaimer = "\n\n---\n> ⚕️ *هذه المعلومات للتوعية فقط ولا تُغني عن استشارة طبيب مختص.*"
-        if "هذه المعلومات للتوعية" not in response:
-            return response + disclaimer
-        return response
+        """Add a compact medical disclaimer once at the end of any bot response."""
+        disclaimer = "\n\n*⚕️ هذا التحليل آلي — استشر طبيباً مختصاً.*"
+        # Avoid duplication: check for any existing disclaimer variant
+        markers = ["هذا التحليل آلي", "هذه المعلومات للتوعية", "لا يغني عن الطبيب", "استشارة طبيب مختص"]
+        if any(m in response for m in markers):
+            return response
+        return response + disclaimer
 
     @staticmethod
     def format_caution_response(answer: str) -> str:
