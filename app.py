@@ -810,6 +810,7 @@ if st.session_state.page == "home":
         ("🎙️", "المساعد الصوتي", "voice", None),
         ("🔬", "تحليل الصور", "vision", None),
         ("🩺", "فاحص الأعراض", "scanner", None),
+        ("📋", "ماسح الوصفات", "ordonnance", None),
         ("🧮", "الحاسبات الطبية", "calculators", None),
         ("📚", "البحث المعرفي", "database", None),
         ("🏥", "الرعاية القريبة", None, "pages/10_🏥_الرعاية_القريبة.py"),
@@ -1503,6 +1504,21 @@ elif st.session_state.page == "calculators":
                 st.error("⛔ **MAP منخفض جداً** — خطر نقص التروية الدموية.")
 
 
+
+# ─────────────────────────────────────────────────────────────
+# PAGE: ORDONNANCE SCANNER
+# ─────────────────────────────────────────────────────────────
+elif st.session_state.page == "ordonnance":
+    try:
+        from ui.ordonnance_ui import render_ordonnance_page
+        render_ordonnance_page()
+    except ImportError as e:
+        logger.error(f"Ordonnance module import error: {e}")
+        st.error("⚠️ Module scanner d'ordonnance non disponible.")
+        st.info("Installez les dépendances : `pip install pytesseract rapidfuzz`")
+    except Exception as e:
+        logger.error(f"Ordonnance page error: {e}")
+        st.error(f"Erreur lors du chargement du scanner : {e}")
 
 # ─────────────────────────────────────────────────────────────
 # PAGE: DATABASE
