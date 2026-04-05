@@ -487,16 +487,36 @@ class MedicalExtractor:
             # Fuzzy match
             dci, nom_commercial = None, None
             if name_index and process is not None:
-                match = process.extractOne(
-                    line.lower(), name_index,
-                    scorer=fuzz.partial_ratio,
-                    score_cutoff=65
-                )
-                if match:
-                    matched, score, _ = match
-                    dci = name_to_dci.get(matched, matched)
-                    nom_commercial = matched.title() \
-                        if matched != dci.lower() else None
+                # We only attempt fuzzy matching if the line has a reasonable length
+                if len(line) >= 4:
+                    match = process.extractOne(
+                        line.lower(), name_index,
+                        scorer=fuzz.token_set_ratio,
+                        score_cutoff=85
+                    )
+                    if match:
+                        matched, score, _ = match
+                        # Ensure we don't accidentally match a single short hallucinated word to a long medicine name
+                        line_words = [w.lower() for w in line.split() if len(w) >= 3]
+                        matched_words = [w.lower() for w in matched.split() if len(w) >= 3]
+                        
+                        # Extra validation: At least one word must have high similarity, or it's a very good token match
+                        is_valid = False
+                        if score >= 90:
+                            is_valid = True
+                        else:
+                            for lw in line_words:
+                                for mw in matched_words:
+                                    if fuzz.ratio(lw, mw) >= 80:
+                                        is_valid = True
+                                        break
+                                if is_valid:
+                                    break
+                                    
+                        if is_valid:
+                            dci = name_to_dci.get(matched, matched)
+                            nom_commercial = matched.title() \
+                                if matched != dci.lower() else None
 
             dosage = self.DOSAGE_RE.search(line)
             posologie = self.POSOLOGIE_RE.search(line)

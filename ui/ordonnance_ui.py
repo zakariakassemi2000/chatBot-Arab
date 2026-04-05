@@ -376,13 +376,20 @@ def render_ordonnance_page():
                     <p style="color: #94a3b8; font-size: 0.9rem; line-height: 1.6;">
                         Le système va :<br/>
                         ✓ Pré-traiter l'image (contraste, netteté)<br/>
-                        ✓ Extraire le texte via docTR (IA Deep Learning)<br/>
+                        ✓ Extraire le texte via docTR ou Donut<br/>
                         ✓ Identifier les médicaments et posologies<br/>
                         ✓ Matcher avec la base pharmaceutique marocaine<br/>
                         ✓ Vérifier sur medicament.ma
                     </p>
                 </div>
                 """, unsafe_allow_html=True)
+                
+                engine_choice = st.radio(
+                    "⚙️ Moteur OCR :",
+                    options=["Rapide (docTR - Texte imprimé)", "Approfondi (Donut - Manuscrit)"],
+                    index=0,
+                    help="docTR est rapide mais moins précis sur les écritures cursives. Donut est spécialisé dans les ordonnances manuscrites."
+                )
 
                 verify_online = st.checkbox(
                     "🌐 Vérifier sur medicament.ma",
@@ -399,11 +406,14 @@ def render_ordonnance_page():
                 )
 
         if analyze_btn:
-            with st.spinner("🔬 Analyse OCR en cours... docTR → Extraction → Matching"):
+            # Determine if we use Donut
+            use_donut = "Donut" in engine_choice
+            
+            with st.spinner(f"🔬 Analyse OCR en cours... {'Donut' if use_donut else 'docTR'} → Extraction → Matching"):
                 try:
-                    # Try new docTR engine first
+                    # Try new engine first
                     from engine.ocr_ordonnance import get_ocr
-                    ocr_pipeline = get_ocr(use_donut=False, verify_online=verify_online)
+                    ocr_pipeline = get_ocr(use_donut=use_donut, verify_online=verify_online)
                     result = ocr_pipeline.analyser(image)
                     _use_new_engine = True
                 except ImportError:
