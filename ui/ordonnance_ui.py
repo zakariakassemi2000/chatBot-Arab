@@ -376,12 +376,20 @@ def render_ordonnance_page():
                     <p style="color: #94a3b8; font-size: 0.9rem; line-height: 1.6;">
                         Le système va :<br/>
                         ✓ Pré-traiter l'image (contraste, netteté)<br/>
-                        ✓ Extraire le texte en français (Tesseract)<br/>
+                        ✓ Extraire le texte via docTR (IA Deep Learning)<br/>
                         ✓ Identifier les médicaments et posologies<br/>
-                        ✓ Matcher avec la base pharmaceutique marocaine
+                        ✓ Matcher avec la base pharmaceutique marocaine<br/>
+                        ✓ Vérifier sur medicament.ma
                     </p>
                 </div>
                 """, unsafe_allow_html=True)
+
+                verify_online = st.checkbox(
+                    "🌐 Vérifier sur medicament.ma",
+                    value=False,
+                    key="ord_verify_ma",
+                    help="Vérifie chaque médicament détecté sur medicament.ma (nécessite internet)"
+                )
 
                 analyze_btn = st.button(
                     "🚀 Lancer l'analyse",
@@ -391,60 +399,191 @@ def render_ordonnance_page():
                 )
 
         if analyze_btn:
-            with st.spinner("🔬 Analyse OCR en cours... Pré-traitement → Extraction → Matching"):
+            with st.spinner("🔬 Analyse OCR en cours... docTR → Extraction → Matching"):
                 try:
-                    from modules.ordonnance_scanner import analyze_ordonnance
-                    result = analyze_ordonnance(image)
-                except ImportError as ie:
-                    st.error(f"⚠️ Module manquant : {ie}")
-                    st.info("Installez les dépendances : `pip install pytesseract rapidfuzz`")
-                    return
+                    # Try new docTR engine first
+                    from engine.ocr_ordonnance import get_ocr
+                    ocr_pipeline = get_ocr(use_donut=False, verify_online=verify_online)
+                    result = ocr_pipeline.analyser(image)
+                    _use_new_engine = True
+                except ImportError:
+                    # Fallback to old PaddleOCR engine
+                    try:
+                        from modules.ordonnance_scanner import analyze_ordonnance
+                        result = analyze_ordonnance(image)
+                        _use_new_engine = False
+                    except ImportError as ie:
+                        st.error(f"⚠️ Module manquant : {ie}")
+                        st.info("Installez les dépendances : `pip install python-doctr[torch] rapidfuzz`")
+                        return
                 except Exception as e:
                     st.error(f"❌ Erreur lors de l'analyse : {e}")
+                    logger.error(f"OCR error: {e}", exc_info=True)
                     return
 
-            # ── Erreur ? ──
-            if result.erreur:
-                st.error(f"⚠️ {result.erreur}")
-                if result.texte_brut:
-                    with st.expander("📝 Texte OCR brut extrait"):
-                        st.markdown(
-                            f'<div class="ocr-text-box">{result.texte_brut}</div>',
-                            unsafe_allow_html=True
+            # ── Handle new engine result format ──
+            if _use_new_engine:
+                # Check for empty text
+                if not result.texte_brut.strip():
+                    st.error("⚠️ Aucun texte détecté. Essayez avec une image plus nette.")
+                    return
+
+                # Score global from OCR confidence
+                avg_conf = 0.0
+                if result.medicaments:
+                    confs = [m.confidence_ocr for m in result.medicaments]
+                    avg_conf = (sum(confs) / len(confs)) * 100 if confs else 0
+                score_global = avg_conf
+
+                score_class = _get_confidence_class(score_global)
+                n_meds = len(result.medicaments)
+                n_verified = sum(1 for m in result.medicaments
+                                 if m.verification_ma and m.verification_ma.get("found"))
+
+                st.markdown(f"""
+                <div class="score-global ord-animate">
+                    <div style="color: #94a3b8; font-size: 0.9rem; font-weight: 600;">
+                        SCORE DE CONFIANCE OCR · Moteur : {result.engine_utilise}
+                    </div>
+                    <div class="score-number {score_class}">
+                        {score_global:.0f}%
+                    </div>
+                    <div style="color: #64748b; font-size: 0.82rem;">
+                        {n_meds} médicament(s) détecté(s)
+                        {f'· {n_verified} vérifié(s) sur medicament.ma' if n_verified else ''}
+                        · Langue : {result.langue_detectee}
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+
+                # ── Cartes médicaments (new format) ──
+                if result.medicaments:
+                    all_cards_html = "<h3 style='color:#d4af37;margin:1.5rem 0 1rem'>💊 Médicaments détectés</h3>"
+                    for i, med in enumerate(result.medicaments):
+                        conf_pct = med.confidence_ocr * 100
+                        conf_class = _get_confidence_class(conf_pct)
+
+                        # Badge
+                        if med.verification_ma and med.verification_ma.get("found"):
+                            badge = '<span class="med-badge found">✓ medicament.ma</span>'
+                        elif med.dci:
+                            badge = '<span class="med-badge found">✓ Base marocaine</span>'
+                        else:
+                            badge = '<span class="med-badge notfound">✗ Non référencé</span>'
+
+                        display_name = med.dci or med.nom_brut
+                        principe_html = f'<p class="med-principe">🧬 {med.nom_commercial}</p>' if med.nom_commercial else ""
+
+                        # Info items
+                        info_items = []
+                        if med.dosage:
+                            info_items.append(("💊 Dosage", med.dosage))
+                        if med.posologie:
+                            info_items.append(("🔄 Posologie", med.posologie))
+                        if med.duree:
+                            info_items.append(("📅 Durée", med.duree))
+
+                        info_grid = ""
+                        if info_items:
+                            items_html = "".join(
+                                f'<div class="med-info-item">'
+                                f'<div class="med-info-label">{label}</div>'
+                                f'<div class="med-info-value">{value}</div>'
+                                f'</div>'
+                                for label, value in info_items
+                            )
+                            info_grid = f'<div class="med-info-grid">{items_html}</div>'
+
+                        # Confidence bar
+                        color = '#4ade80' if conf_class == 'high' else '#fbbf24' if conf_class == 'medium' else '#f87171'
+                        conf_bar = (
+                            f'<div class="conf-bar-bg">'
+                            f'<div class="conf-bar-fill {conf_class}" style="width:{conf_pct}%"></div>'
+                            f'</div>'
+                            f'<div class="conf-label">'
+                            f'<span>Confiance OCR</span>'
+                            f'<span style="color:{color};font-weight:700">{conf_pct:.0f}%</span>'
+                            f'</div>'
                         )
-                return
 
-            # ── Score global ──
-            score_class = _get_confidence_class(result.score_global)
-            st.markdown(f"""
-            <div class="score-global ord-animate">
-                <div style="color: #94a3b8; font-size: 0.9rem; font-weight: 600;">
-                    SCORE DE CONFIANCE GLOBAL
-                </div>
-                <div class="score-number {score_class}">
-                    {result.score_global:.0f}%
-                </div>
-                <div style="color: #64748b; font-size: 0.82rem;">
-                    {len(result.medicaments)} médicament(s) détecté(s)
-                    {'· ' + str(sum(1 for m in result.medicaments if m.est_reference)) + ' référencé(s) dans la base marocaine' if result.medicaments else ''}
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+                        # Verification link
+                        verif_html = ""
+                        if med.verification_ma and med.verification_ma.get("found"):
+                            for vm_item in med.verification_ma.get("medicaments", [])[:2]:
+                                url = vm_item.get("url", "")
+                                nom = vm_item.get("nom", "")
+                                if url and nom:
+                                    verif_html += (
+                                        f'<div style="margin-top:6px;">'
+                                        f'<a href="{url}" target="_blank" style="color:#22d3ee;font-size:0.85rem;">'
+                                        f'🔗 {nom}'
+                                        f'</a></div>'
+                                    )
 
-            # ── Cartes médicaments ──
-            if result.medicaments:
-                # Build ALL cards HTML in one block to prevent Streamlit
-                # from breaking the HTML context between separate st.markdown calls
-                all_cards_html = "<h3 style='color:#d4af37;margin:1.5rem 0 1rem'>💊 Médicaments détectés</h3>"
-                for i, med in enumerate(result.medicaments):
-                    all_cards_html += _render_medication_card(med, i)
-                st.markdown(all_cards_html, unsafe_allow_html=True)
+                        card_html = (
+                            f'<div class="med-card {conf_class}" style="animation-delay:{i * 0.1}s">'
+                            f'<div class="med-card-header">'
+                            f'<div><h3 class="med-name">💊 {display_name}</h3>{principe_html}</div>'
+                            f'{badge}'
+                            f'</div>'
+                            f'{info_grid}'
+                            f'{verif_html}'
+                            f'{conf_bar}'
+                            f'</div>'
+                        )
+                        all_cards_html += card_html
+
+                    st.markdown(all_cards_html, unsafe_allow_html=True)
+                else:
+                    st.warning(
+                        "Aucun médicament n'a pu être identifié dans cette ordonnance. "
+                        "Essayez avec une image plus nette ou un meilleur éclairage."
+                    )
+
+                # Warnings from engine
+                for w in result.avertissements:
+                    if "⚠️" in w:
+                        st.warning(w)
+                    elif "ℹ️" in w:
+                        st.info(w)
 
             else:
-                st.warning(
-                    "Aucun médicament n'a pu être identifié dans cette ordonnance. "
-                    "Essayez avec une image plus nette ou un meilleur éclairage."
-                )
+                # ── Old engine result format (fallback) ──
+                if result.erreur:
+                    st.error(f"⚠️ {result.erreur}")
+                    if result.texte_brut:
+                        with st.expander("📝 Texte OCR brut extrait"):
+                            st.markdown(
+                                f'<div class="ocr-text-box">{result.texte_brut}</div>',
+                                unsafe_allow_html=True
+                            )
+                    return
+
+                score_class = _get_confidence_class(result.score_global)
+                st.markdown(f"""
+                <div class="score-global ord-animate">
+                    <div style="color: #94a3b8; font-size: 0.9rem; font-weight: 600;">
+                        SCORE DE CONFIANCE GLOBAL
+                    </div>
+                    <div class="score-number {score_class}">
+                        {result.score_global:.0f}%
+                    </div>
+                    <div style="color: #64748b; font-size: 0.82rem;">
+                        {len(result.medicaments)} médicament(s) détecté(s)
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+
+                if result.medicaments:
+                    all_cards_html = "<h3 style='color:#d4af37;margin:1.5rem 0 1rem'>💊 Médicaments détectés</h3>"
+                    for i, med in enumerate(result.medicaments):
+                        all_cards_html += _render_medication_card(med, i)
+                    st.markdown(all_cards_html, unsafe_allow_html=True)
+                else:
+                    st.warning(
+                        "Aucun médicament n'a pu être identifié dans cette ordonnance. "
+                        "Essayez avec une image plus nette ou un meilleur éclairage."
+                    )
 
             # ── Texte OCR brut ──
             with st.expander("📝 Texte OCR brut extrait (debug)"):
