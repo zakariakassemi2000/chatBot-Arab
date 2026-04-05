@@ -1,50 +1,238 @@
-[
-  {"nom": "Doliprane", "principe": "Paracétamol", "formes": ["comprimé", "sirop", "suppositoire", "sachet"]},
-  {"nom": "Efferalgan", "principe": "Paracétamol", "formes": ["comprimé effervescent", "sirop"]},
-  {"nom": "Dafalgan", "principe": "Paracétamol", "formes": ["comprimé", "gélule"]},
-  {"nom": "Augmentin", "principe": "Amoxicilline + Acide clavulanique", "formes": ["comprimé", "poudre", "sachet"]},
-  {"nom": "Amoxicilline", "principe": "Amoxicilline", "formes": ["gélule", "suspension buvable"]},
-  {"nom": "Clamoxyl", "principe": "Amoxicilline", "formes": ["gélule", "poudre"]},
-  {"nom": "Spasfon", "principe": "Phloroglucinol", "formes": ["comprimé", "lyoc", "suppositoire"]},
-  {"nom": "Ibuprofène", "principe": "Ibuprofène", "formes": ["comprimé", "gélule", "sirop"]},
-  {"nom": "Nurofen", "principe": "Ibuprofène", "formes": ["comprimé", "gélule"]},
-  {"nom": "Ventoline", "principe": "Salbutamol", "formes": ["aérosol", "solution pour nébulisation"]},
-  {"nom": "Aspégic", "principe": "Acide acétylsalicylique", "formes": ["sachet"]},
-  {"nom": "Kardégic", "principe": "Acide acétylsalicylique", "formes": ["sachet"]},
-  {"nom": "Voltarène", "principe": "Diclofénac", "formes": ["comprimé", "gel", "suppositoire"]},
-  {"nom": "Diclofénac", "principe": "Diclofénac", "formes": ["comprimé", "gel"]},
-  {"nom": "Gaviscon", "principe": "Alginate de sodium", "formes": ["suspension buvable", "sachet"]},
-  {"nom": "Oméprazole", "principe": "Oméprazole", "formes": ["gélule"]},
-  {"nom": "Mopral", "principe": "Oméprazole", "formes": ["gélule"]},
-  {"nom": "Inexium", "principe": "Esoméprazole", "formes": ["comprimé", "sachet"]},
-  {"nom": "Smecta", "principe": "Diosmectite", "formes": ["sachet"]},
-  {"nom": "Imodium", "principe": "Lopéramide", "formes": ["gélule"]},
-  {"nom": "Flagyl", "principe": "Métronidazole", "formes": ["comprimé", "ovule"]},
-  {"nom": "Ciprofloxacine", "principe": "Ciprofloxacine", "formes": ["comprimé"]},
-  {"nom": "Azithromycine", "principe": "Azithromycine", "formes": ["comprimé", "suspension buvable"]},
-  {"nom": "Zithromax", "principe": "Azithromycine", "formes": ["comprimé", "suspension buvable"]},
-  {"nom": "Amlodipine", "principe": "Amlodipine", "formes": ["comprimé"]},
-  {"nom": "Coversyl", "principe": "Périndopril", "formes": ["comprimé"]},
-  {"nom": "Metformine", "principe": "Metformine", "formes": ["comprimé"]},
-  {"nom": "Glucophage", "principe": "Metformine", "formes": ["comprimé"]},
-  {"nom": "Lévothyrox", "principe": "Lévothyroxine", "formes": ["comprimé"]},
-  {"nom": "Fluoxétine", "principe": "Fluoxétine", "formes": ["gélule"]},
-  {"nom": "Lexomil", "principe": "Bromazépam", "formes": ["comprimé"]},
-  {"nom": "Xanax", "principe": "Alprazolam", "formes": ["comprimé"]},
-  {"nom": "Aerius", "principe": "Desloratadine", "formes": ["comprimé", "sirop"]},
-  {"nom": "Zyrtec", "principe": "Cétirizine", "formes": ["comprimé", "gouttes"]},
-  {"nom": "Toplexil", "principe": "Oxomémazine", "formes": ["sirop"]},
-  {"nom": "Rhinadvil", "principe": "Ibuprofène + Pseudoéphédrine", "formes": ["comprimé"]},
-  {"nom": "Bétadine", "principe": "Povidone iodée", "formes": ["solution", "gel", "ovule"]},
-  {"nom": "Fucidine", "principe": "Acide fusidique", "formes": ["crème", "pommade"]},
-  {"nom": "Dermalibour", "principe": "Cuivre + Zinc", "formes": ["crème"]},
-  {"nom": "Celestène", "principe": "Bétaméthasone", "formes": ["comprimé", "gouttes"]},
-  {"nom": "Solupred", "principe": "Prednisolone", "formes": ["comprimé", "solution buvable"]},
-  {"nom": "Lasilix", "principe": "Furosémide", "formes": ["comprimé"]},
-  {"nom": "Crestor", "principe": "Rosuvastatine", "formes": ["comprimé"]},
-  {"nom": "Tahor", "principe": "Atorvastatine", "formes": ["comprimé"]},
-  {"nom": "Plavix", "principe": "Clopidogrel", "formes": ["comprimé"]},
-  {"nom": "Lovenox", "principe": "Énoxaparine", "formes": ["injection"]},
-  {"nom": "Motilium", "principe": "Dompéridone", "formes": ["comprimé", "suspension buvable"]},
-  {"nom": "Duspatalin", "principe": "Mébévérine", "formes": ["comprimé", "gélule"]}
-]
+{
+  "medicaments": [
+    {
+      "dci": "Paracétamol",
+      "noms_commerciaux": ["Doliprane", "Efferalgan", "Dafalgan"],
+      "formes": ["comprimé", "sirop", "suppositoire", "sachet", "comprimé effervescent", "gélule"],
+      "dosages_courants": ["500mg", "1000mg"]
+    },
+    {
+      "dci": "Amoxicilline",
+      "noms_commerciaux": ["Amoxicilline", "Clamoxyl"],
+      "formes": ["gélule", "suspension buvable", "poudre"],
+      "dosages_courants": ["250mg", "500mg", "1g"]
+    },
+    {
+      "dci": "Amoxicilline + Acide clavulanique",
+      "noms_commerciaux": ["Augmentin"],
+      "formes": ["comprimé", "poudre", "sachet"],
+      "dosages_courants": ["500mg/62.5mg", "1g/125mg"]
+    },
+    {
+      "dci": "Phloroglucinol",
+      "noms_commerciaux": ["Spasfon"],
+      "formes": ["comprimé", "lyoc", "suppositoire"],
+      "dosages_courants": ["80mg"]
+    },
+    {
+      "dci": "Ibuprofène",
+      "noms_commerciaux": ["Ibuprofène", "Nurofen"],
+      "formes": ["comprimé", "gélule", "sirop"],
+      "dosages_courants": ["200mg", "400mg"]
+    },
+    {
+      "dci": "Salbutamol",
+      "noms_commerciaux": ["Ventoline"],
+      "formes": ["aérosol", "solution pour nébulisation"],
+      "dosages_courants": ["100µg/dose"]
+    },
+    {
+      "dci": "Acide acétylsalicylique",
+      "noms_commerciaux": ["Aspégic", "Kardégic"],
+      "formes": ["sachet"],
+      "dosages_courants": ["75mg", "100mg", "500mg"]
+    },
+    {
+      "dci": "Diclofénac",
+      "noms_commerciaux": ["Voltarène", "Diclofénac"],
+      "formes": ["comprimé", "gel", "suppositoire"],
+      "dosages_courants": ["25mg", "50mg", "75mg"]
+    },
+    {
+      "dci": "Alginate de sodium",
+      "noms_commerciaux": ["Gaviscon"],
+      "formes": ["suspension buvable", "sachet"],
+      "dosages_courants": []
+    },
+    {
+      "dci": "Oméprazole",
+      "noms_commerciaux": ["Oméprazole", "Mopral"],
+      "formes": ["gélule"],
+      "dosages_courants": ["10mg", "20mg"]
+    },
+    {
+      "dci": "Esoméprazole",
+      "noms_commerciaux": ["Inexium"],
+      "formes": ["comprimé", "sachet"],
+      "dosages_courants": ["20mg", "40mg"]
+    },
+    {
+      "dci": "Diosmectite",
+      "noms_commerciaux": ["Smecta"],
+      "formes": ["sachet"],
+      "dosages_courants": ["3g"]
+    },
+    {
+      "dci": "Lopéramide",
+      "noms_commerciaux": ["Imodium"],
+      "formes": ["gélule"],
+      "dosages_courants": ["2mg"]
+    },
+    {
+      "dci": "Métronidazole",
+      "noms_commerciaux": ["Flagyl"],
+      "formes": ["comprimé", "ovule"],
+      "dosages_courants": ["250mg", "500mg"]
+    },
+    {
+      "dci": "Ciprofloxacine",
+      "noms_commerciaux": ["Ciprofloxacine"],
+      "formes": ["comprimé"],
+      "dosages_courants": ["250mg", "500mg"]
+    },
+    {
+      "dci": "Azithromycine",
+      "noms_commerciaux": ["Azithromycine", "Zithromax"],
+      "formes": ["comprimé", "suspension buvable"],
+      "dosages_courants": ["250mg", "500mg"]
+    },
+    {
+      "dci": "Amlodipine",
+      "noms_commerciaux": ["Amlodipine"],
+      "formes": ["comprimé"],
+      "dosages_courants": ["5mg", "10mg"]
+    },
+    {
+      "dci": "Périndopril",
+      "noms_commerciaux": ["Coversyl"],
+      "formes": ["comprimé"],
+      "dosages_courants": ["4mg", "8mg"]
+    },
+    {
+      "dci": "Metformine",
+      "noms_commerciaux": ["Metformine", "Glucophage"],
+      "formes": ["comprimé"],
+      "dosages_courants": ["500mg", "850mg", "1000mg"]
+    },
+    {
+      "dci": "Lévothyroxine",
+      "noms_commerciaux": ["Lévothyrox"],
+      "formes": ["comprimé"],
+      "dosages_courants": ["25µg", "50µg", "75µg", "100µg"]
+    },
+    {
+      "dci": "Fluoxétine",
+      "noms_commerciaux": ["Fluoxétine"],
+      "formes": ["gélule"],
+      "dosages_courants": ["20mg"]
+    },
+    {
+      "dci": "Bromazépam",
+      "noms_commerciaux": ["Lexomil"],
+      "formes": ["comprimé"],
+      "dosages_courants": ["6mg"]
+    },
+    {
+      "dci": "Alprazolam",
+      "noms_commerciaux": ["Xanax"],
+      "formes": ["comprimé"],
+      "dosages_courants": ["0.25mg", "0.5mg"]
+    },
+    {
+      "dci": "Desloratadine",
+      "noms_commerciaux": ["Aerius"],
+      "formes": ["comprimé", "sirop"],
+      "dosages_courants": ["5mg"]
+    },
+    {
+      "dci": "Cétirizine",
+      "noms_commerciaux": ["Zyrtec"],
+      "formes": ["comprimé", "gouttes"],
+      "dosages_courants": ["10mg"]
+    },
+    {
+      "dci": "Oxomémazine",
+      "noms_commerciaux": ["Toplexil"],
+      "formes": ["sirop"],
+      "dosages_courants": []
+    },
+    {
+      "dci": "Ibuprofène + Pseudoéphédrine",
+      "noms_commerciaux": ["Rhinadvil"],
+      "formes": ["comprimé"],
+      "dosages_courants": []
+    },
+    {
+      "dci": "Povidone iodée",
+      "noms_commerciaux": ["Bétadine"],
+      "formes": ["solution", "gel", "ovule"],
+      "dosages_courants": []
+    },
+    {
+      "dci": "Acide fusidique",
+      "noms_commerciaux": ["Fucidine"],
+      "formes": ["crème", "pommade"],
+      "dosages_courants": ["2%"]
+    },
+    {
+      "dci": "Cuivre + Zinc",
+      "noms_commerciaux": ["Dermalibour"],
+      "formes": ["crème"],
+      "dosages_courants": []
+    },
+    {
+      "dci": "Bétaméthasone",
+      "noms_commerciaux": ["Celestène"],
+      "formes": ["comprimé", "gouttes"],
+      "dosages_courants": ["0.5mg", "2mg"]
+    },
+    {
+      "dci": "Prednisolone",
+      "noms_commerciaux": ["Solupred"],
+      "formes": ["comprimé", "solution buvable"],
+      "dosages_courants": ["5mg", "20mg"]
+    },
+    {
+      "dci": "Furosémide",
+      "noms_commerciaux": ["Lasilix"],
+      "formes": ["comprimé"],
+      "dosages_courants": ["20mg", "40mg"]
+    },
+    {
+      "dci": "Rosuvastatine",
+      "noms_commerciaux": ["Crestor"],
+      "formes": ["comprimé"],
+      "dosages_courants": ["5mg", "10mg", "20mg"]
+    },
+    {
+      "dci": "Atorvastatine",
+      "noms_commerciaux": ["Tahor"],
+      "formes": ["comprimé"],
+      "dosages_courants": ["10mg", "20mg", "40mg"]
+    },
+    {
+      "dci": "Clopidogrel",
+      "noms_commerciaux": ["Plavix"],
+      "formes": ["comprimé"],
+      "dosages_courants": ["75mg"]
+    },
+    {
+      "dci": "Énoxaparine",
+      "noms_commerciaux": ["Lovenox"],
+      "formes": ["injection"],
+      "dosages_courants": ["4000UI", "6000UI"]
+    },
+    {
+      "dci": "Dompéridone",
+      "noms_commerciaux": ["Motilium"],
+      "formes": ["comprimé", "suspension buvable"],
+      "dosages_courants": ["10mg"]
+    },
+    {
+      "dci": "Mébévérine",
+      "noms_commerciaux": ["Duspatalin"],
+      "formes": ["comprimé", "gélule"],
+      "dosages_courants": ["135mg", "200mg"]
+    }
+  ]
+}
