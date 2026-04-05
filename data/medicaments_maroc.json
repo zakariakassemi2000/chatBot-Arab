@@ -7,6 +7,26 @@
       "dosages_courants": ["500mg", "1000mg"]
     },
     {
+      "dci": "Piroxicam",
+      "noms_commerciaux": ["Cycladol", "Feldène", "Brexin"],
+      "formes": ["comprimé", "gélule", "suppositoire", "injection"],
+      "dosages_courants": ["10mg", "20mg"],
+      "ocr_aliases": ["piscom", "piroxicarn", "piroxican", "piroxica", "puscomr", "pinscom", "prscom"]
+    },
+    {
+      "dci": "Célécoxib",
+      "noms_commerciaux": ["Celebrex"],
+      "formes": ["gélule"],
+      "dosages_courants": ["100mg", "200mg"],
+      "ocr_aliases": ["celecoxb", "celecox", "celeb"]
+    },
+    {
+      "dci": "Méloxicam",
+      "noms_commerciaux": ["Mobic"],
+      "formes": ["comprimé"],
+      "dosages_courants": ["7.5mg", "15mg"]
+    },
+    {
       "dci": "Amoxicilline",
       "noms_commerciaux": ["Amoxicilline", "Clamoxyl"],
       "formes": ["gélule", "suspension buvable", "poudre"],
@@ -58,7 +78,8 @@
       "dci": "Oméprazole",
       "noms_commerciaux": ["Oméprazole", "Mopral"],
       "formes": ["gélule"],
-      "dosages_courants": ["10mg", "20mg"]
+      "dosages_courants": ["10mg", "20mg"],
+      "ocr_aliases": ["epp", "ipp"]
     },
     {
       "dci": "Esoméprazole",

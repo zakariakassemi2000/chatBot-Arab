@@ -75,7 +75,12 @@ class OCREngine:
                 VisionEncoderDecoderModel
             )
             model_id = "chinmays18/medical-prescription-ocr"
-            self.processor = DonutProcessor.from_pretrained(model_id)
+            try:
+                self.processor = DonutProcessor.from_pretrained(model_id)
+            except Exception as e:
+                logger.warning(f"Fast tokenizer issue: {e}, fallback to use_fast=False")
+                self.processor = DonutProcessor.from_pretrained(model_id, use_fast=False)
+
             self.model = VisionEncoderDecoderModel.from_pretrained(model_id)
             self.device = "cuda" if torch.cuda.is_available() else "cpu"
             self.model.to(self.device)
@@ -113,12 +118,10 @@ class OCREngine:
         # docTR accepte numpy array RGB
         arr = np.array(image.convert("RGB"))
 
-        # Préprocessing CV2
-        arr = self._preprocess_cv(arr)
-
-        # Convertir en 3 canaux si nécessaire (docTR attend RGB)
-        if len(arr.shape) == 2:
-            arr = cv2.cvtColor(arr, cv2.COLOR_GRAY2RGB)
+        # docTR est un modèle de Deep Learning (CNN) entraîné sur des images natives.
+        # La binarisation (adaptiveThreshold) détruit les ombres et textures nécessaires au modèle, 
+        # ce qui produit des lettres éparpillées et illisibles.
+        # Nous lui passons donc l'image RGB non-altérée.
 
         result = self.model([arr])
 
@@ -466,6 +469,9 @@ class MedicalExtractor:
                         all_names.append((dci.lower(), dci))
                     for cn in m.get("noms_commerciaux", []):
                         all_names.append((cn.lower(), dci or cn))
+                    for alias in m.get("ocr_aliases", []):
+                        nom_base = dci if dci else (m.get("noms_commerciaux", [""])[0] if m.get("noms_commerciaux") else alias)
+                        all_names.append((alias.lower(), nom_base))
             elif isinstance(db, list):
                 for m in db:
                     nom = m.get("nom", "")
@@ -484,20 +490,25 @@ class MedicalExtractor:
             if not line or len(line) < 3:
                 continue
 
+            # Nettoyer la ligne (enlever numéros de liste, tirets et puces)
+            line_clean = re.sub(r'^[\d\W_]+', '', line).strip()
+            if not line_clean:
+                line_clean = line
+
             # Fuzzy match
             dci, nom_commercial = None, None
             if name_index and process is not None:
                 # We only attempt fuzzy matching if the line has a reasonable length
-                if len(line) >= 4:
+                if len(line_clean) >= 4:
                     match = process.extractOne(
-                        line.lower(), name_index,
+                        line_clean.lower(), name_index,
                         scorer=fuzz.token_set_ratio,
                         score_cutoff=85
                     )
                     if match:
                         matched, score, _ = match
                         # Ensure we don't accidentally match a single short hallucinated word to a long medicine name
-                        line_words = [w.lower() for w in line.split() if len(w) >= 3]
+                        line_words = [w.lower() for w in line_clean.split() if len(w) >= 3]
                         matched_words = [w.lower() for w in matched.split() if len(w) >= 3]
                         
                         # Extra validation: At least one word must have high similarity, or it's a very good token match
@@ -518,14 +529,22 @@ class MedicalExtractor:
                             nom_commercial = matched.title() \
                                 if matched != dci.lower() else None
 
-            dosage = self.DOSAGE_RE.search(line)
-            posologie = self.POSOLOGIE_RE.search(line)
-            duree = self.DUREE_RE.search(line)
+            dosage = self.DOSAGE_RE.search(line_clean)
+            posologie = self.POSOLOGIE_RE.search(line_clean)
+            duree = self.DUREE_RE.search(line_clean)
+
+            # Extraire le vrai nom brut : isoler la partie de texte avant le dosage
+            if dosage:
+                nom_brut = line_clean[:dosage.start()].strip()
+                if not nom_brut or len(nom_brut) < 3:
+                    nom_brut = line_clean
+            else:
+                nom_brut = line_clean
 
             # Ligne utile si contient dosage OU médicament reconnu
             if dosage or dci:
                 meds.append(MedicamentExtrait(
-                    nom_brut=line,
+                    nom_brut=nom_brut,
                     dci=dci,
                     nom_commercial=nom_commercial,
                     dosage=dosage.group(0) if dosage else None,
