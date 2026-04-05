@@ -367,7 +367,7 @@ def render_ordonnance_page():
             col_img, col_action = st.columns([1.2, 1])
 
             with col_img:
-                st.image(image, caption="Ordonnance chargée", use_container_width=True)
+                st.image(image, caption="Ordonnance chargée", width='stretch')
 
             with col_action:
                 st.markdown("""
@@ -393,7 +393,7 @@ def render_ordonnance_page():
 
                 verify_online = st.checkbox(
                     "🌐 Vérifier sur medicament.ma",
-                    value=False,
+                    value=True,
                     key="ord_verify_ma",
                     help="Vérifie chaque médicament détecté sur medicament.ma (nécessite internet)"
                 )
@@ -401,7 +401,7 @@ def render_ordonnance_page():
                 analyze_btn = st.button(
                     "🚀 Lancer l'analyse",
                     type="primary",
-                    use_container_width=True,
+                    width='stretch',
                     key="ord_analyze"
                 )
 
@@ -438,12 +438,8 @@ def render_ordonnance_page():
                     st.error("⚠️ Aucun texte détecté. Essayez avec une image plus nette.")
                     return
 
-                # Score global from OCR confidence
-                avg_conf = 0.0
-                if result.medicaments:
-                    confs = [m.confidence_ocr for m in result.medicaments]
-                    avg_conf = (sum(confs) / len(confs)) * 100 if confs else 0
-                score_global = avg_conf
+                # Score global is already computed by the pipeline
+                score_global = result.score_global * 100
 
                 score_class = _get_confidence_class(score_global)
                 n_meds = len(result.medicaments)
@@ -504,6 +500,17 @@ def render_ordonnance_page():
                             )
                             info_grid = f'<div class="med-info-grid">{items_html}</div>'
 
+                        # Formes et Dosages (from DB)
+                        db_info_html = ""
+                        if med.formes_disponibles or med.dosages_habituels:
+                            db_info_html += '<div style="margin: 0.8rem 0; font-size: 0.85rem;">'
+                            if med.formes_disponibles:
+                                pills = "".join(f'<span class="forme-pill">{f}</span>' for f in med.formes_disponibles)
+                                db_info_html += f'<div style="margin-bottom:4px;"><b>📦 Formes :</b> {pills}</div>'
+                            if med.dosages_habituels:
+                                db_info_html += f'<div style="color:#d4af37;"><b>💊 Dosages habituels :</b> {", ".join(med.dosages_habituels)}</div>'
+                            db_info_html += '</div>'
+
                         # Confidence bar
                         color = '#4ade80' if conf_class == 'high' else '#fbbf24' if conf_class == 'medium' else '#f87171'
                         conf_bar = (
@@ -537,6 +544,7 @@ def render_ordonnance_page():
                             f'{badge}'
                             f'</div>'
                             f'{info_grid}'
+                            f'{db_info_html}'
                             f'{verif_html}'
                             f'{conf_bar}'
                             f'</div>'
