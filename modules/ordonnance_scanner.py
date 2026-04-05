@@ -57,7 +57,12 @@ _MEDICAMENTS_CACHE: Optional[List[Dict]] = None
 
 
 def load_medicaments_db() -> List[Dict]:
-    """Charge la base de médicaments marocains depuis le fichier JSON."""
+    """Charge la base de médicaments marocains depuis le fichier JSON.
+    Supporte les deux formats :
+      - Ancien : [{"nom": ..., "principe": ..., "formes": [...]}]
+      - Nouveau : {"medicaments": [{"dci": ..., "noms_commerciaux": [...], "formes": [...]}]}
+    Normalise toujours vers le format plat [{"nom", "principe", "formes"}].
+    """
     global _MEDICAMENTS_CACHE
     if _MEDICAMENTS_CACHE is not None:
         return _MEDICAMENTS_CACHE
@@ -65,9 +70,39 @@ def load_medicaments_db() -> List[Dict]:
     try:
         if _DB_PATH.exists():
             with open(_DB_PATH, "r", encoding="utf-8") as f:
-                _MEDICAMENTS_CACHE = json.load(f)
-                logger.info(f"[Ordonnance] Base chargée: {len(_MEDICAMENTS_CACHE)} médicaments")
-                return _MEDICAMENTS_CACHE
+                raw = json.load(f)
+
+            # Nouveau format : {"medicaments": [...]}
+            if isinstance(raw, dict) and "medicaments" in raw:
+                flat = []
+                for entry in raw["medicaments"]:
+                    dci = entry.get("dci", "")
+                    formes = entry.get("formes", [])
+                    # Créer une entrée pour chaque nom commercial
+                    for nom_com in entry.get("noms_commerciaux", []):
+                        flat.append({
+                            "nom": nom_com,
+                            "principe": dci,
+                            "formes": formes,
+                        })
+                    # Aussi ajouter le DCI lui-même s'il n'est pas déjà nom commercial
+                    noms_lower = [n.lower() for n in entry.get("noms_commerciaux", [])]
+                    if dci and dci.lower() not in noms_lower:
+                        flat.append({
+                            "nom": dci,
+                            "principe": dci,
+                            "formes": formes,
+                        })
+                _MEDICAMENTS_CACHE = flat
+            # Ancien format : liste plate
+            elif isinstance(raw, list):
+                _MEDICAMENTS_CACHE = raw
+            else:
+                logger.warning("[Ordonnance] Format JSON non reconnu")
+                _MEDICAMENTS_CACHE = []
+
+            logger.info(f"[Ordonnance] Base chargée: {len(_MEDICAMENTS_CACHE)} médicaments")
+            return _MEDICAMENTS_CACHE
         else:
             logger.warning(f"[Ordonnance] Fichier base introuvable: {_DB_PATH}")
             return []

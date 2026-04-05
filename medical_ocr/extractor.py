@@ -15,16 +15,25 @@ class Extractor:
         if os.path.exists(self.db_path):
             with open(self.db_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
-                # Ensure local DB has a list under 'medicaments' or is a flat list
-                if isinstance(data, list):
+                # New format: {"medicaments": [{dci, noms_commerciaux, ...}]}
+                if isinstance(data, dict) and "medicaments" in data:
+                    for entry in data["medicaments"]:
+                        dci = entry.get("dci", "")
+                        if dci:
+                            self.medications.append(dci)
+                        for cn in entry.get("noms_commerciaux", []):
+                            self.medications.append(cn)
+                # Old format: flat list [{nom, principe, ...}]
+                elif isinstance(data, list):
                     for item in data:
-                        # Extract drug names explicitly (commercial or generic)
                         if "nom_commercial" in item:
                             self.medications.append(item["nom_commercial"])
+                        elif "nom" in item:
+                            self.medications.append(item["nom"])
                         if "dci" in item:
                             self.medications.append(item["dci"])
-                elif isinstance(data, dict) and "medicaments" in data:
-                    self.medications = [m.get("nom_commercial", "") for m in data["medicaments"]]
+                        elif "principe" in item:
+                            self.medications.append(item["principe"])
         else:
             logging.warning(f"Database {self.db_path} not found. Fuzzy matching will be limited.")
 
