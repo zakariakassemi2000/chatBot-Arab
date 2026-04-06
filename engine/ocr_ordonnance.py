@@ -40,14 +40,30 @@ class OCREngine:
         self.model = None
         self.engine_name = "uninitialised"
         self.processor = None
+        self.model_trocr = None
+        self.processor_trocr = None
         self.device = "cpu"
         self._load_model()
 
     def _load_model(self):
+        self._load_trocr()
         if self.use_donut:
             self._load_donut()
         else:
             self._load_doctr()
+
+    def _load_trocr(self):
+        """TrOCR — spécialisé dans l'écriture manuscrite."""
+        try:
+            from transformers import TrOCRProcessor, VisionEncoderDecoderModel
+            self.processor_trocr = TrOCRProcessor.from_pretrained("microsoft/trocr-base-handwritten")
+            self.model_trocr = VisionEncoderDecoderModel.from_pretrained("microsoft/trocr-base-handwritten")
+            device = "cuda" if torch.cuda.is_available() else "cpu"
+            self.model_trocr.to(device)
+            logger.info(f"[OCR] TrOCR chargé — spécialisé manuscrit (device: {device})")
+        except Exception as e:
+            logger.error(f"[OCR] Erreur chargement TrOCR: {e}")
+            self.model_trocr = None
 
     def _load_doctr(self):
         """docTR — DBNet + CRNN, pré-entraîné FR/EN."""
@@ -148,12 +164,32 @@ class OCREngine:
 
         return False
 
-    # ── Text Extraction Main Entry Point ─────────────────────
+    def _preprocess_for_ocr(self, image: Image.Image) -> Image.Image:
+        """Prétraitement de l'image (OpenCV) avant OCR."""
+        arr = np.array(image.convert("L"))
+        arr = cv2.GaussianBlur(arr, (5, 5), 0)
+        arr = cv2.adaptiveThreshold(
+            arr, 255,
+            cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+            cv2.THRESH_BINARY,
+            11, 2
+        )
+        return Image.fromarray(arr).convert("RGB")
+
+    @staticmethod
+    def _is_handwritten_heuristic(text: str) -> bool:
+        """Détecte si le texte est manuscrit via heuristique simple."""
+        if not text.strip(): 
+            return True
+        return len(text.split()) < 5 or not any(c.isdigit() for c in text)
 
     def extract_text(self, image: Image.Image) -> tuple:
         """Retourne (texte_extrait, confiance_0_1)."""
+        # Preprocessing image (OBLIGATOIRE pour manuscrit)
+        processed_image = self._preprocess_for_ocr(image)
+
         if self.use_donut and self.engine_name.startswith("Donut"):
-            text, conf = self._extract_donut(image)
+            text, conf = self._extract_donut(processed_image)
 
             # Hallucination guard — Donut hallucinates on non-English docs
             if self._is_hallucinated(text):
@@ -161,13 +197,39 @@ class OCREngine:
                     "[OCR] Donut output détecté comme hallucination — "
                     "fallback automatique vers docTR"
                 )
-                text, conf = self._fallback_doctr(image)
+                text, conf = self._fallback_doctr(processed_image)
+            
+            # Application de l'heuristique
+            if self._is_handwritten_heuristic(text) and self.model_trocr:
+                logger.info("[OCR] Texte détecté comme manuscrit -> passage à TrOCR")
+                return self._extract_trocr(processed_image)
+
             return text, conf
 
         elif self.engine_name.startswith("docTR"):
-            return self._extract_doctr(image)
+            text, conf = self._extract_doctr(processed_image)
+            if self._is_handwritten_heuristic(text) and self.model_trocr:
+                logger.info("[OCR] Texte docTR détecté comme manuscrit -> passage à TrOCR")
+                return self._extract_trocr(processed_image)
+            return text, conf
         else:
-            return self._extract_tesseract(image)
+            return self._extract_tesseract(processed_image)
+
+    def _extract_trocr(self, image: Image.Image) -> tuple:
+        """Extraction via TrOCR (pour manuscrit)."""
+        try:
+            pixel_values = self.processor_trocr(images=image, return_tensors="pt").pixel_values
+            device = "cuda" if torch.cuda.is_available() else "cpu"
+            pixel_values = pixel_values.to(device)
+            
+            generated_ids = self.model_trocr.generate(pixel_values, max_length=128)
+            text = self.processor_trocr.batch_decode(generated_ids, skip_special_tokens=True)[0]
+            
+            self.engine_name = "TrOCR (Handwritten)"
+            return text.strip(), 0.85
+        except Exception as e:
+            logger.error(f"[OCR] Erreur TrOCR: {e}")
+            return "", 0.0
 
     def _fallback_doctr(self, image: Image.Image) -> tuple:
         """Charge docTR à la volée et extrait le texte."""
@@ -655,41 +717,29 @@ class MedicalExtractor:
         if not word or len(word) < 3 or not name_index:
             return None, None, [], [], 0
 
-        # Essai 1: token_set_ratio (tolérant aux mots supplémentaires)
+        # Medical Auto-Correction Layer (GAME CHANGER)
+        # Corriger AVANT fuzzy matching
+        MED_CORRECTIONS = {
+            "paracetarnal": "paracetamol",
+            "paracetamolr": "paracetamol",
+            "amoxcilline": "amoxicilline",
+            "dolipran": "doliprane",
+            "augmentinr": "augmentin",
+        }
+        word = MED_CORRECTIONS.get(word.lower(), word)
+
+        # Super Fuzzy Matching (upgrade)
         match = process.extractOne(
             word.lower(), name_index,
-            scorer=fuzz.token_set_ratio,
-            score_cutoff=70  # Abaissé de 85 pour capturer plus de variantes OCR
+            scorer=fuzz.WRatio
         )
-        if not match:
-            # Essai 2: ratio simple (bon pour les mots isolés courts)
-            match = process.extractOne(
-                word.lower(), name_index,
-                scorer=fuzz.ratio,
-                score_cutoff=65
-            )
+        
         if not match:
             return None, None, [], [], 0
 
         matched, score, _ = match
-
-        # Validation anti faux-positifs: au moins un mot doit être similaire
-        line_words = [w.lower() for w in word.split() if len(w) >= 3]
-        matched_words = [w.lower() for w in matched.split() if len(w) >= 3]
-
-        is_valid = False
-        if score >= 85:
-            is_valid = True
-        elif score >= 70:
-            for lw in line_words:
-                for mw in matched_words:
-                    if fuzz.ratio(lw, mw) >= 65:
-                        is_valid = True
-                        break
-                if is_valid:
-                    break
-
-        if not is_valid:
+        
+        if score <= 75:
             return None, None, [], [], 0
 
         dci = name_to_dci.get(matched, matched)
