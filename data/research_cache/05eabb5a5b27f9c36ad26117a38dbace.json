@@ -1,0 +1,191 @@
+{
+  "query": "CANCER",
+  "topic": {
+    "topic": "سرطان",
+    "category": "صحة",
+    "search_query_ar": "سرطان، أمراض السرطان، علاج السرطان",
+    "search_query_en": "Cancer, Cancer Diseases, Cancer Treatment"
+  },
+  "books": [
+    {
+      "type": "book",
+      "id": "nXwgEAAAQBAJ",
+      "title": "مرض السرطان",
+      "subtitle": "الأسباب، التشخيص، الوقاية، والعلاج",
+      "authors": [
+        "مصعب قاسم عزاوي"
+      ],
+      "description": "كتاب مرجعي مكثف يمثل ملخصاً مكثفاً لمبادئ وأسس الوقاية من مرض السرطان، وسبل تفادي مسبباته، ووسائل التشخيص المبكر له، وعلاجه، من إعداد وتقديم استشاري علم الأمراض والكشف المبكر عن السرطان في المملكة المتحدة الدكتور مصعب قاسم عزاوي باللغة الإنجليزية، والذي تفضل بتقديمه كهدية مجانية لفريق دار الأكاديمية للطباعة والنشر و التوزيع للقيام بترجمته إلى اللغة العربية، وتقديمه لكل قارئ عربي مهتم بترقية صحته و السير على نهج أن الوقاية دوماً هي خير من قنطار علاج.",
+      "publisher": "Academy House",
+      "published_date": "",
+      "page_count": 139,
+      "categories": [
+        "Social Science"
+      ],
+      "language": "ar",
+      "thumbnail": "http://books.google.com/books/content?id=nXwgEAAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api",
+      "preview_link": "http://books.google.com/books?id=nXwgEAAAQBAJ&printsec=frontcover&dq=%D8%B3%D8%B1%D8%B7%D8%A7%D9%86%D8%8C+%D8%A3%D9%85%D8%B1%D8%A7%D8%B6+%D8%A7%D9%84%D8%B3%D8%B1%D8%B7%D8%A7%D9%86%D8%8C+%D8%B9%D9%84%D8%A7%D8%AC+%D8%A7%D9%84%D8%B3%D8%B1%D8%B7%D8%A7%D9%86&hl=&as_pt=BOOKS&cd=3&source=gbs_api",
+      "info_link": "http://books.google.com/books?id=nXwgEAAAQBAJ&dq=%D8%B3%D8%B1%D8%B7%D8%A7%D9%86%D8%8C+%D8%A3%D9%85%D8%B1%D8%A7%D8%B6+%D8%A7%D9%84%D8%B3%D8%B1%D8%B7%D8%A7%D9%86%D8%8C+%D8%B9%D9%84%D8%A7%D8%AC+%D8%A7%D9%84%D8%B3%D8%B1%D8%B7%D8%A7%D9%86&hl=&as_pt=BOOKS&source=gbs_api",
+      "average_rating": 0,
+      "ratings_count": 0,
+      "semantic_score": 0.5047,
+      "popularity_score": 0.0,
+      "recency_score": 0.5,
+      "relevance_score": 0.3778
+    },
+    {
+      "type": "book",
+      "id": "q0gKBNok0xkC",
+      "title": "المجلة العربية",
+      "subtitle": "",
+      "authors": [
+        "مؤلف غير معروف"
+      ],
+      "description": "... <b>بالسرطان</b> - وواجهت الدراسات العلمية حول وأظهرت دراسات علمية حديثة على ظهور ... <b>أمراض السرطان</b> بالولايات المتحدة علاقة أضعف أو اختلاف قوة هذا بينما عارضت ... <b>علاج السرطان</b> تضاد حدوث <b>سرطان</b> البروستات ظهر حديثاً اهتمام متزايد بتشجيع&nbsp;...",
+      "publisher": "",
+      "published_date": "2005",
+      "page_count": 670,
+      "categories": [
+        "Arab countries"
+      ],
+      "language": "ar",
+      "thumbnail": "http://books.google.com/books/content?id=q0gKBNok0xkC&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "preview_link": "http://books.google.com/books?id=q0gKBNok0xkC&q=%D8%B3%D8%B1%D8%B7%D8%A7%D9%86%D8%8C+%D8%A3%D9%85%D8%B1%D8%A7%D8%B6+%D8%A7%D9%84%D8%B3%D8%B1%D8%B7%D8%A7%D9%86%D8%8C+%D8%B9%D9%84%D8%A7%D8%AC+%D8%A7%D9%84%D8%B3%D8%B1%D8%B7%D8%A7%D9%86&dq=%D8%B3%D8%B1%D8%B7%D8%A7%D9%86%D8%8C+%D8%A3%D9%85%D8%B1%D8%A7%D8%B6+%D8%A7%D9%84%D8%B3%D8%B1%D8%B7%D8%A7%D9%86%D8%8C+%D8%B9%D9%84%D8%A7%D8%AC+%D8%A7%D9%84%D8%B3%D8%B1%D8%B7%D8%A7%D9%86&hl=&as_pt=BOOKS&cd=4&source=gbs_api",
+      "info_link": "http://books.google.com/books?id=q0gKBNok0xkC&dq=%D8%B3%D8%B1%D8%B7%D8%A7%D9%86%D8%8C+%D8%A3%D9%85%D8%B1%D8%A7%D8%B6+%D8%A7%D9%84%D8%B3%D8%B1%D8%B7%D8%A7%D9%86%D8%8C+%D8%B9%D9%84%D8%A7%D8%AC+%D8%A7%D9%84%D8%B3%D8%B1%D8%B7%D8%A7%D9%86&hl=&as_pt=BOOKS&source=gbs_api",
+      "average_rating": 0,
+      "ratings_count": 0,
+      "semantic_score": 0.5791,
+      "popularity_score": 0.0,
+      "recency_score": 0.2,
+      "relevance_score": 0.3774
+    },
+    {
+      "type": "book",
+      "id": "LsJqEAAAQBAJ",
+      "title": "التبغ وحصائل علاج السرطان",
+      "subtitle": "ملخصات المعرفة حول التبغ لمنظمة الصحة العالمية",
+      "authors": [
+        "مؤلف غير معروف"
+      ],
+      "description": "هذه الوثيقة هي الإصدار الثالث من سلسلة الخلاصات المعرفية بشأن التبغ. وتُظهر الأدلة الملخصة في هذه الخلاصة المعرفية بشأن التبغ أن استعمال التبغ من قبل مرضى السرطان يفاقم خطر الحصائل السلبية لعلاج السرطان. وتهدف الوثيقة كذلك للاستفادة منها كأداة دعوية للوقاية من مضاعفات علاج السرطان المرتبطة بالتبغ ولإشراك أخصائيي الرعاية الصحية في جهود مكافحة وباء التبغ. وقد أعدّت منظمة الصحة العالمية هذه الخلاصة المعرفية بالتعاون مع الوكالة الدولية لبحوث السرطان وجامعة نيوكاسل في أستراليا.",
+      "publisher": "World Health Organization",
+      "published_date": "2021-03-03",
+      "page_count": 8,
+      "categories": [
+        "Law"
+      ],
+      "language": "ar",
+      "thumbnail": "http://books.google.com/books/content?id=LsJqEAAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api",
+      "preview_link": "http://books.google.com/books?id=LsJqEAAAQBAJ&pg=PP2&dq=%D8%B3%D8%B1%D8%B7%D8%A7%D9%86%D8%8C+%D8%A3%D9%85%D8%B1%D8%A7%D8%B6+%D8%A7%D9%84%D8%B3%D8%B1%D8%B7%D8%A7%D9%86%D8%8C+%D8%B9%D9%84%D8%A7%D8%AC+%D8%A7%D9%84%D8%B3%D8%B1%D8%B7%D8%A7%D9%86&hl=&as_pt=BOOKS&cd=1&source=gbs_api",
+      "info_link": "http://books.google.com/books?id=LsJqEAAAQBAJ&dq=%D8%B3%D8%B1%D8%B7%D8%A7%D9%86%D8%8C+%D8%A3%D9%85%D8%B1%D8%A7%D8%B6+%D8%A7%D9%84%D8%B3%D8%B1%D8%B7%D8%A7%D9%86%D8%8C+%D8%B9%D9%84%D8%A7%D8%AC+%D8%A7%D9%84%D8%B3%D8%B1%D8%B7%D8%A7%D9%86&hl=&as_pt=BOOKS&source=gbs_api",
+      "average_rating": 0,
+      "ratings_count": 0,
+      "semantic_score": 0.5236,
+      "popularity_score": 0.0,
+      "recency_score": 0.4,
+      "relevance_score": 0.3742
+    },
+    {
+      "type": "book",
+      "id": "OJnApPbnumIC",
+      "title": "المقتطف",
+      "subtitle": "",
+      "authors": [
+        "مؤلف غير معروف"
+      ],
+      "description": "<b>السرطان</b> واحدث المكتشفات العلمية فيه كما اكتشف اكتشاف جديد في العلوم الطبيعية ظن الناس انه يمكن استخدامه في <b>علاج</b> بعض <b>الامراض</b> جرياً على قولهم ان المريض يتعلق بحبال الهواء فلما كشفت اشعة رنتيجن ظنوا انها تفيد في <b>علاج</b> السل <b>والسرطان</b> ونحوهما من&nbsp;...",
+      "publisher": "",
+      "published_date": "1904",
+      "page_count": 1258,
+      "categories": [
+        "Science"
+      ],
+      "language": "ar",
+      "thumbnail": "http://books.google.com/books/content?id=OJnApPbnumIC&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api",
+      "preview_link": "http://books.google.com/books?id=OJnApPbnumIC&pg=PA286&dq=%D8%B3%D8%B1%D8%B7%D8%A7%D9%86%D8%8C+%D8%A3%D9%85%D8%B1%D8%A7%D8%B6+%D8%A7%D9%84%D8%B3%D8%B1%D8%B7%D8%A7%D9%86%D8%8C+%D8%B9%D9%84%D8%A7%D8%AC+%D8%A7%D9%84%D8%B3%D8%B1%D8%B7%D8%A7%D9%86&hl=&as_pt=BOOKS&cd=5&source=gbs_api",
+      "info_link": "https://play.google.com/store/books/details?id=OJnApPbnumIC&source=gbs_api",
+      "average_rating": 0,
+      "ratings_count": 0,
+      "semantic_score": 0.5329,
+      "popularity_score": 0.0,
+      "recency_score": 0.2,
+      "relevance_score": 0.3497
+    },
+    {
+      "type": "book",
+      "id": "6cpMDwAAQBAJ",
+      "title": "الوقاية من أمراض السرطان والتخلص من سموم الجسم",
+      "subtitle": "",
+      "authors": [
+        "خبير الاعشاب يوسف احمد الشرفاء"
+      ],
+      "description": "في هذا الكتاب سوف نضع بين ايدي القارئ طرق العالج بالاعشاب والغذاء، وكيفية الوقاية من امراض السرطان .",
+      "publisher": "Dar Al Ausra Media and Dar Alam Al-Thaqafa for Publishing",
+      "published_date": "2010-01-01",
+      "page_count": 295,
+      "categories": [],
+      "language": "ar",
+      "thumbnail": "http://books.google.com/books/content?id=6cpMDwAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api",
+      "preview_link": "http://books.google.com/books?id=6cpMDwAAQBAJ&pg=PA279&dq=%D8%B3%D8%B1%D8%B7%D8%A7%D9%86%D8%8C+%D8%A3%D9%85%D8%B1%D8%A7%D8%B6+%D8%A7%D9%84%D8%B3%D8%B1%D8%B7%D8%A7%D9%86%D8%8C+%D8%B9%D9%84%D8%A7%D8%AC+%D8%A7%D9%84%D8%B3%D8%B1%D8%B7%D8%A7%D9%86&hl=&as_pt=BOOKS&cd=2&source=gbs_api",
+      "info_link": "http://books.google.com/books?id=6cpMDwAAQBAJ&dq=%D8%B3%D8%B1%D8%B7%D8%A7%D9%86%D8%8C+%D8%A3%D9%85%D8%B1%D8%A7%D8%B6+%D8%A7%D9%84%D8%B3%D8%B1%D8%B7%D8%A7%D9%86%D8%8C+%D8%B9%D9%84%D8%A7%D8%AC+%D8%A7%D9%84%D8%B3%D8%B1%D8%B7%D8%A7%D9%86&hl=&as_pt=BOOKS&source=gbs_api",
+      "average_rating": 0,
+      "ratings_count": 0,
+      "semantic_score": 0.4643,
+      "popularity_score": 0.0,
+      "recency_score": 0.2,
+      "relevance_score": 0.3086
+    }
+  ],
+  "articles": [
+    {
+      "type": "article",
+      "id": "3439568",
+      "title": "سرطان الثدي",
+      "summary": "سرطان الثدي هو نوع من أنواع السرطان يظهر في أنسجة الثدي. من علاماته تغير في شكل الثدي، وظهور كتلة في الثدي، تقشير الجلد، سائل قادم من الحلمة، حلمة مقلوبة حديثًا، أو بقع حمراء أو متقشرة. في حالة انتشار المرض في الجسم تظهر العلامات التالية:آلام العظم، انتفاخ في الغدد الليمفاوية، ضيق في التنفس أو اصفرار في الجلد.",
+      "url": "https://ar.wikipedia.org/wiki/%D8%B3%D8%B1%D8%B7%D8%A7%D9%86_%D8%A7%D9%84%D8%AB%D8%AF%D9%8A",
+      "thumbnail": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Mammo_breast_cancer.jpg/330px-Mammo_breast_cancer.jpg",
+      "source": "Wikipedia (AR)",
+      "lang": "ar",
+      "references": 333,
+      "description": "سرطان ينشأ من الغدد الثديية",
+      "semantic_score": 0.6791,
+      "popularity_score": 1.0,
+      "recency_score": 0.5,
+      "relevance_score": 0.7325
+    },
+    {
+      "type": "article",
+      "id": "131998",
+      "title": "سرطان",
+      "summary": "السَّرطان هو مجموعة من الأمراض التي تتميز خلاياها بالتوغل والانتشار ، هذه الخلايا المنقسمة لها القدرة على غزو الأنسجة المجاورة وتدميرها، أو الانتقال إلى أنسجة بعيدة في عملية يُطلق عليها الانبثاث. وهذه القدرات هي صفات الورم الخبيث على عكس الورم الحميد، الذي يتميز بنمو محدد وعدم القدرة على الغزو أو القدرة على الانتقال. مع ذلك يمكن أن يتطور الورم الحميد إلى سرطان خبيث في بعض الأحيان. حوالي 5-10% من السرطانات تحدث بسبب عيوب جينية وراثية من والدي الشخص ويمكن الكشف عن السرطان بعلامات وأعراض معينة أو اختبارات فحص. وبعد ذلك تُجْرَى المزيد من الاختبارات عن طريق التصوير الطبي والتأكيد بأخذ خزعة.",
+      "url": "https://ar.wikipedia.org/wiki/%D8%B3%D8%B1%D8%B7%D8%A7%D9%86",
+      "thumbnail": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Tumor_Mesothelioma2_legend.jpg/330px-Tumor_Mesothelioma2_legend.jpg",
+      "source": "Wikipedia (AR)",
+      "lang": "ar",
+      "references": 267,
+      "description": "مرض ينتج عن الانقسام المستمر غير الطبيعى للخلايا الحية",
+      "semantic_score": 0.6722,
+      "popularity_score": 1.0,
+      "recency_score": 0.5,
+      "relevance_score": 0.7283
+    },
+    {
+      "type": "article",
+      "id": "935773",
+      "title": "علاجات مرض السرطان",
+      "summary": "يمكن علاج السرطان عن طريق الجراحة، والعلاج الكيميائي، العلاج الإشعاعي، العلاج المناعي، أو العلاج باستخدام الأجسام المضادة وحيدة النسيلة أو وسائل أخرى. اختيار العلاج يعتمد على مكان ودرجة الورم ومرحلة المرض، فضلا عن الحالة العامة للمريض. وهناك أيضا عدد من الطرق التجريبية لعلاج السرطان قيد التطوير.",
+      "url": "https://ar.wikipedia.org/wiki/%D8%B9%D9%84%D8%A7%D8%AC%D8%A7%D8%AA_%D9%85%D8%B1%D8%B6_%D8%A7%D9%84%D8%B3%D8%B1%D8%B7%D8%A7%D9%86",
+      "thumbnail": "",
+      "source": "Wikipedia (AR)",
+      "lang": "ar",
+      "references": 62,
+      "description": "",
+      "semantic_score": 0.6204,
+      "popularity_score": 1.0,
+      "recency_score": 0.5,
+      "relevance_score": 0.6972
+    }
+  ],
+  "videos": [],
+  "timestamp": "2026-04-12T17:56:05.954377"
+}

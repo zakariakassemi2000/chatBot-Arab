@@ -127,32 +127,41 @@ def save_history(messages):
 def inject_custom_css():
     st.markdown("""
     <style>
-        /* Base Moroccan Typography */
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap');
+        /* Base SaaS Typography */
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
 
-        /* Theme Variables - Zellige & Deep Nights */
+        /* Theme Variables - Dark Medical SaaS */
         :root {
-            --z-green: #16a34a;
-            --z-green-hover: #15803d;
-            --z-green-light: rgba(22, 163, 74, 0.15);
-            --z-red: #dc2626;
-            --z-gold: #d4af37;
-            --z-beige: #fef3c7;
-            --z-bg: #0f172a;
-            --z-card: #1e293b;
-            --z-text: #f8fafc;
-            --z-muted: #94a3b8;
+            --z-green: #0d9488;          /* Primary Teal 600 */
+            --z-green-hover: #0f766e;    /* Hover Teal 700 */
+            --z-green-light: rgba(13, 148, 136, 0.15);
+            --z-red: #ef4444;            /* Soft Red */
+            --z-gold: #3b82f6;           /* Blue 500 (swapped gold for Medical Blue) */
+            --z-beige: #e2e8f0;          /* Slate 200 */
+            --z-bg: #0f172a;             /* Slate 900 background */
+            --z-card: rgba(30, 41, 59, 0.55); /* Slate 800 semi-transparent */
+            --z-text: #f8fafc;           /* Slate 50 */
+            --z-muted: #94a3b8;          /* Slate 400 */
+            
+            /* Spacing Scale */
+            --space-1: 8px;
+            --space-2: 16px;
+            --space-3: 24px;
+            --space-4: 32px;
+            --space-5: 40px;
         }
 
-        /* RTL & Font Initialization (excluding icon fonts) */
+        /* RTL & Font Initialization */
         html, body {
             direction: rtl;
             text-align: right;
+            background-color: var(--z-bg);
+            color: var(--z-text);
         }
         
-        p, h1, h2, h3, h4, h5, h6, li, a {
-            font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
-            letter-spacing: 0.2px;
+        p, h1, h2, h3, h4, h5, h6, li, a, span, div {
+            font-family: 'Cairo', 'Inter', sans-serif;
+            letter-spacing: 0.15px;
         }
         
         /* Protect Streamlit internal Material Icons */
@@ -166,19 +175,12 @@ def inject_custom_css():
         /* Hide Default Sidebar Nav for controlled routing */
         [data-testid="stSidebarNav"] { display: none !important; }
 
-        /* The subtle Zellige App Background (Infinite Resolution CSS) */
+        /* The App Background (Mesh Gradient SaaS look) */
         .stApp {
-            background-color: #0A1628;  /* Deep navy */
+            background-color: var(--z-bg);
             background-image: 
-                /* Soft Teal glow */
-                radial-gradient(circle at 15% 50%, rgba(26, 139, 128, 0.08), transparent 40%),
-                /* Deep Red glow */
-                radial-gradient(circle at 85% 30%, rgba(160, 32, 47, 0.06), transparent 40%),
-                /* Cobalt Blue glow */
-                radial-gradient(circle at 50% 90%, rgba(26, 58, 128, 0.08), transparent 50%),
-                /* Ambient Gradient */
-                linear-gradient(135deg, rgba(10, 22, 40, 0) 0%, rgba(13, 30, 54, 0.9) 100%);
-            background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%;
+                radial-gradient(circle at 10% 20%, rgba(13, 148, 136, 0.08), transparent 45%),
+                radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.08), transparent 45%);
             background-attachment: fixed;
             color: var(--z-text);
         }
@@ -186,94 +188,104 @@ def inject_custom_css():
 
         /* Sidebar Glassmorphism */
         [data-testid="stSidebar"] {
-            background: rgba(15, 23, 42, 0.85) !important;
-            border-left: 1px solid var(--z-green-light) !important;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: rgba(15, 23, 42, 0.75) !important;
+            border-left: 1px solid rgba(255, 255, 255, 0.05) !important;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
         }
 
-        /* Native Streamlit Container -> Zellige Card Styling */
+        /* Native Streamlit Container -> Glassmorphism Card Styling */
         [data-testid="stVerticalBlockBorderWrapper"] {
-            border: 1px solid var(--z-green-light) !important;
-            background-color: rgba(30, 41, 59, 0.4);
-            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            background-color: var(--z-card);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border-radius: 16px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s, box-shadow 0.2s;
+            padding: var(--space-3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s;
         }
 
         /* 
-           Native Streamlit Buttons upgraded to Interactive Moroccan Cards 
+           Native Streamlit Buttons upgraded to Interactive Glass Cards 
            We target secondary buttons to act as dynamic grid cards!
         */
         div[data-testid="stButton"] > button[kind="secondary"] {
-            background-color: var(--z-card);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background-color: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.06);
             border-radius: 12px;
             color: var(--z-text);
-            min-height: 85px;
-            font-size: 1.15rem;
+            min-height: 80px;
+            font-size: 1.1rem;
             font-weight: 600;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: var(--space-2);
         }
         div[data-testid="stButton"] > button[kind="secondary"]:hover {
             border-color: var(--z-green);
-            background-color: rgba(22, 163, 74, 0.08);
+            background-color: rgba(13, 148, 136, 0.1);
             transform: translateY(-4px);
-            box-shadow: 0 10px 20px -5px rgba(22, 163, 74, 0.2);
-            color: var(--z-beige); /* Subtle gold text on hover */
+            box-shadow: 0 12px 24px -8px rgba(13, 148, 136, 0.3);
+            color: #ffffff;
         }
         div[data-testid="stButton"] > button[kind="secondary"] p {
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             margin: 0;
-            white-space: pre-wrap; /* allow nice text flow */
+            white-space: pre-wrap;
         }
 
         /* Primary CTA Buttons */
         div[data-testid="stButton"] > button[kind="primary"] {
             background: linear-gradient(135deg, var(--z-green), var(--z-green-hover));
             color: #ffffff !important;
-            border: none;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
-            min-height: 60px;
+            min-height: 56px;
             font-weight: 700;
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(22, 163, 74, 0.25);
+            box-shadow: 0 4px 15px rgba(13, 148, 136, 0.3);
         }
         div[data-testid="stButton"] > button[kind="primary"]:hover {
-            background: linear-gradient(135deg, var(--z-green-hover), #14532d);
+            background: linear-gradient(135deg, var(--z-green-hover), #0f766e);
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(22, 163, 74, 0.4);
+            box-shadow: 0 8px 25px rgba(13, 148, 136, 0.5);
         }
 
         /* Chat Input Field Focus Glow */
         [data-testid="stChatInput"] {
             border-radius: 16px;
-            border: 1px solid var(--z-green-light) !important;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+            background: rgba(30, 41, 59, 0.8) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2) !important;
+            backdrop-filter: blur(12px);
         }
         [data-testid="stChatInput"]:focus-within {
             border-color: var(--z-green) !important;
-            box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2) !important;
+            box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.25) !important;
+        }
+        [data-testid="stChatInput"] textarea {
+            color: var(--z-text) !important;
         }
 
         /* Chat Messages */
         [data-testid="stChatMessage"] {
-            background: rgba(30,41,59,0.2) !important;
-            border-radius: 12px;
-            padding: 1.5rem !important;
-            margin-bottom: 1rem;
-            border: 1px solid rgba(255,255,255,0.03);
+            background: rgba(30, 41, 59, 0.4) !important;
+            border-radius: 16px;
+            padding: var(--space-3) !important;
+            margin-bottom: var(--space-2);
+            border: 1px solid rgba(255,255,255,0.04);
+            backdrop-filter: blur(8px);
         }
+
         /* Auth Screen Native Style */
         .auth-card {
             background-color: var(--z-card);
             border-top: 4px solid var(--z-green);
             border-radius: 16px;
-            padding: 3rem;
+            padding: var(--space-4);
             box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
             text-align: center;
         }
@@ -281,76 +293,59 @@ def inject_custom_css():
     </style>
     """, unsafe_allow_html=True)
     
-    if PATTERN_SRC:
-        st.markdown(f"""
-        <style>
-        .stApp::before {{
-            content: "";
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #C9A855; /* Force tinted Gold for this specific pattern! */
-            -webkit-mask-image: url("{PATTERN_SRC}");
-            mask-image: url("{PATTERN_SRC}");
-            -webkit-mask-size: 150px 150px;
-            mask-size: 150px 150px;
-            -webkit-mask-repeat: repeat;
-            mask-repeat: repeat;
-            opacity: 0.15;
-            z-index: -1;
-            pointer-events: none;
-        }}
-        </style>
-        """, unsafe_allow_html=True)
+    # We remove the background PATTERN_SRC to keep the minimal SaaS look
+    
     st.markdown("""
     <style>
         /* App Titles */
         .moroccan-title {
             font-size: 3.5rem;
             font-weight: 800;
-            background: linear-gradient(90deg, var(--z-beige), #ffffff);
+            background: linear-gradient(90deg, #5eead4, #ffffff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-align: center;
             margin-bottom: 0px;
             padding-bottom: 5px;
+            letter-spacing: -0.5px;
         }
         .moroccan-subtitle {
             text-align: center;
             color: var(--z-muted);
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 3rem;
+            font-size: 1.15rem;
+            font-weight: 500;
+            margin-bottom: var(--space-4);
         }
 
         @keyframes pulseAlert {
-            0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); }
-            70% { box-shadow: 0 0 0 15px rgba(220, 38, 38, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.2); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
         }
-        /* Minimal Zellige Emergency Alert */
+        /* Modern Soft UI Emergency Alert */
         .zellige-alert {
-            background: linear-gradient(135deg, rgba(220, 38, 38, 0.1), rgba(220, 38, 38, 0.05));
-            border-right: 6px solid var(--z-red);
+            background: rgba(239, 68, 68, 0.05);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-right: 4px solid var(--z-red);
             border-radius: 12px;
-            padding: 1.5rem 1.8rem;
+            padding: 1.2rem 1.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2.5rem;
-            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.2);
+            margin-bottom: var(--space-4);
             animation: pulseAlert 2.5s infinite;
         }
-        .zellige-alert-title { color: #f8fafc; font-weight: 700; font-size: 1.2rem; display: flex; align-items: center; gap: 0.8rem; }
-        .zellige-alert-text { color: var(--z-muted); font-size: 0.95rem; margin-top: 0.2rem; }
+        .zellige-alert-title { color: #f8fafc; font-weight: 700; font-size: 1.1rem; display: flex; align-items: center; gap: 0.8rem; }
+        .zellige-alert-text { color: var(--z-muted); font-size: 0.9rem; margin-top: 0.2rem; font-weight: 500; }
         .zellige-alert-numbers { display:flex; gap: 10px; }
         .zellige-alert-numbers span {
-            background: rgba(220, 38, 38, 0.15);
+            background: rgba(239, 68, 68, 0.1);
             color: #fca5a5;
-            padding: 0.6rem 1rem;
+            padding: 0.5rem 1rem;
             border-radius: 8px;
-            font-weight: 700;
-            border: 1px solid rgba(220, 38, 38, 0.2);
-            letter-spacing: 0.5px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border: 1px solid rgba(239, 68, 68, 0.15);
         }
         
     </style>
@@ -382,6 +377,7 @@ def _check_auth() -> bool:
         border-radius: 12px !important;
         padding: 4px !important;
         gap: 4px !important;
+        border: 1px solid rgba(255,255,255,0.05) !important;
     }
     [data-baseweb="tab"] {
         border-radius: 8px !important;
@@ -391,14 +387,14 @@ def _check_auth() -> bool:
         color: #94a3b8 !important;
     }
     [aria-selected="true"][data-baseweb="tab"] {
-        background: linear-gradient(135deg,#16a34a,#15803d) !important;
+        background: linear-gradient(135deg, var(--z-green), var(--z-green-hover)) !important;
         color: #fff !important;
-        box-shadow: 0 4px 12px rgba(22,163,74,0.35) !important;
+        box-shadow: 0 4px 12px rgba(13,148,136,0.3) !important;
     }
     /* Guest banner */
     .guest-banner {
-        background: linear-gradient(135deg, rgba(212,175,55,0.12), rgba(212,175,55,0.06));
-        border: 1px solid rgba(212,175,55,0.3);
+        background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(59,130,246,0.05));
+        border: 1px solid rgba(59,130,246,0.2);
         border-radius: 12px;
         padding: 1rem 1.25rem;
         margin-top: 0.75rem;
@@ -406,10 +402,10 @@ def _check_auth() -> bool:
     }
     .guest-pill {
         display: inline-block;
-        background: rgba(212,175,55,0.2);
-        color: #d4af37;
+        background: rgba(59,130,246,0.2);
+        color: #60a5fa;
         border-radius: 20px;
-        padding: 2px 12px;
+        padding: 4px 12px;
         font-size: 0.8rem;
         font-weight: 700;
         margin-bottom: 0.4rem;
@@ -801,61 +797,63 @@ if st.session_state.page == "home":
     
     # ── Interactive Services Menu (Categorized with Distinct UI Layout) ──
     
-    # 1) Category: التشخيص الأساسي والفوري (2-column preferred)
-    st.markdown("<h3 style='color:#16a34a; margin-top:2rem;'><span class='material-symbols-rounded'>stethoscope</span> التشخيص الأساسي</h3>", unsafe_allow_html=True)
-    col_diag1, col_diag2 = st.columns(2)
-    with col_diag1:
-        if st.button("💬 المحادثة الطبية", key="srv_chat", width="stretch", help="ابدأ الآن بالحديث عن أعراضك"):
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # 1) Category: Medical AI Tools (Diagnostics)
+    st.markdown("<h3 style='color:var(--z-green); margin-top:var(--space-2); margin-bottom:var(--space-2); font-size:1.4rem; text-align: center;'><span class='material-symbols-rounded'>smart_toy</span> الذكاء الاصطناعي التشخيصي</h3>", unsafe_allow_html=True)
+    col_ai1, col_ai2 = st.columns(2)
+    with col_ai1:
+        if st.button("💬 المحادثة الطبية\nتفاصيل الأعراض والتقييم المباشر", key="srv_chat", width="stretch"):
             st.session_state.page = "chat"
             st.rerun()
-    with col_diag2:
-        if st.button("🩺 فاحص الأعراض المتقدم", key="srv_scanner", width="stretch", help="نموذج تحليل ذكي مبني على أسئلة سريرية"):
+    with col_ai2:
+        if st.button("🩺 فاحص الأعراض\nتحليل ذكي يعتمد على البيانات السريرية", key="srv_scanner", width="stretch"):
             st.session_state.page = "scanner"
             st.rerun()
 
-    # 2) Category: الأدوات المتقدمة والتحاليل (3-column layout)
-    st.markdown("<h3 style='color:#8b5cf6; margin-top:2.5rem;'><span class='material-symbols-rounded'>science</span> أدوات المعمل المتقدمة</h3>", unsafe_allow_html=True)
+    # 2) Category: Advanced Diagnostics Tools
+    st.markdown("<h3 style='color:#3b82f6; margin-top:var(--space-4); margin-bottom:var(--space-2); font-size:1.4rem; text-align: center;'><span class='material-symbols-rounded'>science</span> أدوات الفحص المتقدمة</h3>", unsafe_allow_html=True)
     col_adv1, col_adv2, col_adv3 = st.columns(3)
     with col_adv1:
-        if st.button("🔬 مختبر تحليل الصور الأشعة", key="srv_vision", width="stretch", help="حلل صور الرنين المغناطيسي والأشعة"):
+        if st.button("🔬 مختبر الصور (Vision)\nحلل الرنين المغناطيسي والأشعة", key="srv_vision", width="stretch"):
             st.session_state.page = "vision"
             st.rerun()
     with col_adv2:
-        if st.button("📋 ماسح الوصفات الطبية (OCR)", key="srv_ordo", width="stretch", help="استخرج أسماء الأدوية من الوصفات"):
+        if st.button("📋 ماسح الوصفات (OCR)\nاستخرج أسماء الأدوية بسرعة", key="srv_ordo", width="stretch"):
             st.session_state.page = "ordonnance"
             st.rerun()
     with col_adv3:
-        if st.button("🧮 حاسبات المقاييس الحيوية", key="srv_calc", width="stretch", help="حسابات طبية سريرية"):
+        if st.button("🧮 حاسبات سريرية\nقياسات حيوية ومعدلات الخطورة", key="srv_calc", width="stretch"):
             st.session_state.page = "calculators"
             st.rerun()
 
-    # 3) Category: خدمات عامة ومتخصصة (3-column layout, including mental & doctor space)
-    st.markdown("<h3 style='color:#38bdf8; margin-top:2.5rem;'><span class='material-symbols-rounded'>public</span> خدمات متخصصة والسجلات</h3>", unsafe_allow_html=True)
+    # 3) Category: Specialized Services & Modules
+    st.markdown("<h3 style='color:#8b5cf6; margin-top:var(--space-4); margin-bottom:var(--space-2); font-size:1.4rem; text-align: center;'><span class='material-symbols-rounded'>health_and_safety</span> خدمات وموديولات متخصصة</h3>", unsafe_allow_html=True)
     col_gen1, col_gen2, col_gen3 = st.columns(3)
     with col_gen1:
-        if st.button("🧠 وحدة الصحة النفسية", key="srv_mental", width="stretch", help="جلسات للعلاج المعرفي ودعم الصحة النفسية"):
+        if st.button("🧠 وحدة الصحة النفسية\nدعم نفسي ومعرفي مخصص", key="srv_mental", width="stretch"):
             st.session_state.page = "mental"
             st.rerun()
     with col_gen2:
-        if st.button("🏥 العيادات والرعاية القريبة", key="srv_care", width="stretch"):
+        if st.button("🏥 العيادات والرعاية\nتوجيه للإسعاف والتخصصات القريبة", key="srv_care", width="stretch"):
             st.switch_page("pages/10_🏥_الرعاية_القريبة.py")
     with col_gen3:
-        if st.button("📚 المستكشف البحثي", key="srv_db", width="stretch"):
+        if st.button("📚 المستكشف البحثي\nمحرك أبحاث الكتب والمقالات", key="srv_db", width="stretch"):
             st.session_state.page = "database"
             st.rerun()
 
-    # Smaller bottom rows for secondary features
+    # 4) Secondary Tools
     st.markdown("<br>", unsafe_allow_html=True)
     col_sec1, col_sec2, col_sec3 = st.columns(3)
     with col_sec1:
-        if st.button("🎙️ المساعد الصوتي السريع", key="srv_voice", width="stretch"):
+        if st.button("🎙️ المساعد الصوتي السريع\nتحدث مباشرة ليتم فهمك فوراً", key="srv_voice", width="stretch"):
             st.session_state.page = "voice"
             st.rerun()
     with col_sec2:
-        if st.button("🦩 المساعد متعدد الوسائط", key="srv_flamingo", width="stretch"):
+        if st.button("🦩 المساعد متعدد الوسائط\nرفع ملفات متنوعة مع نصوص", key="srv_flamingo", width="stretch"):
             st.switch_page("pages/06_🦩_المساعد_متعدد_الوسائط.py")
     with col_sec3:
-        if st.button("📜 الأرشيف والسجلات", key="srv_hist", width="stretch"):
+        if st.button("📜 الأرشيف والسجلات\nمراجعة جلساتك الاستشارية السابقة", key="srv_hist", width="stretch"):
             st.session_state.page = "history"
             st.rerun()
     
@@ -1571,59 +1569,472 @@ elif st.session_state.page == "ordonnance":
     except Exception as e:
         logger.error(f"Ordonnance page error: {e}")
         st.error(f"Erreur lors du chargement du scanner : {e}")
-
 # ─────────────────────────────────────────────────────────────
-# PAGE: DATABASE
+# PAGE: DATABASE  — المستكشف البحثي الذكي (Research Explorer)
 # ─────────────────────────────────────────────────────────────
 elif st.session_state.page == "database":
-    st.markdown('<div class="moroccan-title" style="font-size:2.8rem;">المستكشف البحثي</div>', unsafe_allow_html=True)
-    st.markdown("<div class='moroccan-subtitle'>بحث دقيق ومباشر في المراجع العلمية المؤرشفة الخاصة بالنظام</div>", unsafe_allow_html=True)
-    
-    with st.container(border=True):
-        search_term = st.text_input("أدخل المصطلح الطبي للتشريح الاسترشادي...", placeholder="مثال: التهاب الكبد الفيروسي، الفيروس المخلوي، الأسبرين...")
-    
-    if search_term:
-        with st.spinner("جاري مسح المراجع واستخلاص النصوص الدقيقة..."):
-            try:
-                if orch and hasattr(orch, 'llm'):
-                    # Prompt designed precisely to generate a highly professional encyclopedia entry
-                    prompt = f"""بصفتك الذكاء الاصطناعي الطبي الأساسي SHIFA، ابحث في قاعدة معارفك عن '{search_term}'.
-قم بتوفير تقرير طبي مرجعي دقيق جداً كالتالي (تجنب الإطالة):
-- التعريف التفصيلي للمرض أو المصطلح
-- الأسباب والأعراض
-- مضاعفات محتملة
-- طرق العلاج والمعايير السريرية
+    st.markdown('<div class="moroccan-title" style="font-size:2.8rem;">المستكشف البحثي الذكي</div>', unsafe_allow_html=True)
+    st.markdown("<div class='moroccan-subtitle'>محرك بحث ذكي يقترح كتباً ومقالات وفيديوهات مرتبة حسب الصلة بموضوعك الطبي</div>", unsafe_allow_html=True)
 
-اكتب بلغة علمية دقيقة جداً ومباشرة. لا تقم بالترحيب ولا تختم بأي عبارة ودية، فقط المرجع الأكاديمي."""
-                    
-                    response = orch.llm.run(query=prompt, context={"kb_context": "", "intent": "database_search", "history": None})
-                    
-                    if response and response.success:
-                        text_formatted = response.answer.replace('\\n', '<br/>').replace('\n', '<br/>')
-                        specialty = "الطب العام والأبحاث (Groq AI Model)"
-                        
-                        with st.container(border=True):
-                            st.markdown("<h3 style='color:#d4af37; margin-bottom:1.5rem;'>📑 المرجع الطبي المطابق (مُولّد الذكاء الاصطناعي):</h3>", unsafe_allow_html=True)
-                            
-                            bg_card = """
-                            <div style="background:rgba(15,23,42,0.6); padding:1.5rem 2rem; border-radius:12px; border-right:4px solid #16a34a; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
-                                <div style="display:flex; justify-content:space-between; margin-bottom:1rem; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:0.8rem;">
-                                    <span style="color:#94a3b8; font-size:0.95rem;">التصنيف المرجعي: <b style="color:#a7f3d0;">{specialty}</b></span>
-                                    <span style="color:#C9A855; font-size:0.95rem;">✦ SHIFA AI</span>
-                                </div>
-                                <div style="color:#f8fafc; line-height:1.9; font-size:1.05rem; white-space:pre-wrap;">
-                                    {content}
+    # ── Extra CSS for research cards ──
+    st.markdown("""
+    <style>
+    @keyframes fadeSlideUpCard {
+        from { opacity: 0; transform: translateY(20px) scale(0.98); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    
+    .research-topic-badge {
+        display: inline-flex; align-items: center; justify-content: center;
+        background: linear-gradient(135deg, rgba(22,163,74,0.2), rgba(212,175,55,0.15));
+        border: 1px solid rgba(212,175,55,0.4);
+        border-radius: 30px;
+        padding: 0.6rem 1.5rem;
+        margin: 0.4rem;
+        font-size: 1rem;
+        color: #fef3c7;
+        font-weight: 700;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        backdrop-filter: blur(8px);
+        transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s;
+    }
+    .research-topic-badge:hover {
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 8px 20px rgba(212,175,55,0.3);
+    }
+    
+    .research-content-card {
+        background: linear-gradient(145deg, rgba(30,41,59,0.7), rgba(15,23,42,0.9));
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 1.2rem;
+        transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        overflow: hidden;
+        animation: fadeSlideUpCard 0.6s ease-out forwards;
+        opacity: 0;
+    }
+    
+    /* Staggered animation effect for child cards */
+    .research-content-card:nth-child(1) { animation-delay: 0.1s; }
+    .research-content-card:nth-child(2) { animation-delay: 0.2s; }
+    .research-content-card:nth-child(3) { animation-delay: 0.3s; }
+    .research-content-card:nth-child(4) { animation-delay: 0.4s; }
+    
+    .research-content-card:hover {
+        border-color: rgba(22,163,74,0.6);
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.4), 0 0 20px rgba(22,163,74,0.2);
+    }
+    
+    .research-content-card::before {
+        content: "";
+        position: absolute;
+        top: 0; right: 0;
+        width: 5px; height: 100%;
+        border-radius: 0 16px 16px 0;
+        transition: width 0.3s ease;
+    }
+    .research-content-card:hover::before {
+        width: 8px;
+    }
+    
+    .research-card-book::before { background: linear-gradient(180deg, #10b981, #047857); }
+    .research-card-article::before { background: linear-gradient(180deg, #3b82f6, #1d4ed8); }
+    .research-card-video::before { background: linear-gradient(180deg, #ef4444, #b91c1c); }
+    
+    .research-score-badge {
+        display: inline-flex; align-items: center;
+        background: linear-gradient(135deg, rgba(22,163,74,0.25), rgba(22,163,74,0.1));
+        color: #6ee7b7;
+        border: 1px solid rgba(22,163,74,0.3);
+        border-radius: 12px;
+        padding: 4px 12px;
+        font-size: 0.85rem;
+        font-weight: 800;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        letter-spacing: 0.5px;
+    }
+    
+    .research-link-btn {
+        display: inline-flex; align-items: center; justify-content: center;
+        background: linear-gradient(135deg, rgba(22,163,74,0.15), rgba(22,163,74,0.05));
+        border: 1px solid rgba(22,163,74,0.4);
+        border-radius: 12px;
+        padding: 0.6rem 1.4rem;
+        color: #86efac !important;
+        text-decoration: none !important;
+        font-size: 0.95rem;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .research-link-btn:hover {
+        background: linear-gradient(135deg, rgba(22,163,74,0.35), rgba(22,163,74,0.15));
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(22,163,74,0.3);
+        color: #ffffff !important;
+    }
+    
+    .research-btn-primary {
+        display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 12px; padding: 0.7rem 1rem;
+        background: linear-gradient(135deg, #16a34a, #15803d);
+        color: #ffffff !important; text-decoration: none !important;
+        border-radius: 12px; font-weight: 800; font-size: 0.95rem;
+        box-shadow: 0 4px 15px rgba(22,163,74,0.4);
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    .research-btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(22,163,74,0.5);
+    }
+    
+    .research-section-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin: 2.5rem 0 1.5rem;
+        padding-bottom: 0.8rem;
+        border-bottom: 2px solid rgba(255,255,255,0.05);
+        position: relative;
+    }
+    .research-section-header::after {
+        content: ""; position: absolute; bottom: -2px; right: 0; width: 80px; height: 3px;
+        background: linear-gradient(90deg, var(--z-green), transparent);
+        border-radius: 3px;
+    }
+    .research-section-header h3 {
+        margin: 0;
+        font-size: 1.6rem;
+        font-weight: 800;
+        text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    }
+    
+    .research-section-count {
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(6px);
+        border: 1px solid rgba(255,255,255,0.2);
+        color: #ffffff;
+        border-radius: 14px;
+        padding: 5px 14px;
+        font-size: 0.9rem;
+        font-weight: 800;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    
+    .img-hover-zoom {
+        transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .research-content-card:hover .img-hover-zoom {
+        transform: scale(1.08);
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # ── Search Bar ──
+    with st.container(border=True):
+        search_col1, search_col2 = st.columns([5, 1])
+        with search_col1:
+            search_term = st.text_input(
+                "🔍 ابحث عن أي موضوع طبي أو علمي...",
+                placeholder="مثال: سرطان الثدي، السكري من النوع الثاني، ضغط الدم المرتفع...",
+                key="research_search_input",
+            )
+        with search_col2:
+            st.markdown("<div style='height:28px;'></div>", unsafe_allow_html=True)
+            search_clicked = st.button("🔎 بحث", type="primary", use_container_width=True, key="research_btn")
+
+    if search_term and (search_clicked or search_term):
+        try:
+            from engine.research_explorer import ContentSearchEngine
+
+            engine = ContentSearchEngine()
+
+            # ── Phase 1: Topic Detection ──
+            with st.spinner("🧠 تحليل الموضوع وتحسين كلمات البحث..."):
+                topic_info = engine.detect_topic(search_term)
+
+            # Topic badge
+            st.markdown(f"""
+            <div style="text-align:center; margin:1rem 0;">
+                <span class="research-topic-badge">🧠 الموضوع: {topic_info.get('topic', search_term)}</span>
+                <span class="research-topic-badge">📂 التصنيف: {topic_info.get('category', 'عام')}</span>
+            </div>
+            """, unsafe_allow_html=True)
+
+            # ── Phase 2: Multi-source search ──
+            with st.spinner("🔍 جاري البحث في الكتب والمقالات والفيديوهات..."):
+                results = engine.search_all(
+                    search_term,
+                    max_books=5,
+                    max_articles=3,
+                    max_videos=3,
+                )
+
+            books = results.get("books", [])
+            articles = results.get("articles", [])
+            videos = results.get("videos", [])
+            total = len(books) + len(articles) + len(videos)
+
+            if total == 0:
+                st.warning("❌ لم يتم العثور على نتائج. حاول إعادة صياغة بحثك بمصطلحات مختلفة.")
+            else:
+                # Proper Arabic pluralization for "Results" (نتيجة / نتائج / نتيجتان)
+                if total == 1:
+                    t_text = "نتيجة واحدة"
+                elif total == 2:
+                    t_text = "نتيجتان"
+                elif 3 <= total <= 10:
+                    t_text = f"**{total}** نتائج"
+                else:
+                    t_text = f"**{total}** نتيجة"
+                st.success(f"✅ تم العثور على {t_text} مرتبة حسب الصلة")
+
+                # ═══════════════════ BOOKS ═══════════════════
+                if books:
+                    # Proper Arabic pluralization for Books (كتاب / كتب / كتابان)
+                    b_count = len(books)
+                    if b_count == 1:
+                        b_text = "كتاب واحد"
+                    elif b_count == 2:
+                        b_text = "كتابان"
+                    elif 3 <= b_count <= 10:
+                        b_text = f"{b_count} كتب"
+                    else:
+                        b_text = f"{b_count} كتاباً"
+
+                    st.markdown(f"""
+                    <div class="research-section-header">
+                        <h3 style="color:#86efac;">📚 الكتب الموصى بها</h3>
+                        <span class="research-section-count">{b_text}</span>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+                    import re
+
+                    # Display in 2-column grid
+                    for row_start in range(0, len(books), 2):
+                        book_cols = st.columns(2)
+
+                        for col_idx in range(2):
+                            b_idx = row_start + col_idx
+                            if b_idx >= len(books):
+                                break
+
+                            b = books[b_idx]
+
+                            with book_cols[col_idx]:
+
+                                # ===== DATA =====
+                                authors = "، ".join(b.get("authors", ["مؤلف غير معروف"]))
+                                score = b.get("relevance_score", 0) * 100
+
+                                desc = re.sub(r'<[^>]+>', '', b.get("description") or "")
+                                desc = desc[:200]
+
+                                thumb = b.get("thumbnail", "").replace("http://", "https://")
+
+                                rating = b.get("average_rating", 0) or 0
+                                ratings_count = b.get("ratings_count", 0) or 0
+
+                                pages = b.get("page_count", 0) or 0
+                                publisher = b.get("publisher", "")
+                                pub_date = b.get("published_date", "")
+
+                                preview_link = b.get("preview_link", "")
+                                info_link = b.get("info_link", "")
+
+                                # ✅ FIX LINK
+                                read_link = (preview_link or info_link or "#").replace("http://", "https://")
+
+                                # ===== STARS =====
+                                if rating > 0:
+                                    full_stars = int(rating)
+                                    half_star = "½" if (rating - full_stars) >= 0.3 else ""
+                                    stars_html = f'<span style="color:#fbbf24;">{"⭐" * full_stars}{half_star}</span> <span style="color:#94a3b8; font-size:0.8rem;">({rating}/5 · {ratings_count})</span>'
+                                else:
+                                    stars_html = '<span style="color:#64748b;">بدون تقييمات</span>'
+
+                                # ===== COVER =====
+                                if thumb:
+                                    cover_html = f'<div style="flex-shrink:0; margin-left:15px;"><img src="{thumb}" style="width:105px; height:145px; object-fit:cover; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.4);" /></div>'
+                                else:
+                                    cover_html = '<div style="flex-shrink:0; margin-left:15px; width:105px; height:145px; display:flex; align-items:center; justify-content:center; border-radius:10px; background:#1e293b;">📕</div>'
+
+                                # ===== META =====
+                                meta_parts = []
+                                if pages: meta_parts.append(f"📄 {pages} صفحة")
+                                if publisher: meta_parts.append(f"🏢 {publisher}")
+                                if pub_date: meta_parts.append(f"📅 {pub_date}")
+                                meta_html = " · ".join(meta_parts)
+
+                                # ===== DESC & BUTTON =====
+                                desc_html = ""
+                                if desc.strip():
+                                    desc_html = f'<div style="margin-top:12px; color:#cbd5e1; font-size:0.88rem; line-height:1.7; border-top:1px solid rgba(255,255,255,0.08); padding-top:10px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">{desc}...</div>'
+
+                                btn_html = ""
+                                if read_link != "#":
+                                    btn_html = f'<div style="margin-top:15px; display:flex; gap:10px;"><a href="{read_link}" target="_blank" class="research-link-btn" style="flex:1;">📖 اقرأ الكتاب</a></div>'
+
+                                # ===== CARD =====
+                                card_html = f"""<div class="research-content-card research-card-book"><div style="display:flex;">{cover_html}<div style="flex:1;"><div style="font-weight:800; color:#ffffff; font-size:1.15rem; margin-bottom:6px; line-height:1.4;">{b.get('title', 'بدون عنوان')}</div><div style="color:#a7f3d0; font-size:0.92rem; margin-bottom:6px; font-weight:500;">✍️ {authors}</div><div style="margin-top:4px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">{stars_html}<span class="research-score-badge">✨ {score:.0f}% تطابق</span></div><div style="color:#94a3b8; font-size:0.82rem; margin-top:8px; font-weight:500;">{meta_html}</div></div></div>{desc_html}{btn_html}</div>"""
+                                st.markdown(card_html, unsafe_allow_html=True)
+
+                # ═══════════════════ ARTICLES ═══════════════════
+                if articles:
+                    # Proper Arabic pluralization for Articles (مقال / مقالات / مقالان)
+                    a_count = len(articles)
+                    if a_count == 1:
+                        a_text = "مقال واحد"
+                    elif a_count == 2:
+                        a_text = "مقالان"
+                    elif 3 <= a_count <= 10:
+                        a_text = f"{a_count} مقالات"
+                    else:
+                        a_text = f"{a_count} مقالاً"
+
+                    st.markdown(f"""
+                    <div class="research-section-header">
+                        <h3 style="color:#60a5fa;">🌐 مقالات ذات صلة</h3>
+                        <span class="research-section-count">{a_text}</span>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+                    for a in articles:
+                        score = a.get("relevance_score", 0) * 100
+                        summary = a.get("summary") or ""
+                        import re
+                        summary = re.sub(r'<[^>]+>', '', summary)[:350]
+                        thumb = a.get("thumbnail", "")
+                        thumb_html = f'<div style="overflow:hidden; border-radius:8px; margin-left:12px; float:right; box-shadow:0 2px 10px rgba(0,0,0,0.3);"><img src="{thumb}" class="img-hover-zoom" style="width:110px; height:75px; object-fit:cover; display:block;" /></div>' if thumb else ""
+                        link_html = f'<a href="{a.get("url", "#")}" target="_blank" class="research-link-btn" style="border-color:rgba(59,130,246,0.3); color:#93c5fd !important; margin-top:0.5rem;">🔗 اقرأ المقال بالكامل</a>' if a.get("url") else ""
+
+                        st.markdown(f"""
+                        <div class="research-content-card research-card-article">{thumb_html}
+                            <div style="font-weight:800; color:#ffffff; font-size:1.1rem; margin-bottom:6px; text-shadow:0 1px 2px rgba(0,0,0,0.5);">
+                                {a.get('title', 'بدون عنوان')}
+                            </div>
+                            <div style="color:#94a3b8; font-size:0.9rem; margin-bottom:6px; font-weight:600;">
+                                📰 <span style="color:#cbd5e1;">{a.get('source', 'Wikipedia')}</span> &nbsp;·&nbsp;
+                                <span class="research-score-badge" style="background:rgba(59,130,246,0.2); color:#93c5fd; border-color:rgba(59,130,246,0.4);">✨ {score:.0f}%</span>
+                            </div>
+                            <div style="color:#cbd5e1; font-size:0.88rem; line-height:1.7; margin-bottom:12px; clear:both; padding-top:4px;">
+                                {summary}{'...' if len(summary) >= 350 else ''}
+                            </div>{link_html}
+                        </div>
+                        """, unsafe_allow_html=True)
+
+                # ═══════════════════ VIDEOS ═══════════════════
+                if videos:
+                    # Proper Arabic pluralization for Videos (فيديو / فيديوهات / فيديوهان)
+                    v_count = len(videos)
+                    if v_count == 1:
+                        v_text = "فيديو واحد"
+                    elif v_count == 2:
+                        v_text = "فيديوهان"
+                    elif 3 <= v_count <= 10:
+                        v_text = f"{v_count} فيديوهات"
+                    else:
+                        v_text = f"{v_count} فيديو"
+
+                    st.markdown(f"""
+                    <div class="research-section-header">
+                        <h3 style="color:#f87171;">🎥 فيديوهات مقترحة</h3>
+                        <span class="research-section-count">{v_text}</span>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+                    vid_cols = st.columns(min(len(videos), 3))
+                    for v_idx, v in enumerate(videos[:3]):
+                        with vid_cols[v_idx]:
+                            score = v.get("relevance_score", 0) * 100
+                            views = int(v.get("view_count", 0))
+                            views_str = f"{views:,}" if views else "—"
+                            thumb = v.get("thumbnail", "")
+                            thumb_html = f'<div style="overflow:hidden; border-radius:12px 12px 0 0;"><img src="{thumb}" class="img-hover-zoom" style="width:100%; height:150px; object-fit:cover; display:block;" /></div>' if thumb else '<div style="width:100%;height:150px;background:linear-gradient(135deg, rgba(220,38,38,0.15), rgba(185,28,28,0.05));border-radius:12px 12px 0 0;display:flex;align-items:center;justify-content:center;font-size:3rem;">🎬</div>'
+                            link_html = f'<a href="{v.get("url", "#")}" target="_blank" class="research-link-btn" style="border-color:rgba(220,38,38,0.4); color:#fca5a5 !important; width:100%; text-align:center; display:block; margin-top:8px;">▶️ شاهد على يوتيوب</a>' if v.get("url") and v.get("url") != "#" else ""
+
+                            st.markdown(f"""
+                            <div class="research-content-card research-card-video" style="padding:0; border-radius:12px;">
+                                {thumb_html}
+                                <div style="padding:1.2rem;">
+                                    <div style="font-weight:800; color:#ffffff; font-size:0.95rem; margin-bottom:6px; line-height:1.5; text-shadow:0 1px 2px rgba(0,0,0,0.5);">
+                                        {v.get('title', 'بدون عنوان')[:85]}...
+                                    </div>
+                                    <div style="color:#94a3b8; font-size:0.85rem; margin-bottom:8px; font-weight:600;">
+                                        📺 <span style="color:#cbd5e1;">{v.get('channel_title', '')}</span><br/>👁️ {views_str} مشاهدة
+                                    </div>
+                                    <div style="display:flex; gap:6px; margin-bottom:12px;">
+                                        <span class="research-score-badge" style="background:rgba(220,38,38,0.2); color:#fca5a5; border-color:rgba(220,38,38,0.4);">✨ {score:.0f}%</span>
+                                    </div>{link_html}
                                 </div>
                             </div>
-                            """
-                            st.markdown(bg_card.format(specialty=specialty, content=text_formatted), unsafe_allow_html=True)
-                    else:
-                        st.warning("تعذر على محرك Groq الذكي استخراج النص، يرجى المحاولة لاحقاً.")
-                else:
-                    st.error("الاستعلام المعرفي متوقف مؤقتاً.")
-            except Exception as e:
-                logger.error(f"Search error: {e}")
-                st.error("فشل استخراج البيانات. قد يكون الملف مفقوداً.")
+                            """, unsafe_allow_html=True)
+
+                # ═══════════════════ AI SUMMARY ═══════════════════
+                st.markdown("""
+                <div class="research-section-header">
+                    <h3 style="color:#d4af37;">🧠 ملخص الذكاء الاصطناعي</h3>
+                </div>
+                """, unsafe_allow_html=True)
+
+                with st.spinner("🤖 جاري توليد ملخص ذكي..."):
+                    try:
+                        if orch and hasattr(orch, 'llm') and orch.llm:
+                            prompt = f"""بصفتك الذكاء الاصطناعي الطبي SHIFA، قدم ملخصاً طبياً مرجعياً موجزاً عن '{search_term}'.
+اكتب بلغة عربية علمية دقيقة ومباشرة (5-8 أسطر). اذكر:
+- التعريف
+- الأسباب الرئيسية
+- أبرز الأعراض
+- خيارات العلاج الأساسية
+لا تقم بالترحيب ولا تختم بأي عبارة ودية."""
+
+                            ai_response = orch.llm.run(query=prompt, context={"kb_context": "", "intent": "database_search", "history": None})
+
+                            if ai_response and ai_response.success:
+                                text_formatted = ai_response.answer.replace('\\n', '<br/>').replace('\n', '<br/>')
+                                st.markdown(f"""
+                                <div style="background:rgba(15,23,42,0.6); padding:1.5rem 2rem; border-radius:12px;
+                                            border-right:4px solid #d4af37; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
+                                    <div style="display:flex; justify-content:space-between; margin-bottom:1rem;
+                                                border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:0.8rem;">
+                                        <span style="color:#94a3b8; font-size:0.95rem;">الملخص الطبي المرجعي: <b style="color:#a7f3d0;">SHIFA AI</b></span>
+                                        <span style="color:#C9A855; font-size:0.95rem;">✦ Groq LLM</span>
+                                    </div>
+                                    <div style="color:#f8fafc; line-height:1.9; font-size:1.05rem; white-space:pre-wrap;">
+                                        {text_formatted}
+                                    </div>
+                                </div>
+                                """, unsafe_allow_html=True)
+                            else:
+                                st.info("تعذر توليد ملخص ذكي لهذا الموضوع.")
+                        else:
+                            st.info("وحدة الذكاء الاصطناعي غير متوفرة حالياً لتوليد الملخص.")
+                    except Exception as e:
+                        logger.error(f"AI summary error: {e}")
+                        st.info("تعذر توليد ملخص ذكي حالياً.")
+
+                # ── Disclaimer ──
+                st.markdown("""
+                <div style="background:rgba(220,38,38,0.05); border-right:3px solid #dc2626;
+                            padding:1rem 1.2rem; border-radius:0 8px 8px 0; margin-top:1.5rem;">
+                    <p style="color:#fca5a5; font-size:0.85rem; margin:0;">
+                        ⚠️ <b>تنبيه:</b> هذه النتائج لأغراض معلوماتية فقط. المحتوى مستخرج من مصادر خارجية (Google Books, Wikipedia, YouTube).
+                        لا تُغني هذه المعلومات عن استشارة طبيب مختص.
+                    </p>
+                </div>
+                """, unsafe_allow_html=True)
+
+        except ImportError as ie:
+            logger.error(f"Research explorer import error: {ie}")
+            st.error("⚠️ وحدة المستكشف البحثي غير متوفرة. تحقق من تثبيت المكونات.")
+        except Exception as e:
+            logger.error(f"Research search error: {e}")
+            st.error("حدث خطأ أثناء البحث. يرجى المحاولة مرة أخرى.")
 
 # ─────────────────────────────────────────────────────────────
 # PAGE: HISTORY
