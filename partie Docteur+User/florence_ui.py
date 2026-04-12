@@ -339,7 +339,7 @@ def show_florence_analysis_interface(db, notif_manager):
     for i, (col, btn_name) in enumerate(zip(row1, buttons[:5])):
         with col:
             st.markdown(f'<div class="btn-{i}">', unsafe_allow_html=True)
-            if st.button(btn_name, key=f"florence_btn_{i}", use_container_width=True):
+            if st.button(btn_name, key=f"florence_btn_{i}", width='stretch'):
                 if st.session_state.florence_uploaded_file:
                     with st.spinner(f"🔬 Analyse {btn_name} en cours..."):
                         time.sleep(2)
@@ -404,7 +404,7 @@ def show_florence_analysis_interface(db, notif_manager):
     for i, (col, btn_name) in enumerate(zip(row2, buttons[5:])):
         with col:
             st.markdown(f'<div class="btn-{i+5}">', unsafe_allow_html=True)
-            if st.button(btn_name, key=f"florence_btn_{i+5}", use_container_width=True):
+            if st.button(btn_name, key=f"florence_btn_{i+5}", width='stretch'):
                 if st.session_state.florence_uploaded_file:
                     with st.spinner(f"🔬 Analyse {btn_name} en cours..."):
                         time.sleep(2)
@@ -481,7 +481,7 @@ def show_florence_analysis_interface(db, notif_manager):
         
         with col_img:
             if st.session_state.florence_uploaded_file:
-                st.image(st.session_state.florence_uploaded_file, caption="Fichier analysé", use_container_width=True)
+                st.image(st.session_state.florence_uploaded_file, caption="Fichier analysé", width='stretch')
         
         with col_res:
             # Badges
@@ -599,7 +599,7 @@ def show_florence_analysis_interface(db, notif_manager):
                         }
                     }
             ))
-            st.plotly_chart(fig_confidence, use_container_width=True)
+            st.plotly_chart(fig_confidence, width='stretch')
             
             # Graphique des probabilités
             diseases = ['Pneumonie', 'Tuberculose', 'Cancer', 'Bronchite', 'Normal']
@@ -613,7 +613,7 @@ def show_florence_analysis_interface(db, notif_manager):
                 color=probs,
                 color_continuous_scale='viridis'
             )
-            st.plotly_chart(fig_probs, use_container_width=True)
+            st.plotly_chart(fig_probs, width='stretch')
         
         with tab3:
             st.markdown("#### 🔬 Paramètres détaillés")
@@ -623,13 +623,13 @@ def show_florence_analysis_interface(db, notif_manager):
                     list(st.session_state.florence_result['parameters'].items()),
                     columns=['Paramètre', 'Valeur']
                 )
-                st.dataframe(df_params, use_container_width=True)
+                st.dataframe(df_params, width='stretch')
             elif 'intervals' in st.session_state.florence_result:
                 df_intervals = pd.DataFrame(
                     list(st.session_state.florence_result['intervals'].items()),
                     columns=['Intervalle', 'Valeur (ms)']
                 )
-                st.dataframe(df_intervals, use_container_width=True)
+                st.dataframe(df_intervals, width='stretch')
             else:
                 st.info("Aucun paramètre détaillé disponible pour cette analyse")
             
@@ -653,21 +653,21 @@ def show_florence_analysis_interface(db, notif_manager):
             col_a1, col_a2, col_a3 = st.columns(3)
             
             with col_a1:
-                if st.button("📞 Contacter médecin", key="florence_contact", use_container_width=True):
+                if st.button("📞 Contacter médecin", key="florence_contact", width='stretch'):
                     st.info("Fonctionnalité de téléconsultation - À implémenter")
             
             with col_a2:
-                if st.button("📅 Prendre RDV", key="florence_rdv", use_container_width=True):
+                if st.button("📅 Prendre RDV", key="florence_rdv", width='stretch'):
                     st.session_state['nav'] = "📅 Rendez-vous"
                     st.rerun()
             
             with col_a3:
-                if st.button("💬 Support", key="florence_support", use_container_width=True):
+                if st.button("💬 Support", key="florence_support", width='stretch'):
                     st.session_state['nav'] = "💬 Chat Santé"
                     st.rerun()
         
         # Bouton nouvelle analyse
-        if st.button("🔄 Nouvelle analyse Florence", use_container_width=True):
+        if st.button("🔄 Nouvelle analyse Florence", width='stretch'):
             st.session_state.florence_active_analysis = None
             st.session_state.florence_result = None
             st.rerun()

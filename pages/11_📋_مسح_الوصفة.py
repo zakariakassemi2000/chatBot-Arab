@@ -1,14 +1,17 @@
 """
 SHIFA AI — 📋 مسح الوصفة الطبية
 ═══════════════════════════════════
-Extraction OCR des ordonnances médicales
-Engine: docTR (CPU) | Donut Medical (GPU) | Tesseract (fallback)
+Analyse intelligente d'ordonnances via Vision AI (Gemini 3 Flash OpenRouter)
+avec validation croisée CNOPS et medicament.ma.
 """
 
 import streamlit as st
 from PIL import Image
-import requests.utils
+import io
 import logging
+
+from engine.vision_ocr.vlm_extraction import extract_from_image
+import engine.vision_ocr.decision_engine as dec_engine
 
 logger = logging.getLogger(__name__)
 
@@ -70,138 +73,60 @@ st.markdown("""
         font-family: 'Tajawal', sans-serif;
         margin-bottom: 0.5rem;
     }
-    .med-card .detail {
-        color: #CBD5E1;
-        font-size: 0.9rem;
-        margin: 0.2rem 0;
-    }
-    .med-card .badge {
-        display: inline-block;
+
+    .status-valid {
+        color: #22C55E;
+        background: rgba(34, 197, 94, 0.15);
+        border: 1px solid rgba(34, 197, 94, 0.3);
         padding: 2px 10px;
         border-radius: 20px;
         font-size: 0.8rem;
         font-weight: 500;
+        display: inline-block;
     }
-    .badge-found {
-        background: rgba(34, 197, 94, 0.15);
-        color: #22C55E;
-        border: 1px solid rgba(34, 197, 94, 0.3);
-    }
-    .badge-notfound {
-        background: rgba(239, 68, 68, 0.15);
-        color: #EF4444;
-        border: 1px solid rgba(239, 68, 68, 0.3);
-    }
-    .badge-nocheck {
-        background: rgba(148, 163, 184, 0.15);
-        color: #94A3B8;
-        border: 1px solid rgba(148, 163, 184, 0.3);
-    }
-
-    .stats-row {
-        display: flex;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-    }
-    .stat-box {
-        flex: 1;
-        background: linear-gradient(135deg, #1e293b, #0f172a);
-        border: 1px solid rgba(0, 201, 167, 0.2);
-        border-radius: 12px;
-        padding: 1rem;
-        text-align: center;
-    }
-    .stat-box .number {
-        font-size: 2rem;
-        font-weight: 700;
-        color: #00C9A7;
-    }
-    .stat-box .label {
-        color: #94A3B8;
-        font-size: 0.85rem;
-        font-family: 'Tajawal', sans-serif;
-    }
-
-    .raw-text-box {
-        background: #0f172a;
-        border: 1px solid rgba(0, 201, 167, 0.15);
-        border-radius: 8px;
-        padding: 1rem;
-        color: #E2E8F0;
-        font-family: 'Courier New', monospace;
-        font-size: 0.85rem;
-        white-space: pre-wrap;
-        max-height: 300px;
-        overflow-y: auto;
-        direction: ltr;
-        text-align: left;
-    }
-
-    .warning-box {
-        background: rgba(234, 179, 8, 0.08);
-        border: 1px solid rgba(234, 179, 8, 0.3);
-        border-radius: 8px;
-        padding: 0.8rem 1rem;
+    .status-suspect {
         color: #EAB308;
-        font-size: 0.9rem;
-        margin-top: 0.5rem;
+        background: rgba(234, 179, 8, 0.15);
+        border: 1px solid rgba(234, 179, 8, 0.3);
+        padding: 2px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        display: inline-block;
     }
-    .info-box {
-        background: rgba(59, 130, 246, 0.08);
-        border: 1px solid rgba(59, 130, 246, 0.3);
-        border-radius: 8px;
-        padding: 0.8rem 1rem;
-        color: #3B82F6;
-        font-size: 0.9rem;
-        margin-top: 0.5rem;
+    .status-invalid {
+        color: #EF4444;
+        background: rgba(239, 68, 68, 0.15);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        padding: 2px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        display: inline-block;
     }
 </style>
 """, unsafe_allow_html=True)
 
 
 def render_ocr_page():
-    """Page principale de scan d'ordonnance."""
+    """Page principale de scan d'ordonnance via VLM."""
 
     # ── Header ───────────────────────────────────────────
     st.markdown("""
     <div class="ocr-header" dir="rtl">
-        <h2>📋 مسح الوصفة الطبية</h2>
-        <p>استخراج المعلومات من الوصفة — لا تفسير طبي</p>
+        <h2>📋 مسح الوصفة الطبية (Vision AI)</h2>
+        <p>استخراج ذكي مع تحقق من قاعدة CNOPS و medicament.ma</p>
     </div>
     """, unsafe_allow_html=True)
 
-    # ── Options ──────────────────────────────────────────
-    col_opt1, col_opt2, col_opt3 = st.columns([2, 2, 1])
-    with col_opt1:
-        engine = st.selectbox(
-            "🔧 محرك OCR",
-            [
-                "docTR (موصى به — CPU)",
-                "Donut Medical (GPU مفضل)",
-            ],
-            index=0,
-            help="docTR هو الأسرع والأدق على الوصفات المطبوعة بالفرنسية"
-        )
-    with col_opt2:
-        verify = st.checkbox(
-            "🌐 التحقق على medicament.ma",
-            value=True,
-            help="يتحقق من وجود الأدوية في قاعدة بيانات medicament.ma"
-        )
-    with col_opt3:
-        st.markdown("<br>", unsafe_allow_html=True)
-
-    st.divider()
-
     # ── Upload ───────────────────────────────────────────
     uploaded = st.file_uploader(
-        "📷 ارفع صورة الوصفة",
-        type=["jpg", "jpeg", "png"],
-        help="تنسيقات مدعومة: JPG, JPEG, PNG"
+        "📸 ارفع صورة الوصفة",
+        type=["jpg", "jpeg", "png", "webp"],
+        help="تنسيقات مدعومة: JPG, JPEG, PNG, WEBP"
     )
 
     if not uploaded:
-        # Placeholder when no image uploaded
         st.markdown("""
         <div style="text-align:center; padding:3rem; color:#64748B;" dir="rtl">
             <p style="font-size:3rem;">📋</p>
@@ -209,7 +134,7 @@ def render_ocr_page():
                 ارفع صورة الوصفة الطبية لبدء التحليل
             </p>
             <p style="font-size:0.85rem; color:#475569;">
-                يدعم الوصفات المطبوعة بالفرنسية والعربية
+                مدعوم بواسطة Gemini 3 Flash للتعرف الدقيق
             </p>
         </div>
         """, unsafe_allow_html=True)
@@ -217,144 +142,93 @@ def render_ocr_page():
 
     # ── Load image ───────────────────────────────────────
     image = Image.open(uploaded)
-
     col1, col2 = st.columns([1, 2])
 
     with col1:
-        st.image(image, caption="📄 الوصفة الأصلية", use_container_width=True)
+        st.image(image, caption="📄 الوصفة الأصلية", width='stretch' if hasattr(st, 'container_width') else None, use_column_width=True)
 
     with col2:
         with st.spinner("⏳ جاري التحليل بواسطة الذكاء الاصطناعي..."):
             try:
-                from engine.ocr_ordonnance import get_ocr
+                uploaded.seek(0)
+                image_bytes = uploaded.getvalue()
 
-                use_donut = "Donut" in engine
-                ocr = get_ocr(
-                    use_donut=use_donut,
-                    verify_online=verify
-                )
-                res = ocr.analyser(image)
+                # Extraction via VLM
+                extraction = extract_from_image(image_bytes)
+                
+                if not getattr(extraction, 'medicaments', []):
+                    st.warning("⚠️ لم يتم اكتشاف أي أدوية في هذه الوصفة.")
+                    final_results = {}
+                else:
+                    st.success(f"✅ تم استخراج {len(extraction.medicaments)} دواء (الثقة: {extraction.confiance_globale:.0%})")
+                    # Validation
+                    final_results = {}
+                    for med in extraction.medicaments:
+                        analysis = dec_engine.analyze_medication(
+                            raw_name=med.nom,
+                            raw_dosage=med.dosage,
+                            vlm_confidence=extraction.confiance_globale,
+                            posologie=med.posologie,
+                            duree=med.duree,
+                        )
+                        key_name = analysis.get("corrected_name", med.nom)
+                        final_results[key_name] = analysis
 
-            except ImportError as e:
-                st.error(f"❌ خطأ في تحميل محرك OCR: {e}")
-                st.info("💡 تأكد من تثبيت المتطلبات: `pip install python-doctr[torch] beautifulsoup4 rapidfuzz`")
-                return
             except Exception as e:
                 st.error(f"❌ خطأ في التحليل: {e}")
-                logger.exception("OCR pipeline error")
+                logger.exception("VLM OCR pipeline error")
                 return
 
-        # ── Success banner ───────────────────────────────
-        st.success(f"✅ تم التحليل بنجاح — محرك: **{res.engine_utilise}**")
+        # ── Affichage Informations Générales ──────────────────
+        medecin = getattr(extraction, "medecin", None)
+        patient = getattr(extraction, "patient", None)
+        
+        if medecin or patient:
+            st.markdown("### 📋 معلومات الوصفة", unsafe_allow_html=True)
+            info_col1, info_col2 = st.columns(2)
+            with info_col1:
+                if medecin:
+                    nom_med = medecin.nom or "غير محدد"
+                    spec = medecin.specialite or ""
+                    st.info(f"👨‍⚕️ **طبيب:** {nom_med} {f'({spec})' if spec else ''}")
+            with info_col2:
+                if patient:
+                    nom_pat = patient.nom or "غير محدد"
+                    st.info(f"🧑 **مريض:** {nom_pat}")
 
-        # ── Stats row ────────────────────────────────────
-        lang_display = {
-            "fr": "🇫🇷 فرنسية",
-            "ar": "🇲🇦 عربية",
-            "mixte": "🌍 مختلطة",
-            "inconnu": "❓ غير محدد"
-        }
-
-        n_meds = len(res.medicaments)
-        lang_str = lang_display.get(res.langue_detectee, res.langue_detectee)
-
-        st.markdown(f"""
-        <div class="stats-row">
-            <div class="stat-box">
-                <div class="number">{n_meds}</div>
-                <div class="label">💊 أدوية مكتشفة</div>
-            </div>
-            <div class="stat-box">
-                <div class="number">{lang_str}</div>
-                <div class="label">🌐 اللغة</div>
-            </div>
-            <div class="stat-box">
-                <div class="number">{res.engine_utilise.split('(')[0].strip()}</div>
-                <div class="label">🔧 المحرك</div>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-
-        # ── Medications ──────────────────────────────────
-        if res.medicaments:
-            st.markdown(f"### 💊 الأدوية المستخرجة ({n_meds})")
-
-            for i, med in enumerate(res.medicaments, 1):
-                # Badge de vérification
-                if med.verification_ma:
-                    vm = med.verification_ma
-                    if vm.get("found"):
-                        badge_html = '<span class="badge badge-found">🟢 موجود في medicament.ma</span>'
-                    else:
-                        badge_html = '<span class="badge badge-notfound">🔴 غير موجود</span>'
+        # ── Affichage des Médicaments ────────────────────────
+        if final_results:
+            st.markdown("### 💊 الأدوية المستخرجة")
+            
+            for med_name, info in final_results.items():
+                status = info.get("status", "unknown")
+                if status == "valid":
+                    status_icon = "✅"
+                    status_class = "status-valid"
+                    status_text = "مؤكد"
+                elif status == "suspect":
+                    status_icon = "⚠️"
+                    status_class = "status-suspect"
+                    status_text = "مشتبه به"
                 else:
-                    badge_html = '<span class="badge badge-nocheck">⚪ لم يتم التحقق</span>'
+                    status_icon = "❌"
+                    status_class = "status-invalid"
+                    status_text = "غير معروف"
 
-                title = med.dci or med.nom_brut
-                with st.expander(f"**{i}. {title}**", expanded=(i <= 3)):
-                    c1, c2 = st.columns(2)
-                    with c1:
-                        st.markdown(f"""
-                        <div class="med-card" dir="rtl">
-                            <h4>{title}</h4>
-                            {badge_html}
-                        """, unsafe_allow_html=True)
+                confidence = info.get("confidence", 0)
+                
+                with st.expander(f"{status_icon} **{med_name}** — (الثقة: {confidence*100:.0f}%)", expanded=(status == 'valid')):
+                    c_a, c_b = st.columns(2)
+                    with c_a:
+                        st.markdown(f"**الحالة:** <span class='{status_class}'>{status_text}</span>", unsafe_allow_html=True)
+                        st.markdown(f"**الجرعة (Dosage):** {info.get('dosage') or 'غير محدد'}")
+                        st.markdown(f"**طريقة الأخذ (Posologie):** {info.get('posologie') or 'غير محدد'}")
+                        st.markdown(f"**المدة (Durée):** {info.get('duree') or 'غير محدد'}")
+                    with c_b:
+                        price = info.get("price")
+                        st.markdown(f"**الثمن (Prix Public):** {f'{price} DH' if price else 'غير متوفر'}")
+                        remb = "نعم 💰" if info.get("remboursable") else "لا 🚫"
+                        st.markdown(f"**التعويض (CNOPS Remboursable):** {remb}")
+                        st.markdown(f"**النوع (Type):** {info.get('type') or 'N/A'}")
 
-                        if med.dci:
-                            st.markdown(f"**DCI :** {med.dci}")
-                        if med.nom_commercial:
-                            st.markdown(f"**الاسم التجاري :** {med.nom_commercial}")
-                        if med.dosage:
-                            st.markdown(f"**الجرعة :** {med.dosage}")
-                        if med.posologie:
-                            st.markdown(f"**طريقة الأخذ :** {med.posologie}")
-                        if med.duree:
-                            st.markdown(f"**المدة :** {med.duree}")
-
-                        st.markdown(f"**الثقة OCR :** {med.confidence_ocr:.0%}")
-                        st.markdown("</div>", unsafe_allow_html=True)
-
-                    with c2:
-                        if med.verification_ma:
-                            vm = med.verification_ma
-                            if vm.get("found"):
-                                st.success("✅ موجود على medicament.ma")
-                                for m in vm.get("medicaments", [])[:3]:
-                                    url = m.get("url", "")
-                                    nom = m.get("nom", "")
-                                    if url and nom:
-                                        st.markdown(f"🔗 [{nom}]({url})")
-                            else:
-                                st.warning("⚠️ غير موجود في القاعدة")
-                                first_word = med.nom_brut.split()[0] if med.nom_brut else ""
-                                search_url = f"https://medicament.ma/?s={requests.utils.quote(first_word)}"
-                                st.markdown(f"[🔍 بحث يدوي على medicament.ma]({search_url})")
-                        else:
-                            st.info("ℹ️ التحقق عبر الإنترنت معطل")
-        else:
-            st.warning("⚠️ لم يتم اكتشاف أي أدوية في هذه الوصفة")
-
-        # ── Raw text ─────────────────────────────────────
-        with st.expander("📄 النص الكامل المستخرج"):
-            if res.texte_brut:
-                st.markdown(
-                    f'<div class="raw-text-box">{res.texte_brut}</div>',
-                    unsafe_allow_html=True
-                )
-            else:
-                st.info("لا يوجد نص مستخرج")
-
-        # ── Warnings ─────────────────────────────────────
-        for w in res.avertissements:
-            if "⚠️" in w:
-                st.markdown(f'<div class="warning-box">{w}</div>',
-                            unsafe_allow_html=True)
-            elif "ℹ️" in w:
-                st.markdown(f'<div class="info-box">{w}</div>',
-                            unsafe_allow_html=True)
-            else:
-                st.info(w)
-
-
-# ── Run ──────────────────────────────────────────────────
 render_ocr_page()

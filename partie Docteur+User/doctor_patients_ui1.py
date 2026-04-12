@@ -335,12 +335,12 @@ def show_doctor_patients_ui(db, doctor_id):
                         # Boutons d'action modifiés
                         col_btn1, col_btn2 = st.columns(2)
                         with col_btn1:
-                            if st.button("📁 DOSSIER", key=f"dossier_{patient['id']}", use_container_width=True):
+                            if st.button("📁 DOSSIER", key=f"dossier_{patient['id']}", width='stretch'):
                                 st.session_state.selected_patient = patient['id']
                                 st.session_state.view_mode = "dossier"
                                 st.rerun()
                         with col_btn2:
-                            if st.button("📅 CONSULTATION", key=f"consult_{patient['id']}", use_container_width=True):
+                            if st.button("📅 CONSULTATION", key=f"consult_{patient['id']}", width='stretch'):
                                 st.session_state.selected_patient = patient['id']
                                 st.session_state.view_mode = "consultation"
                                 st.rerun()
@@ -399,7 +399,7 @@ def show_patient_dossier(db, patient_id, doctor_id):
         show_patient_historique(db, patient_id)
     
     # Bouton retour
-    if st.button("🔙 Retour à la liste des patients", use_container_width=True):
+    if st.button("🔙 Retour à la liste des patients", width='stretch'):
         st.session_state.selected_patient = None
         st.session_state.view_mode = None
         st.rerun()
@@ -544,7 +544,7 @@ def show_patient_images(db, patient_id):
         cols = st.columns(3)
         for idx, img in enumerate(images):
             with cols[idx % 3]:
-                st.image("https://via.placeholder.com/200x150.png?text=Image+Medicale", use_container_width=True)
+                st.image("https://via.placeholder.com/200x150.png?text=Image+Medicale", width='stretch')
                 st.caption(f"**{img['type']}** - {img['date'].strftime('%d/%m/%Y')}")
                 st.write(img['description'])
                 if st.button("🔍 Agrandir", key=f"view_img_{img['id']}"):
@@ -733,7 +733,7 @@ def show_patient_consultation_calendar(db, patient_id, doctor_id):
                                 if st.button(
                                     f"{rdv['heure_rdv'].strftime('%H:%M') if isinstance(rdv['heure_rdv'], datetime) else rdv['heure_rdv']} - Dr. {rdv['medecin_nom']}",
                                     key=rdv_key,
-                                    use_container_width=True
+                                    width='stretch'
                                 ):
                                     st.session_state.selected_rdv = rdv
                         
@@ -860,7 +860,7 @@ def show_patient_consultation_calendar(db, patient_id, doctor_id):
         st.error(f"Erreur lors du chargement du calendrier: {e}")
     
     # Bouton retour
-    if st.button("🔙 Retour à la liste des patients", use_container_width=True):
+    if st.button("🔙 Retour à la liste des patients", width='stretch'):
         st.session_state.selected_patient = None
         st.session_state.view_mode = None
         st.rerun()

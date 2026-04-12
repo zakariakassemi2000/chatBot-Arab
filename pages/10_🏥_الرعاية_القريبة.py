@@ -417,7 +417,7 @@ with st.container():
     # CTA INSIDE panel
     do_search = st.button(
         "🚀 ابدأ البحث الآن",
-        use_container_width=True
+        width='stretch'
     )
 
 
@@ -579,7 +579,7 @@ if do_search:
 
         st.dataframe(
             df,
-            use_container_width=True,
+            width='stretch',
             hide_index=True,
             column_config={
                 "المسافة (كم)": st.column_config.NumberColumn(format="%.2f كم"),
@@ -598,7 +598,7 @@ if do_search:
                 ),
                 mime="text/csv",
                 key="download_csv",
-                use_container_width=True,
+                width='stretch',
             )
 
         with col_dl_2:
@@ -615,7 +615,7 @@ if do_search:
                     file_name=f"shifa_nearby_{user_lat:.4f}_{user_lon:.4f}.xlsx",
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                     key="download_excel",
-                    use_container_width=True,
+                    width='stretch',
                 )
             except ImportError:
                 st.info("💡 قم بتثبيت `openpyxl` لتفعيل تصدير Excel")
@@ -654,7 +654,7 @@ if do_search:
                         plot_bgcolor="rgba(0,0,0,0)",
                         font=dict(color="#94A3B8"),
                     )
-                    st.plotly_chart(fig, use_container_width=True)
+                    st.plotly_chart(fig, width='stretch')
                 except ImportError:
                     st.info("💡 قم بتثبيت `plotly` لعرض الرسوم البيانية")
 
@@ -690,7 +690,7 @@ if do_search:
                 plot_bgcolor="rgba(0,0,0,0)",
                 font=dict(color="#94A3B8"),
             )
-            st.plotly_chart(fig_pie, use_container_width=True)
+            st.plotly_chart(fig_pie, width='stretch')
         except ImportError:
             st.info("💡 قم بتثبيت `plotly` لعرض الرسوم البيانية")
 

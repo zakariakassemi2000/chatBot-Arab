@@ -8,6 +8,7 @@
 
 import streamlit as st
 import logging
+import io
 
 logger = logging.getLogger("shifa.ordonnance_ui")
 
@@ -313,7 +314,7 @@ def render_ordonnance_page():
         unsafe_allow_html=True
     )
     st.markdown(
-        '<div class="moroccan-subtitle">Scanner une ordonnance · استخراج الأدوية تلقائيا بالذكاء الاصطناعي</div>',
+        '<div class="moroccan-subtitle">Scanner une ordonnance · استخراج الأدوية تلقائيا</div>',
         unsafe_allow_html=True
     )
 
@@ -376,28 +377,14 @@ def render_ordonnance_page():
                     <p style="color: #94a3b8; font-size: 0.9rem; line-height: 1.6;">
                         Le système va :<br/>
                         ✓ Pré-traiter l'image (contraste, netteté)<br/>
-                        ✓ Extraire le texte via docTR ou Donut<br/>
+                        ✓ Extraire le texte de l'ordonnance<br/>
                         ✓ Identifier les médicaments et posologies<br/>
                         ✓ Matcher avec la base pharmaceutique marocaine<br/>
-                        ✓ Vérifier sur medicament.ma
+                        ✓ Vérifier le prix sur medicament.ma et le remboursement CNOPS
                     </p>
                 </div>
                 """, unsafe_allow_html=True)
                 
-                engine_choice = st.radio(
-                    "⚙️ Moteur OCR :",
-                    options=["Rapide (docTR - Texte imprimé)", "Approfondi (Donut - Manuscrit)"],
-                    index=0,
-                    help="docTR est rapide mais moins précis sur les écritures cursives. Donut est spécialisé dans les ordonnances manuscrites."
-                )
-
-                verify_online = st.checkbox(
-                    "🌐 Vérifier sur medicament.ma",
-                    value=True,
-                    key="ord_verify_ma",
-                    help="Vérifie chaque médicament détecté sur medicament.ma (nécessite internet)"
-                )
-
                 analyze_btn = st.button(
                     "🚀 Lancer l'analyse",
                     type="primary",
@@ -406,209 +393,161 @@ def render_ordonnance_page():
                 )
 
         if analyze_btn:
-            # Determine if we use Donut
-            use_donut = "Donut" in engine_choice
-            
-            with st.spinner(f"🔬 Analyse OCR en cours... {'Donut' if use_donut else 'docTR'} → Extraction → Matching"):
+            with st.spinner("🔬 Analyse en cours..."):
                 try:
-                    # Try new engine first
-                    from engine.ocr_ordonnance import get_ocr
-                    ocr_pipeline = get_ocr(use_donut=use_donut, verify_online=verify_online)
-                    result = ocr_pipeline.analyser(image)
-                    _use_new_engine = True
-                except ImportError:
-                    # Fallback to old PaddleOCR engine
-                    try:
-                        from modules.ordonnance_scanner import analyze_ordonnance
-                        result = analyze_ordonnance(image)
-                        _use_new_engine = False
-                    except ImportError as ie:
-                        st.error(f"⚠️ Module manquant : {ie}")
-                        st.info("Installez les dépendances : `pip install python-doctr[torch] rapidfuzz`")
-                        return
+                    from engine.vision_ocr.vlm_extraction import extract_from_image
+                    
+                    # Convert PIL Image to bytes
+                    img_byte_arr = io.BytesIO()
+                    image.save(img_byte_arr, format=image.format or 'JPEG')
+                    image_bytes = img_byte_arr.getvalue()
+
+                    extraction = extract_from_image(image_bytes)
+                    st.session_state["ocr_extraction"] = extraction
                 except Exception as e:
                     st.error(f"❌ Erreur lors de l'analyse : {e}")
                     logger.error(f"OCR error: {e}", exc_info=True)
                     return
 
-            # ── Handle new engine result format ──
-            if _use_new_engine:
-                # Check for empty text
-                if not result.texte_brut.strip():
-                    st.error("⚠️ Aucun texte détecté. Essayez avec une image plus nette.")
-                    return
+        # ── Affichage et Correction interactive ──
+        if st.session_state.get("ocr_extraction") is not None:
+            extraction = st.session_state["ocr_extraction"]
+            import engine.vision_ocr.decision_engine as dec_engine
+            
+            score_global = extraction.confiance_globale * 100
+            score_class = _get_confidence_class(score_global)
+            n_meds = len(extraction.medicaments) if hasattr(extraction, 'medicaments') and extraction.medicaments else 0
 
-                # Score global is already computed by the pipeline
-                score_global = result.score_global * 100
-
-                score_class = _get_confidence_class(score_global)
-                n_meds = len(result.medicaments)
-                n_verified = sum(1 for m in result.medicaments
-                                 if m.verification_ma and m.verification_ma.get("found"))
-
-                st.markdown(f"""
-                <div class="score-global ord-animate">
-                    <div style="color: #94a3b8; font-size: 0.9rem; font-weight: 600;">
-                        SCORE DE CONFIANCE OCR · Moteur : {result.engine_utilise}
-                    </div>
-                    <div class="score-number {score_class}">
-                        {score_global:.0f}%
-                    </div>
-                    <div style="color: #64748b; font-size: 0.82rem;">
-                        {n_meds} médicament(s) détecté(s)
-                        {f'· {n_verified} vérifié(s) sur medicament.ma' if n_verified else ''}
-                        · Langue : {result.langue_detectee}
-                    </div>
+            st.markdown(f"""
+            <div class="score-global ord-animate">
+                <div style="color: #94a3b8; font-size: 0.9rem; font-weight: 600;">
+                    INDICE DE CONFIANCE
                 </div>
-                """, unsafe_allow_html=True)
+                <div class="score-number {score_class}">
+                    {score_global:.0f}%
+                </div>
+                <div style="color: #64748b; font-size: 0.82rem;">
+                    {n_meds} médicament(s) détecté(s)
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
 
-                # ── Cartes médicaments (new format) ──
-                if result.medicaments:
-                    all_cards_html = "<h3 style='color:#d4af37;margin:1.5rem 0 1rem'>💊 Médicaments détectés</h3>"
-                    for i, med in enumerate(result.medicaments):
-                        conf_pct = med.confidence_ocr * 100
-                        conf_class = _get_confidence_class(conf_pct)
+            if n_meds > 0:
+                st.markdown("<h3 style='color:#d4af37;margin:1.5rem 0 1rem'>💊 Médicaments détectés</h3>", unsafe_allow_html=True)
+                for i, med in enumerate(extraction.medicaments):
+                    analysis = dec_engine.analyze_medication(
+                        raw_name=med.nom,
+                        raw_dosage=med.dosage,
+                        vlm_confidence=extraction.confiance_globale,
+                        posologie=med.posologie,
+                        duree=med.duree,
+                    )
+                    
+                    status = analysis["status"]
+                    conf_pct = analysis["confidence"] * 100
+                    conf_class = _get_confidence_class(conf_pct)
+                    
+                    if status == "valid":
+                        badge = '<span class="med-badge found">✓ Validé</span>'
+                    elif status == "suspect":
+                        badge = '<span class="med-badge" style="background:rgba(234,179,8,0.15);color:#eab308;border:1px solid rgba(234,179,8,0.3)">⚠️ Suspect</span>'
+                    else:
+                        badge = '<span class="med-badge notfound">✗ Non trouvé</span>'
 
-                        # Badge
-                        if med.verification_ma and med.verification_ma.get("found"):
-                            badge = '<span class="med-badge found">✓ medicament.ma</span>'
-                        elif med.dci:
-                            badge = '<span class="med-badge found">✓ Base marocaine</span>'
-                        else:
-                            badge = '<span class="med-badge notfound">✗ Non référencé</span>'
+                    display_name = analysis.get("corrected_name", med.nom)
+                    
+                    status_text = "Valid" if status == "valid" else "Suspect" if status == "suspect" else "Non trouvé"
+                    val_dosage = analysis.get('dosage') or "Non détecté"
+                    val_poso = analysis.get('posologie') or "Non détectée"
+                    val_duree = analysis.get('duree') or "Non détectée"
+                    val_prix = f"{analysis['price']} DH" if analysis.get('price') else "Non trouvé"
+                    val_cnops = "Oui ✅" if analysis.get("remboursable") else "Non 🚫"
+                    val_type = analysis.get("type") or "Unknown"
 
-                        display_name = med.dci or med.nom_brut
-                        principe_html = f'<p class="med-principe">🧬 {med.nom_commercial}</p>' if med.nom_commercial else ""
+                    list_html = f"""
+                    <div style="background: rgba(15, 23, 42, 0.4); border-radius: 8px; padding: 1rem; border: 1px solid rgba(255, 255, 255, 0.05); color: #cbd5e1; font-size: 0.95rem; line-height: 1.8; margin: 1rem 0; font-family: 'Inter', sans-serif;">
+                        <span style="color:#d4af37; margin-right:8px;">▪</span> <b>Statut:</b> <span style="color: {'#4ade80' if status=='valid' else '#facc15' if status=='suspect' else '#f87171'};">{status_text}</span><br/>
+                        <span style="color:#d4af37; margin-right:8px;">▪</span> <b>Dosage:</b> {val_dosage}<br/>
+                        <span style="color:#d4af37; margin-right:8px;">▪</span> <b>Posologie:</b> {val_poso}<br/>
+                        <span style="color:#d4af37; margin-right:8px;">▪</span> <b>Durée:</b> {val_duree}<br/>
+                        <span style="color:#d4af37; margin-right:8px;">▪</span> <b>Prix Public:</b> {val_prix}<br/>
+                        <span style="color:#d4af37; margin-right:8px;">▪</span> <b>Remboursable CNOPS:</b> {val_cnops}<br/>
+                        <span style="color:#d4af37; margin-right:8px;">▪</span> <b>Type:</b> {val_type}
+                    </div>
+                    """
 
-                        # Info items
-                        info_items = []
-                        if med.dosage:
-                            info_items.append(("💊 Dosage", med.dosage))
-                        if med.posologie:
-                            info_items.append(("🔄 Posologie", med.posologie))
-                        if med.duree:
-                            info_items.append(("📅 Durée", med.duree))
-
-                        info_grid = ""
-                        if info_items:
-                            items_html = "".join(
-                                f'<div class="med-info-item">'
-                                f'<div class="med-info-label">{label}</div>'
-                                f'<div class="med-info-value">{value}</div>'
-                                f'</div>'
-                                for label, value in info_items
-                            )
-                            info_grid = f'<div class="med-info-grid">{items_html}</div>'
-
-                        # Formes et Dosages (from DB)
-                        db_info_html = ""
-                        if med.formes_disponibles or med.dosages_habituels:
-                            db_info_html += '<div style="margin: 0.8rem 0; font-size: 0.85rem;">'
-                            if med.formes_disponibles:
-                                pills = "".join(f'<span class="forme-pill">{f}</span>' for f in med.formes_disponibles)
-                                db_info_html += f'<div style="margin-bottom:4px;"><b>📦 Formes :</b> {pills}</div>'
-                            if med.dosages_habituels:
-                                db_info_html += f'<div style="color:#d4af37;"><b>💊 Dosages habituels :</b> {", ".join(med.dosages_habituels)}</div>'
-                            db_info_html += '</div>'
-
-                        # Confidence bar
-                        color = '#4ade80' if conf_class == 'high' else '#fbbf24' if conf_class == 'medium' else '#f87171'
-                        conf_bar = (
-                            f'<div class="conf-bar-bg">'
-                            f'<div class="conf-bar-fill {conf_class}" style="width:{conf_pct}%"></div>'
-                            f'</div>'
-                            f'<div class="conf-label">'
-                            f'<span>Confiance OCR</span>'
-                            f'<span style="color:{color};font-weight:700">{conf_pct:.0f}%</span>'
-                            f'</div>'
-                        )
-
-                        # Verification link
-                        verif_html = ""
-                        if med.verification_ma and med.verification_ma.get("found"):
-                            for vm_item in med.verification_ma.get("medicaments", [])[:2]:
-                                url = vm_item.get("url", "")
-                                nom = vm_item.get("nom", "")
-                                if url and nom:
-                                    verif_html += (
-                                        f'<div style="margin-top:6px;">'
-                                        f'<a href="{url}" target="_blank" style="color:#22d3ee;font-size:0.85rem;">'
-                                        f'🔗 {nom}'
-                                        f'</a></div>'
-                                    )
-
-                        card_html = (
-                            f'<div class="med-card {conf_class}" style="animation-delay:{i * 0.1}s">'
-                            f'<div class="med-card-header">'
-                            f'<div><h3 class="med-name">💊 {display_name}</h3>{principe_html}</div>'
-                            f'{badge}'
-                            f'</div>'
-                            f'{info_grid}'
-                            f'{db_info_html}'
-                            f'{verif_html}'
-                            f'{conf_bar}'
-                            f'</div>'
-                        )
-                        all_cards_html += card_html
-
-                    st.markdown(all_cards_html, unsafe_allow_html=True)
-                else:
-                    st.warning(
-                        "Aucun médicament n'a pu être identifié dans cette ordonnance. "
-                        "Essayez avec une image plus nette ou un meilleur éclairage."
+                    color = '#4ade80' if conf_class == 'high' else '#fbbf24' if conf_class == 'medium' else '#f87171'
+                    conf_bar = (
+                        f'<div class="conf-bar-bg">'
+                        f'<div class="conf-bar-fill {conf_class}" style="width:{conf_pct}%"></div>'
+                        f'</div>'
+                        f'<div class="conf-label">'
+                        f'<span>Confiance</span>'
+                        f'<span style="color:{color};font-weight:700">{conf_pct:.0f}%</span>'
+                        f'</div>'
                     )
 
-                # Warnings from engine
-                for w in result.avertissements:
-                    if "⚠️" in w:
-                        st.warning(w)
-                    elif "ℹ️" in w:
-                        st.info(w)
+                    card_html = (
+                        f'<div class="med-card {conf_class}" style="animation-delay:{i * 0.1}s">'
+                        f'<div class="med-card-header">'
+                        f'<div><h3 class="med-name">💊 {display_name}</h3></div>'
+                        f'{badge}'
+                        f'</div>'
+                        f'{list_html}'
+                        f'{conf_bar}'
+                        f'</div>'
+                    )
+                    st.markdown(card_html, unsafe_allow_html=True)
+                    
+                    # Section de correction manuelle interactive
+                    with st.expander(f"⚙️ Action : Corriger ou Supprimer"):
+                        c_edit1, c_edit2 = st.columns(2)
+                        with c_edit1:
+                            new_name = st.text_input("Nom du médicament", value=med.nom, key=f"edit_name_{i}")
+                        with c_edit2:
+                            new_dosage = st.text_input("Dosage", value=med.dosage or "", key=f"edit_dosage_{i}")
+                        
+                        col_btn1, col_btn2 = st.columns([1, 1])
+                        with col_btn1:
+                            if st.button("🔄 Vérifier", key=f"update_btn_{i}", use_container_width=True):
+                                st.session_state["ocr_extraction"].medicaments[i].nom = new_name
+                                st.session_state["ocr_extraction"].medicaments[i].dosage = new_dosage
+                                if hasattr(st, "rerun"):
+                                    st.rerun()
+                                else:
+                                    st.experimental_rerun()
+                        with col_btn2:
+                            if st.button("🗑️ Supprimer", key=f"del_btn_{i}", use_container_width=True):
+                                st.session_state["ocr_extraction"].medicaments.pop(i)
+                                if hasattr(st, "rerun"):
+                                    st.rerun()
+                                else:
+                                    st.experimental_rerun()
 
             else:
-                # ── Old engine result format (fallback) ──
-                if result.erreur:
-                    st.error(f"⚠️ {result.erreur}")
-                    if result.texte_brut:
-                        with st.expander("📝 Texte OCR brut extrait"):
-                            st.markdown(
-                                f'<div class="ocr-text-box">{result.texte_brut}</div>',
-                                unsafe_allow_html=True
-                            )
-                    return
-
-                score_class = _get_confidence_class(result.score_global)
-                st.markdown(f"""
-                <div class="score-global ord-animate">
-                    <div style="color: #94a3b8; font-size: 0.9rem; font-weight: 600;">
-                        SCORE DE CONFIANCE GLOBAL
-                    </div>
-                    <div class="score-number {score_class}">
-                        {result.score_global:.0f}%
-                    </div>
-                    <div style="color: #64748b; font-size: 0.82rem;">
-                        {len(result.medicaments)} médicament(s) détecté(s)
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-
-                if result.medicaments:
-                    all_cards_html = "<h3 style='color:#d4af37;margin:1.5rem 0 1rem'>💊 Médicaments détectés</h3>"
-                    for i, med in enumerate(result.medicaments):
-                        all_cards_html += _render_medication_card(med, i)
-                    st.markdown(all_cards_html, unsafe_allow_html=True)
-                else:
-                    st.warning(
-                        "Aucun médicament n'a pu être identifié dans cette ordonnance. "
-                        "Essayez avec une image plus nette ou un meilleur éclairage."
-                    )
-
-            # ── Texte OCR brut ──
-            with st.expander("📝 Texte OCR brut extrait (debug)"):
-                st.markdown(
-                    f'<div class="ocr-text-box">{result.texte_brut}</div>',
-                    unsafe_allow_html=True
+                st.warning(
+                    "Aucun médicament n'a pu être identifié. "
+                    "Vous pouvez le(s) saisir manuellement ci-dessous."
                 )
+
+            # ── Section d'ajout manuel ──
+            st.markdown("<hr style='border:1px solid rgba(255,255,255,0.1); margin: 2rem 0;'/>", unsafe_allow_html=True)
+            st.markdown("<h4 style='color:#f8fafc;'>➕ Ajouter un médicament manuellement</h4>", unsafe_allow_html=True)
+            with st.form("add_med_form", clear_on_submit=True):
+                col_ad1, col_ad2 = st.columns(2)
+                with col_ad1:
+                    add_name = st.text_input("Nom du médicament (ex: Doliprane)")
+                with col_ad2:
+                    add_dosage = st.text_input("Dosage (optionnel, ex: 1000mg)")
+                add_submit = st.form_submit_button("Ajouter à la liste")
+                if add_submit and add_name:
+                    from engine.vision_ocr.vlm_extraction import Medicament
+                    new_med = Medicament(nom=add_name, dosage=add_dosage, posologie=None, duree=None)
+                    st.session_state["ocr_extraction"].medicaments.append(new_med)
+                    if hasattr(st, "rerun"):
+                        st.rerun()
+                    else:
+                        st.experimental_rerun()
 
             # ── Disclaimer final ──
             st.markdown("""
@@ -616,18 +555,12 @@ def render_ordonnance_page():
                 <p>
                     <b>⚠️ AVERTISSEMENT LÉGAL — MENTIONS OBLIGATOIRES :</b><br/><br/>
                     ① Les résultats de ce scanner sont générés par un système automatisé de reconnaissance
-                    optique de caractères (OCR) et de matching algorithmique. Ils sont fournis
-                    <b>à titre informatif uniquement</b>.<br/><br/>
-                    ② Ce système <b>ne constitue pas un avis médical ni pharmaceutique</b>.
-                    Les informations extraites peuvent contenir des erreurs dues à la qualité
-                    de l'image, à l'écriture manuscrite ou aux limites de la technologie OCR.<br/><br/>
+                    optique de caractères. Ils sont fournis <b>à titre informatif uniquement</b>.<br/>
+                    ② Ce système <b>ne constitue pas un avis médical ni pharmaceutique</b>.<br/>
                     ③ <b>Consultez systématiquement votre médecin ou votre pharmacien</b>
-                    pour la validation de toute ordonnance avant la prise de médicaments.<br/><br/>
-                    ④ SHIFA AI décline toute responsabilité en cas d'utilisation inappropriée
-                    des informations fournies par ce module.<br/><br/>
+                    pour la validation de toute ordonnance.<br/>
                     <span style="color:#64748b; font-size:0.78rem;">
-                        Conformément à la réglementation marocaine (Loi 17-04 portant code du médicament
-                        et de la pharmacie), seul un professionnel de santé habilité peut prescrire
+                        Conformément à la réglementation marocaine, seul un professionnel de santé habilité peut prescrire
                         et délivrer des médicaments.
                     </span>
                 </p>

@@ -322,17 +322,23 @@ def inject_custom_css():
             margin-bottom: 3rem;
         }
 
+        @keyframes pulseAlert {
+            0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(220, 38, 38, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+        }
         /* Minimal Zellige Emergency Alert */
         .zellige-alert {
-            background: rgba(220, 38, 38, 0.05); /* very subtle red */
-            border-right: 4px solid var(--z-red);
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.1), rgba(220, 38, 38, 0.05));
+            border-right: 6px solid var(--z-red);
             border-radius: 12px;
-            padding: 1.2rem 1.5rem;
+            padding: 1.5rem 1.8rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 2.5rem;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.2);
+            animation: pulseAlert 2.5s infinite;
         }
         .zellige-alert-title { color: #f8fafc; font-weight: 700; font-size: 1.2rem; display: flex; align-items: center; gap: 0.8rem; }
         .zellige-alert-text { color: var(--z-muted); font-size: 0.95rem; margin-top: 0.2rem; }
@@ -460,7 +466,7 @@ def _check_auth() -> bool:
                     placeholder="••••••••",
                     key="login_password"
                 )
-                if st.button("🔑 دخول / Se connecter", type="primary", key="btn_login", use_container_width=True):
+                if st.button("🔑 دخول / Se connecter", type="primary", key="btn_login", width="stretch"):
                     if not login_username or not login_password:
                         st.error("⚠️ Veuillez remplir tous les champs.")
                     elif login_user is None:
@@ -513,7 +519,7 @@ def _check_auth() -> bool:
                     placeholder="••••••••",
                     key="reg_password2"
                 )
-                if st.button("📝 إنشاء الحساب / Créer", type="primary", key="btn_register", use_container_width=True):
+                if st.button("📝 إنشاء الحساب / Créer", type="primary", key="btn_register", width="stretch"):
                     if not reg_username or not reg_password:
                         st.error("⚠️ Les champs marqués * sont obligatoires.")
                     elif reg_password != reg_password2:
@@ -562,7 +568,7 @@ def _check_auth() -> bool:
                 </div>
                 """, unsafe_allow_html=True)
 
-                if st.button("👤 المتابعة كزائر / Continuer en invité", key="btn_guest", use_container_width=True):
+                if st.button("👤 المتابعة كزائر / Continuer en invité", key="btn_guest", width="stretch"):
                     st.session_state["_authenticated"] = True
                     st.session_state["_user"] = guest_session() if guest_session else {
                         "id": None, "username": "Invité", "role": "guest"
@@ -683,8 +689,8 @@ with st.sidebar:
         st.markdown("""
         <div style="background:rgba(212,175,55,0.08); border:1px solid rgba(212,175,55,0.25);
                     border-radius:10px; padding:0.6rem 1rem; text-align:center; margin-bottom:0.5rem;">
-            <span style="color:#d4af37; font-weight:700; font-size:0.85rem;">👤 وضع الزائر / Invité</span><br>
-            <span style="color:#64748b; font-size:0.75rem;">المحادثات غير محفوظة</span>
+            <span style="color:#d4af37; font-weight:700; font-size:0.85rem;">👤 زائر / حساب مؤقت</span><br>
+            <span style="color:#64748b; font-size:0.75rem;">الميزات محدودة. أنشئ حساباً للحفظ.</span>
         </div>
         """, unsafe_allow_html=True)
     else:
@@ -696,7 +702,7 @@ with st.sidebar:
         </div>
         """, unsafe_allow_html=True)
 
-    if st.button("🚪 تسجيل الخروج / Déconnexion", use_container_width=True, key="sidebar_logout"):
+    if st.button("🚪 تسجيل الخروج / Déconnexion", width="stretch", key="sidebar_logout"):
         for k in ["_authenticated", "_user", "_is_guest", "messages", "local_history"]:
             st.session_state.pop(k, None)
         st.rerun()
@@ -719,23 +725,8 @@ with st.sidebar:
             st.session_state.session_id = str(time.time())
             st.rerun()
             
-    # ── Link to Docteur+User Portal ──
-    st.markdown("<hr style='border-color: rgba(22, 163, 74, 0.2);'/>", unsafe_allow_html=True)
-    st.markdown("""
-    <div style="text-align:center; margin-bottom:0.5rem;">
-        <span style="color:#d4af37; font-size:1rem; font-weight:700;">🏥 فضاء الطبيب والمريض</span><br/>
-        <span style="color:#94a3b8; font-size:0.8rem;">إدارة المرضى · المواعيد · التحاليل</span>
-    </div>
-    """, unsafe_allow_html=True)
-    if st.button("🚀 تشغيل فضاء الطبيب", width="stretch"):
-        import subprocess as _sp
-        doctor_app = str(BASE_DIR / "partie Docteur+User" / "main.py")
-        _sp.Popen(
-            [sys.executable, "-m", "streamlit", "run", doctor_app, "--server.port", "8503"],
-            cwd=str(BASE_DIR / "partie Docteur+User")
-        )
-        st.success("✅ تم التشغيل! افتح http://localhost:8503")
-    st.link_button("🔗 فتح فضاء الطبيب", "http://localhost:8503", use_container_width=True)
+    # Removed Sidebar Links: Mental Health & Doctor Portal have been moved to main dashboard for clarity
+
 
     st.markdown("""
     <div style="background:rgba(22, 163, 74, 0.05); border-right:3px solid #16a34a; padding:12px; margin-top:2rem; border-radius:8px 0 0 8px;">
@@ -770,67 +761,116 @@ if st.session_state.page == "home":
         </div>
     """, unsafe_allow_html=True)
     
-    # ── Main CTA ──
-    col_cta1, col_cta2, col_cta3 = st.columns([1, 2, 1])
+    # ── Main CTA (Onboarding / 2 Actions) ──
+    st.markdown("<p style='text-align:center; color:#94a3b8; font-size:1.15rem; margin-bottom:1.5rem;'>👋 مرحباً بك! يرجى اختيار الخدمة المناسبة لحالتك للبدء.</p>", unsafe_allow_html=True)
+    col_cta1, col_cta2, col_cta3, col_cta4 = st.columns([0.5, 2, 2, 0.5])
     with col_cta2:
-        if st.button("🚀 ابدأ محادثة أو تشخيص جديد الآن", width="stretch", type="primary"):
+        if st.button("💬 صف أعراضك للطبيب الذكي", width="stretch", type="primary"):
             st.session_state.page = "chat"
+            st.rerun()
+    with col_cta3:
+        if st.button("📸 رفع ومسح صورة طبية / وصفة", width="stretch", type="primary"):
+            st.session_state.page = "vision"
             st.rerun()
             
     st.markdown("<br><br>", unsafe_allow_html=True)
     
-    # ── System Metrics Panel (Native Elements) ──
-    st.subheader("📊 حالة الجاهزية والنظام")
-    cols_metrics = st.columns(4)
-    
-    with cols_metrics[0]:
-        with st.container(border=True):
-            st.markdown(f"<div style='text-align:center;'><h3>🧠</h3><p style='color:#94a3b8; margin:0;'>محرك التحليل</p><h4 style='color:{'#16a34a' if AI_STATUS else '#dc2626'}; margin:0;'>{'نشط ✔' if AI_STATUS else 'غير متصل ❌'}</h4></div>", unsafe_allow_html=True)
+    # ── System Metrics Panel (Hidden by default / Dev Only) ──
+    with st.expander("⚙️ تفاصيل حالة النظام والمحرك (للمشرفين)"):
+        st.caption("مراقبة أداء محرك الاستدلال وقاعدة المعرفة")
+        cols_metrics = st.columns(4)
         
-    with cols_metrics[1]:
-        with st.container(border=True):
-            st.markdown(f"<div style='text-align:center;'><h3>📚</h3><p style='color:#94a3b8; margin:0;'>قاعدة المعرفة</p><h4 style='color:{'#16a34a' if DB_STATUS else '#fbbf24'}; margin:0;'>{'محدثة بالكامل ✔' if DB_STATUS else 'جاري التحديث⏳'}</h4></div>", unsafe_allow_html=True)
+        with cols_metrics[0]:
+            with st.container(border=True):
+                st.markdown(f"<div style='text-align:center;'><h3>🧠</h3><p style='color:#94a3b8; margin:0;'>محرك التحليل</p><h4 style='color:{'#16a34a' if AI_STATUS else '#dc2626'}; margin:0;'>{'نشط ✔' if AI_STATUS else 'غير متصل ❌'}</h4></div>", unsafe_allow_html=True)
+            
+        with cols_metrics[1]:
+            with st.container(border=True):
+                st.markdown(f"<div style='text-align:center;'><h3>📚</h3><p style='color:#94a3b8; margin:0;'>قاعدة المعرفة</p><h4 style='color:{'#16a34a' if DB_STATUS else '#fbbf24'}; margin:0;'>{'محدثة ✔' if DB_STATUS else 'جاري التحديث⏳'}</h4></div>", unsafe_allow_html=True)
 
-    with cols_metrics[2]:
-        msg_count = len(st.session_state.get("local_history", []))
-        with st.container(border=True):
-            st.markdown(f"<div style='text-align:center;'><h3>👥</h3><p style='color:#94a3b8; margin:0;'>استشاراتك</p><h4 style='color:#38bdf8; margin:0;'>{msg_count} محفوظ بنجاح</h4></div>", unsafe_allow_html=True)
-        
-    with cols_metrics[3]:
-        with st.container(border=True):
-            st.markdown("<div style='text-align:center;'><h3>⚡</h3><p style='color:#94a3b8; margin:0;'>الأداء والاستجابة</p><h4 style='color:#d4af37; margin:0;'>السرعة المستقرة</h4></div>", unsafe_allow_html=True)
+        with cols_metrics[2]:
+            msg_count = len(st.session_state.get("local_history", []))
+            with st.container(border=True):
+                st.markdown(f"<div style='text-align:center;'><h3>👥</h3><p style='color:#94a3b8; margin:0;'>الجلسة المحلية</p><h4 style='color:#38bdf8; margin:0;'>{msg_count} عنصر محفوظ</h4></div>", unsafe_allow_html=True)
+            
+        with cols_metrics[3]:
+            with st.container(border=True):
+                st.markdown("<div style='text-align:center;'><h3>⚡</h3><p style='color:#94a3b8; margin:0;'>السرعة</p><h4 style='color:#d4af37; margin:0;'>الزمن مستقر</h4></div>", unsafe_allow_html=True)
 
     st.markdown("<hr/>", unsafe_allow_html=True)
     
-    # ── Interactive Services Menu (Native Buttons styled via CSS) ──
-    st.subheader("🛠️ باقة الخدمات الطبية المتقدمة")
+    # ── Interactive Services Menu (Categorized with Distinct UI Layout) ──
     
-    cards = [
-        ("💬", "محادثة طبية", "chat", None),
-        ("🎙️", "المساعد الصوتي", "voice", None),
-        ("🔬", "تحليل الصور", "vision", None),
-        ("🩺", "فاحص الأعراض", "scanner", None),
-        ("📋", "ماسح الوصفات", "ordonnance", None),
-        ("🧮", "الحاسبات الطبية", "calculators", None),
-        ("📚", "البحث المعرفي", "database", None),
-        ("🏥", "الرعاية القريبة", None, "pages/10_🏥_الرعاية_القريبة.py"),
-        ("🦩", "ذكاء متعدد", None, "pages/06_🦩_المساعد_متعدد_الوسائط.py"),
-        ("📜", "الأرشيف", "history", None),
-    ]
+    # 1) Category: التشخيص الأساسي والفوري (2-column preferred)
+    st.markdown("<h3 style='color:#16a34a; margin-top:2rem;'><span class='material-symbols-rounded'>stethoscope</span> التشخيص الأساسي</h3>", unsafe_allow_html=True)
+    col_diag1, col_diag2 = st.columns(2)
+    with col_diag1:
+        if st.button("💬 المحادثة الطبية", key="srv_chat", width="stretch", help="ابدأ الآن بالحديث عن أعراضك"):
+            st.session_state.page = "chat"
+            st.rerun()
+    with col_diag2:
+        if st.button("🩺 فاحص الأعراض المتقدم", key="srv_scanner", width="stretch", help="نموذج تحليل ذكي مبني على أسئلة سريرية"):
+            st.session_state.page = "scanner"
+            st.rerun()
 
-    for i in range(0, len(cards), 4):
-        cols = st.columns(4)
-        for j in range(4):
-            if i + j < len(cards):
-                c = cards[i + j]
-                with cols[j]:
-                    # Primary rendering of the card as a simple styled button
-                    if st.button(f"{c[0]}  {c[1]}", key=f"srv_btn_{i+j}", width="stretch"):
-                        if c[2]:
-                            st.session_state.page = c[2]
-                            st.rerun()
-                        elif c[3]:
-                            st.switch_page(c[3])
+    # 2) Category: الأدوات المتقدمة والتحاليل (3-column layout)
+    st.markdown("<h3 style='color:#8b5cf6; margin-top:2.5rem;'><span class='material-symbols-rounded'>science</span> أدوات المعمل المتقدمة</h3>", unsafe_allow_html=True)
+    col_adv1, col_adv2, col_adv3 = st.columns(3)
+    with col_adv1:
+        if st.button("🔬 مختبر تحليل الصور الأشعة", key="srv_vision", width="stretch", help="حلل صور الرنين المغناطيسي والأشعة"):
+            st.session_state.page = "vision"
+            st.rerun()
+    with col_adv2:
+        if st.button("📋 ماسح الوصفات الطبية (OCR)", key="srv_ordo", width="stretch", help="استخرج أسماء الأدوية من الوصفات"):
+            st.session_state.page = "ordonnance"
+            st.rerun()
+    with col_adv3:
+        if st.button("🧮 حاسبات المقاييس الحيوية", key="srv_calc", width="stretch", help="حسابات طبية سريرية"):
+            st.session_state.page = "calculators"
+            st.rerun()
+
+    # 3) Category: خدمات عامة ومتخصصة (3-column layout, including mental & doctor space)
+    st.markdown("<h3 style='color:#38bdf8; margin-top:2.5rem;'><span class='material-symbols-rounded'>public</span> خدمات متخصصة والسجلات</h3>", unsafe_allow_html=True)
+    col_gen1, col_gen2, col_gen3 = st.columns(3)
+    with col_gen1:
+        if st.button("🧠 وحدة الصحة النفسية", key="srv_mental", width="stretch", help="جلسات للعلاج المعرفي ودعم الصحة النفسية"):
+            st.session_state.page = "mental"
+            st.rerun()
+    with col_gen2:
+        if st.button("🏥 العيادات والرعاية القريبة", key="srv_care", width="stretch"):
+            st.switch_page("pages/10_🏥_الرعاية_القريبة.py")
+    with col_gen3:
+        if st.button("📚 المستكشف البحثي", key="srv_db", width="stretch"):
+            st.session_state.page = "database"
+            st.rerun()
+
+    # Smaller bottom rows for secondary features
+    st.markdown("<br>", unsafe_allow_html=True)
+    col_sec1, col_sec2, col_sec3 = st.columns(3)
+    with col_sec1:
+        if st.button("🎙️ المساعد الصوتي السريع", key="srv_voice", width="stretch"):
+            st.session_state.page = "voice"
+            st.rerun()
+    with col_sec2:
+        if st.button("🦩 المساعد متعدد الوسائط", key="srv_flamingo", width="stretch"):
+            st.switch_page("pages/06_🦩_المساعد_متعدد_الوسائط.py")
+    with col_sec3:
+        if st.button("📜 الأرشيف والسجلات", key="srv_hist", width="stretch"):
+            st.session_state.page = "history"
+            st.rerun()
+    
+    # Optional direct link to doctor space on main dashboard
+    st.markdown("<hr style='opacity:0.2; margin-top:3rem;'/>", unsafe_allow_html=True)
+    st.markdown("<div style='text-align:center;'>", unsafe_allow_html=True)
+    if st.button("👨‍⚕️ فضاء الطبيب والإدارة الطبية الخاصة", key="srv_doc", help="الانتقال إلى تطبيق إدارة المستشفى والمرضى"):
+        import subprocess as _sp
+        doctor_app = str(BASE_DIR / "partie Docteur+User" / "main.py")
+        _sp.Popen(
+            [sys.executable, "-m", "streamlit", "run", doctor_app, "--server.port", "8503"],
+            cwd=str(BASE_DIR / "partie Docteur+User")
+        )
+        st.success("✅ جاري فتح فضاء الطبيب على منفذ 8503.. افتح المتصفح على localhost:8503")
+    st.markdown("</div>", unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────────────────────
 # PAGE: CHAT (MAIN)
@@ -1501,6 +1541,21 @@ elif st.session_state.page == "calculators":
                 st.error("⛔ **MAP منخفض جداً** — خطر نقص التروية الدموية.")
 
 
+
+# ─────────────────────────────────────────────────────────────
+# PAGE: MENTAL HEALTH (شفاء-نفس)
+# ─────────────────────────────────────────────────────────────
+elif st.session_state.page == "mental":
+    try:
+        from mental_module import render_mental_module
+        _or_key = st.secrets.get("OPENROUTER_API_KEY", "") or os.getenv("OPENROUTER_API_KEY", "")
+        render_mental_module(api_key=_or_key)
+    except ImportError as e:
+        logger.error(f"Mental module import error: {e}")
+        st.error("⚠️ Module الصحة النفسية غير متاح حالياً.")
+    except Exception as e:
+        logger.error(f"Mental module error: {e}")
+        st.error(f"خطأ في تحميل وحدة الصحة النفسية: {e}")
 
 # ─────────────────────────────────────────────────────────────
 # PAGE: ORDONNANCE SCANNER

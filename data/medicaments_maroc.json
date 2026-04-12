@@ -4,7 +4,8 @@
       "dci": "Paracétamol",
       "noms_commerciaux": ["Doliprane", "Efferalgan", "Dafalgan"],
       "formes": ["comprimé", "sirop", "suppositoire", "sachet", "comprimé effervescent", "gélule"],
-      "dosages_courants": ["500mg", "1000mg"]
+      "dosages_courants": ["500mg", "1000mg"],
+      "ocr_aliases": ["dolipran", "dolipranne", "efferalqan", "dafalqan", "paracetarnol", "paracetamol"]
     },
     {
       "dci": "Piroxicam",
@@ -30,25 +31,29 @@
       "dci": "Amoxicilline",
       "noms_commerciaux": ["Amoxicilline", "Clamoxyl"],
       "formes": ["gélule", "suspension buvable", "poudre"],
-      "dosages_courants": ["250mg", "500mg", "1g"]
+      "dosages_courants": ["250mg", "500mg", "1g"],
+      "ocr_aliases": ["amoxicillin", "amoxiciline", "amoxiciiline", "clamoxyl", "clamoxy", "clamoxyI"]
     },
     {
       "dci": "Amoxicilline + Acide clavulanique",
       "noms_commerciaux": ["Augmentin"],
       "formes": ["comprimé", "poudre", "sachet"],
-      "dosages_courants": ["500mg/62.5mg", "1g/125mg"]
+      "dosages_courants": ["500mg/62.5mg", "1g/125mg"],
+      "ocr_aliases": ["augmentin", "augmentine", "auqmentin", "augrnentin"]
     },
     {
       "dci": "Phloroglucinol",
       "noms_commerciaux": ["Spasfon"],
       "formes": ["comprimé", "lyoc", "suppositoire"],
-      "dosages_courants": ["80mg"]
+      "dosages_courants": ["80mg"],
+      "ocr_aliases": ["spasfon", "spasfort", "spasfbn"]
     },
     {
       "dci": "Ibuprofène",
       "noms_commerciaux": ["Ibuprofène", "Nurofen"],
       "formes": ["comprimé", "gélule", "sirop"],
-      "dosages_courants": ["200mg", "400mg"]
+      "dosages_courants": ["200mg", "400mg"],
+      "ocr_aliases": ["ibuprofen", "ibuprofene", "nurofen", "nurofene"]
     },
     {
       "dci": "Salbutamol",
@@ -66,7 +71,8 @@
       "dci": "Diclofénac",
       "noms_commerciaux": ["Voltarène", "Diclofénac"],
       "formes": ["comprimé", "gel", "suppositoire"],
-      "dosages_courants": ["25mg", "50mg", "75mg"]
+      "dosages_courants": ["25mg", "50mg", "75mg"],
+      "ocr_aliases": ["voltarene", "voltaren", "diclofenac", "diclofen", "voltarème"]
     },
     {
       "dci": "Alginate de sodium",
@@ -79,7 +85,7 @@
       "noms_commerciaux": ["Oméprazole", "Mopral"],
       "formes": ["gélule"],
       "dosages_courants": ["10mg", "20mg"],
-      "ocr_aliases": ["epp", "ipp"]
+      "ocr_aliases": ["epp", "ipp", "omeprazole", "omeprazol", "orneprazole", "mopral", "mopraI"]
     },
     {
       "dci": "Esoméprazole",
@@ -127,13 +133,15 @@
       "dci": "Périndopril",
       "noms_commerciaux": ["Coversyl"],
       "formes": ["comprimé"],
-      "dosages_courants": ["4mg", "8mg"]
+      "dosages_courants": ["4mg", "8mg"],
+      "ocr_aliases": ["coversyl", "coversyI", "perindopril"]
     },
     {
       "dci": "Metformine",
       "noms_commerciaux": ["Metformine", "Glucophage"],
       "formes": ["comprimé"],
-      "dosages_courants": ["500mg", "850mg", "1000mg"]
+      "dosages_courants": ["500mg", "850mg", "1000mg"],
+      "ocr_aliases": ["metformin", "metfornine", "glucophage", "glucophaqe"]
     },
     {
       "dci": "Lévothyroxine",
@@ -205,13 +213,15 @@
       "dci": "Bétaméthasone",
       "noms_commerciaux": ["Celestène"],
       "formes": ["comprimé", "gouttes"],
-      "dosages_courants": ["0.5mg", "2mg"]
+      "dosages_courants": ["0.5mg", "2mg"],
+      "ocr_aliases": ["celestene", "celestère", "betamethasone", "celestène"]
     },
     {
       "dci": "Prednisolone",
       "noms_commerciaux": ["Solupred"],
       "formes": ["comprimé", "solution buvable"],
-      "dosages_courants": ["5mg", "20mg"]
+      "dosages_courants": ["5mg", "20mg"],
+      "ocr_aliases": ["solupred", "solupréd", "prednisolone", "prednisolone"]
     },
     {
       "dci": "Furosémide",

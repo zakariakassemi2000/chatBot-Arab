@@ -35,7 +35,7 @@ logger = logging.getLogger(__name__)
 #  Constants
 # ═════════════════════════════════════════════════════════════════
 
-EMBED_MODEL_NAME = "aubmindlab/bert-base-arabertv2"
+EMBED_MODEL_NAME = "sentence-transformers/paraphrase-multilingual-mpnet-base-v2"
 
 # Cross-encoder for reranking (multilingual, small, fast)
 RERANKER_MODEL_NAME = "cross-encoder/ms-marco-MiniLM-L-6-v2"

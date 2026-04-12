@@ -28,10 +28,10 @@ if not st.session_state.cart:
         
         col_a, col_b = st.columns(2)
         with col_a:
-            if st.button("📂 Voir les catégories", use_container_width=True):
+            if st.button("📂 Voir les catégories", width='stretch'):
                 st.switch_page("pages/2_Categories.py")
         with col_b:
-            if st.button("🏠 Retour à l'accueil", use_container_width=True):
+            if st.button("🏠 Retour à l'accueil", width='stretch'):
                 st.switch_page("app.py")
 else:
     # Affichage du panier
@@ -59,7 +59,7 @@ else:
             col1, col2, col3, col4 = st.columns([1, 3, 2, 1])
             
             with col1:
-                st.image(f"https://via.placeholder.com/100x100?text=Produit", use_column_width=True)
+                st.image(f"https://via.placeholder.com/100x100?text=Produit", width='stretch')
             
             with col2:
                 st.markdown(f"### {item['name']}")
@@ -133,16 +133,16 @@ else:
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
-        if st.button("🔄 Continuer mes achats", use_container_width=True):
+        if st.button("🔄 Continuer mes achats", width='stretch'):
             st.switch_page("pages/2_Categories.py")
     
     with col2:
-        if st.button("🗑️ Vider le panier", use_container_width=True):
+        if st.button("🗑️ Vider le panier", width='stretch'):
             st.session_state.cart = []
             st.rerun()
     
     with col3:
-        if st.button("📦 Passer la commande", type="primary", use_container_width=True):
+        if st.button("📦 Passer la commande", type="primary", width='stretch'):
             st.switch_page("pages/4_Commande.py")
     
     with col4:
@@ -198,7 +198,7 @@ else:
                         ">PROMO</span>
                     """, unsafe_allow_html=True)
                 
-                if st.button("➕ Ajouter", key=f"sugg_{product['id']}", use_container_width=True):
+                if st.button("➕ Ajouter", key=f"sugg_{product['id']}", width='stretch'):
                     st.session_state.cart.append(product)
                     st.rerun()
     

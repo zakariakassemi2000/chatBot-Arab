@@ -38,7 +38,7 @@ else:
             
             conditions = st.checkbox("J'accepte les CGV *")
             
-            if st.form_submit_button("✅ Confirmer la commande", use_container_width=True):
+            if st.form_submit_button("✅ Confirmer la commande", width='stretch'):
                 if not all([nom, prenom, telephone, adresse, ville, conditions]):
                     st.error("Veuillez remplir tous les champs obligatoires")
                 else:

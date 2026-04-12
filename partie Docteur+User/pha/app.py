@@ -440,15 +440,15 @@ with st.sidebar:
     
     # Navigation
     st.markdown("### 📍 Navigation")
-    if st.button("🏠 Accueil", use_container_width=True):
+    if st.button("🏠 Accueil", width='stretch'):
         st.switch_page("app.py")
-    if st.button("📂 Catégories", use_container_width=True):
+    if st.button("📂 Catégories", width='stretch'):
         st.switch_page("pages/2_Categories.py")
-    if st.button("🛒 Panier", use_container_width=True):
+    if st.button("🛒 Panier", width='stretch'):
         st.switch_page("pages/3_Panier.py")
-    if st.button("📦 Commander", use_container_width=True):
+    if st.button("📦 Commander", width='stretch'):
         st.switch_page("pages/4_Commande.py")
-    if st.button("⚙️ Admin", use_container_width=True):
+    if st.button("⚙️ Admin", width='stretch'):
         st.switch_page("pages/5_Admin.py")
 
 # Header principal
@@ -485,7 +485,7 @@ cols = st.columns(6)
 categories = ["Visage", "Cheveux", "Corps", "Maquillage", "Bébé", "Promotions"]
 for i, cat in enumerate(categories):
     with cols[i]:
-        if st.button(f"🔹 {cat}", use_container_width=True):
+        if st.button(f"🔹 {cat}", width='stretch'):
             st.session_state.selected_category = cat
             st.switch_page("pages/2_Categories.py")
 
@@ -533,7 +533,7 @@ for i, product in enumerate(products[:8]):
                 elif days < 30:
                     st.markdown(f'<span class="expiry-date warning">⚠️ Expire dans {days} jours</span>', unsafe_allow_html=True)
             
-            if st.button(f"🛒 Ajouter au panier", key=f"home_add_{product['id']}", use_container_width=True):
+            if st.button(f"🛒 Ajouter au panier", key=f"home_add_{product['id']}", width='stretch'):
                 st.session_state.cart.append(product)
                 st.rerun()
 

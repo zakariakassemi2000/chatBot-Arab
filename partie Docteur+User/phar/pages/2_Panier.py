@@ -37,10 +37,10 @@ if not st.session_state.cart:
         
         col_a, col_b = st.columns(2)
         with col_a:
-            if st.button("📂 Voir les catégories", use_container_width=True):
+            if st.button("📂 Voir les catégories", width='stretch'):
                 st.switch_page("pages/1_Categories.py")
         with col_b:
-            if st.button("🏠 Retour à l'accueil", use_container_width=True):
+            if st.button("🏠 Retour à l'accueil", width='stretch'):
                 st.switch_page("app.py")
 else:
     total = 0
@@ -69,7 +69,7 @@ else:
             
             with col1:
                 image_url = CATEGORY_IMAGES.get(item['category'], DEFAULT_PRODUCT_IMAGE)
-                st.image(image_url, use_container_width=True)
+                st.image(image_url, width='stretch')
             
             with col2:
                 st.markdown(f"### {item['name']}")
@@ -133,14 +133,14 @@ else:
     # Actions
     col1, col2, col3 = st.columns(3)
     with col1:
-        if st.button("🔄 Continuer mes achats", use_container_width=True):
+        if st.button("🔄 Continuer mes achats", width='stretch'):
             st.switch_page("pages/1_Categories.py")
     with col2:
-        if st.button("🗑️ Vider le panier", use_container_width=True):
+        if st.button("🗑️ Vider le panier", width='stretch'):
             st.session_state.cart = []
             st.rerun()
     with col3:
-        if st.button("📦 Passer la commande", type="primary", use_container_width=True):
+        if st.button("📦 Passer la commande", type="primary", width='stretch'):
             st.switch_page("pages/3_Commande.py")
     
     st.divider()
@@ -169,14 +169,14 @@ else:
         with cols[i]:
             with st.container():
                 image_url = CATEGORY_IMAGES.get(product['category'], DEFAULT_PRODUCT_IMAGE)
-                st.image(image_url, use_container_width=True)
+                st.image(image_url, width='stretch')
                 st.markdown(f"**{product['name']}**")
                 st.markdown(f"💰 {product['price']} {DEVISE}")
                 
                 if product.get('promo', False):
                     st.markdown(f'<span style="background:{COLORS["primary"]};color:white;padding:2px 8px;border-radius:20px;">PROMO</span>', unsafe_allow_html=True)
                 
-                if st.button("➕ Ajouter", key=f"sugg_{product['id']}", use_container_width=True):
+                if st.button("➕ Ajouter", key=f"sugg_{product['id']}", width='stretch'):
                     st.session_state.cart.append(product)
                     st.rerun()
     

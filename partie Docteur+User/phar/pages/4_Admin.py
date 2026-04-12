@@ -193,7 +193,7 @@ def check_password():
         password = st.text_input("Mot de passe", type="password", placeholder="Entrez le mot de passe admin")
         col1, col2, col3 = st.columns([1,2,1])
         with col2:
-            submitted = st.form_submit_button("🔑 Se connecter", use_container_width=True)
+            submitted = st.form_submit_button("🔑 Se connecter", width='stretch')
         
         if submitted:
             if password == "admin123":
@@ -223,7 +223,7 @@ else:
     # Bouton déconnexion
     col1, col2, col3, col4, col5 = st.columns([3,1,1,1,2])
     with col5:
-        if st.button("🚪 Déconnexion", use_container_width=True):
+        if st.button("🚪 Déconnexion", width='stretch'):
             st.session_state.admin_auth = False
             st.rerun()
     
@@ -422,7 +422,7 @@ else:
             
             description = st.text_area("Description", height=100, placeholder="Description détaillée du produit...")
             
-            submitted = st.form_submit_button("✅ Ajouter le produit", use_container_width=True)
+            submitted = st.form_submit_button("✅ Ajouter le produit", width='stretch')
             
             if submitted:
                 if not name or price <= 0:
@@ -459,7 +459,7 @@ else:
                     
                     with col1:
                         # Image placeholder
-                        st.image("https://via.placeholder.com/150x150?text=Produit", use_column_width=True)
+                        st.image("https://via.placeholder.com/150x150?text=Produit", width='stretch')
                     
                     with col2:
                         with st.form(f"edit_form_{product['id']}"):
@@ -488,7 +488,7 @@ else:
                             
                             col_a, col_b, col_c = st.columns(3)
                             with col_a:
-                                if st.form_submit_button("💾 Mettre à jour", use_container_width=True):
+                                if st.form_submit_button("💾 Mettre à jour", width='stretch'):
                                     if update_product(
                                         product['id'], new_name, new_category, new_price,
                                         new_description, new_promo, new_stock, new_expiration
@@ -497,7 +497,7 @@ else:
                                         st.rerun()
                             
                             with col_b:
-                                if st.form_submit_button("🗑️ Supprimer", use_container_width=True):
+                                if st.form_submit_button("🗑️ Supprimer", width='stretch'):
                                     if delete_product(product['id']):
                                         st.success("✅ Produit supprimé")
                                         st.rerun()
@@ -594,7 +594,7 @@ else:
                 hole=0.3
             )
             fig1.update_traces(textposition='inside', textinfo='percent+label')
-            st.plotly_chart(fig1, use_container_width=True)
+            st.plotly_chart(fig1, width='stretch')
             
             # Graphique 2: Stock par catégorie
             stock_by_cat = df.groupby('category')['stock'].sum().reset_index()
@@ -606,7 +606,7 @@ else:
                 color_discrete_sequence=[COLORS['primary']]
             )
             fig2.update_layout(xaxis_tickangle=-45)
-            st.plotly_chart(fig2, use_container_width=True)
+            st.plotly_chart(fig2, width='stretch')
             
             # Graphique 3: Distribution des prix
             fig3 = px.histogram(
@@ -616,7 +616,7 @@ else:
                 title='Distribution des prix',
                 color_discrete_sequence=[COLORS['primary_light']]
             )
-            st.plotly_chart(fig3, use_container_width=True)
+            st.plotly_chart(fig3, width='stretch')
             
             # Graphique 4: Évolution des ventes (si commandes)
             if orders:
@@ -633,7 +633,7 @@ else:
                     markers=True
                 )
                 fig4.update_traces(line_color=COLORS['primary'])
-                st.plotly_chart(fig4, use_container_width=True)
+                st.plotly_chart(fig4, width='stretch')
             
             # Tableau des expirations
             st.subheader("📅 Calendrier des expirations")
@@ -672,7 +672,7 @@ else:
                 
                 st.dataframe(
                     exp_df.style.applymap(color_status, subset=['Statut']),
-                    use_container_width=True,
+                    width='stretch',
                     hide_index=True
                 )
             else:

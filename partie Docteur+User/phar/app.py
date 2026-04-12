@@ -367,7 +367,7 @@ st.sidebar.markdown("---")
 col1, col2 = st.sidebar.columns(2)
 with col1:
     
-    if st.button("📂مساعدك الطبي الذكي", use_container_width=True):
+    if st.button("📂مساعدك الطبي الذكي", width='stretch'):
                 try:
                     subprocess.Popen(
                         [sys.executable, "-m", "streamlit", "run", "chatBot-Arab-main/pp.py", "--server.port", "8502"]
@@ -378,7 +378,7 @@ with col1:
 
 with col2:
     
-    if st.button("📂APP", use_container_width=True):
+    if st.button("📂APP", width='stretch'):
                 try:
                     subprocess.Popen(
                         [sys.executable, "-m", "streamlit", "run", "PROJET - ROUGE\\main.py", "--server.port", "8501"]
@@ -482,7 +482,7 @@ else:
 # Footer
 st.divider()
 st.markdown(" 🏥 app")
-if st.button("📂APP", use_container_width=True):
+if st.button("📂APP", width='stretch'):
             try:
                 subprocess.Popen(
                     [sys.executable, "-m", "streamlit", "run", "PROJET - ROUGE\\main.py", "--server.port", "8501"]
@@ -492,7 +492,7 @@ if st.button("📂APP", use_container_width=True):
                 st.error(f"Erreur lancement app2: {e}")
 st.divider()
 st.markdown(" 🏥 إعداد المساعد الصحي الذكي بالعربية")
-if st.button("📂مساعدك الطبي الذكي", use_container_width=True):
+if st.button("📂مساعدك الطبي الذكي", width='stretch'):
             try:
                 subprocess.Popen(
                     [sys.executable, "-m", "streamlit", "run", "chatBot-Arab-main/pp.py", "--server.port", "8502"]

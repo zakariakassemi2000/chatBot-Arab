@@ -470,7 +470,7 @@ def show_main_interface():
         st.divider()
         
         st.markdown(" 🏥 إعداد المساعد الصحي الذكي بالعربية")
-        if st.button("📂 مساعدك الطبي الذكي (SHIFA AI)", use_container_width=True):
+        if st.button("📂 مساعدك الطبي الذكي (SHIFA AI)", width='stretch'):
             try:
                 main_app_path = str(PROJECT_ROOT / "app.py")
                 subprocess.Popen(
@@ -480,10 +480,10 @@ def show_main_interface():
                 st.success("✅ SHIFA AI lancé ! Ouvrez http://localhost:8502")
             except Exception as e:
                 st.error(f"Erreur lancement SHIFA AI: {e}")
-        st.link_button("🔗 Ouvrir SHIFA AI", "http://localhost:8502", use_container_width=True)
+        st.link_button("🔗 Ouvrir SHIFA AI", "http://localhost:8502", width='stretch')
         st.divider()
         st.markdown(" 💊 Parapharmacie")
-        if st.button("📂 Parapharmacie", use_container_width=True):
+        if st.button("📂 Parapharmacie", width='stretch'):
             try:
                 phar_app_path = str(BASE_DIR / "phar" / "app.py")
                 subprocess.Popen(
@@ -493,11 +493,11 @@ def show_main_interface():
                 st.success("✅ Parapharmacie lancée ! Ouvrez http://localhost:8504")
             except Exception as e:
                 st.error(f"Erreur lancement Parapharmacie: {e}")
-        st.link_button("🔗 Ouvrir Parapharmacie", "http://localhost:8504", use_container_width=True)
+        st.link_button("🔗 Ouvrir Parapharmacie", "http://localhost:8504", width='stretch')
         st.divider()
         # Bouton de déconnexion stylisé
         st.markdown('<div class="logout-button">', unsafe_allow_html=True)
-        if st.button("🚪 Déconnexion", use_container_width=True):
+        if st.button("🚪 Déconnexion", width='stretch'):
             del st.session_state.user
             if 'nav' in st.session_state:
                 del st.session_state.nav
@@ -864,7 +864,7 @@ def show_patient_records(db, user_id):
             with col2:
                 st.write("")  # Espacement
                 st.write("")  # Espacement
-                if uploaded_file and st.button("📥 Enregistrer", use_container_width=True, type="primary"):
+                if uploaded_file and st.button("📥 Enregistrer", width='stretch', type="primary"):
                     try:
                         # Limite de taille (10MB)
                         MAX_SIZE = 10 * 1024 * 1024
@@ -999,7 +999,7 @@ def show_appointments_interface(db, notif_manager, user_id):
                 heure_rdv = st.time_input("Heure", value=datetime.now().time().replace(hour=9, minute=0))
                 motif = st.text_area("Motif de la consultation")
             
-            submit = st.form_submit_button("Confirmer", use_container_width=True)
+            submit = st.form_submit_button("Confirmer", width='stretch')
             
             if submit and medecin_choice:
                 try:
@@ -1126,7 +1126,7 @@ def show_doctor_dashboard_enhanced(db, ia_priorisation, doctor_id):
                     paper_bgcolor='rgba(0,0,0,0)',
                     font=dict(color='#991b1b')
                 )
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, width='stretch')
         except:
             st.info("Données de consultation non disponibles")
     
@@ -1150,7 +1150,7 @@ def show_doctor_dashboard_enhanced(db, ia_priorisation, doctor_id):
                     paper_bgcolor='rgba(0,0,0,0)',
                     font=dict(color='#991b1b')
                 )
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, width='stretch')
         except:
             st.info("Données d'analyses non disponibles")
     
@@ -1325,7 +1325,7 @@ def show_doctor_statistics_enhanced(db, doctor_id):
                 paper_bgcolor='rgba(0,0,0,0)',
                 font=dict(color='#991b1b')
             )
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width='stretch')
         
         # Répartition par motif
         st.subheader("📋 Motifs de consultation")
@@ -1348,7 +1348,7 @@ def show_doctor_statistics_enhanced(db, doctor_id):
                 paper_bgcolor='rgba(0,0,0,0)',
                 font=dict(color='#991b1b')
             )
-            st.plotly_chart(fig_motifs, use_container_width=True)
+            st.plotly_chart(fig_motifs, width='stretch')
             
     except Exception as e:
         st.error(f"Erreur chargement statistiques: {e}")
@@ -1627,7 +1627,7 @@ def show_auth_interface(auth_manager):
             st.markdown("### Connectez-vous")
             username = st.text_input("Nom d'utilisateur", placeholder="Entrez votre nom d'utilisateur")
             password = st.text_input("Mot de passe", type="password", placeholder="Entrez votre mot de passe")
-            submit = st.form_submit_button("Se connecter", use_container_width=True)
+            submit = st.form_submit_button("Se connecter", width='stretch')
             
             if submit:
                 if username and password:
@@ -1658,7 +1658,7 @@ def show_auth_interface(auth_manager):
             ville = st.selectbox("Ville", ["Casablanca", "Rabat", "Marrakech", "Fès", "Tanger", "Agadir", "Autre"])
             role = st.selectbox("Je suis", ["patient", "medecin"])
             
-            submit = st.form_submit_button("S'inscrire", use_container_width=True)
+            submit = st.form_submit_button("S'inscrire", width='stretch')
             
             if submit:
                 if new_password != confirm_password:

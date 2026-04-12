@@ -78,7 +78,7 @@ else:
             conditions = st.checkbox("J'accepte les conditions générales de vente *")
             newsletter = st.checkbox("Je souhaite recevoir la newsletter et les offres promotionnelles")
             
-            submitted = st.form_submit_button("✅ Confirmer ma commande", use_container_width=True)
+            submitted = st.form_submit_button("✅ Confirmer ma commande", width='stretch')
             
             if submitted:
                 if not nom or not prenom or not telephone or not adresse or not ville or not conditions:

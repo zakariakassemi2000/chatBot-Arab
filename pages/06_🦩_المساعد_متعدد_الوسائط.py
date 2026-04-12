@@ -149,7 +149,7 @@ with col_left:
     )
 
     if uploaded_img:
-        st.image(uploaded_img, use_container_width=True, caption="الصورة المرفوعة")
+        st.image(uploaded_img, width='stretch', caption="الصورة المرفوعة")
 
         # Type selector
         st.markdown('<p class="section-label" style="margin-top:14px;">🏷️ نوع الصورة</p>', unsafe_allow_html=True)

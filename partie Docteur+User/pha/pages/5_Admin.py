@@ -310,20 +310,20 @@ else:
             # Graphique 1: Répartition par catégorie
             fig1 = px.pie(df, names='category', title='Répartition des produits par catégorie',
                          color_discrete_sequence=px.colors.sequential.Reds)
-            st.plotly_chart(fig1, use_container_width=True)
+            st.plotly_chart(fig1, width='stretch')
             
             # Graphique 2: Stock par catégorie
             stock_by_cat = df.groupby('category')['stock'].sum().reset_index()
             fig2 = px.bar(stock_by_cat, x='category', y='stock', 
                          title='Stock total par catégorie',
                          color_discrete_sequence=['#dc2626'])
-            st.plotly_chart(fig2, use_container_width=True)
+            st.plotly_chart(fig2, width='stretch')
             
             # Graphique 3: Produits par prix
             fig3 = px.histogram(df, x='price', nbins=20, 
                                title='Distribution des prix',
                                color_discrete_sequence=['#ef4444'])
-            st.plotly_chart(fig3, use_container_width=True)
+            st.plotly_chart(fig3, width='stretch')
             
             # Tableau des expirations
             st.subheader("📅 Calendrier des expirations")
@@ -349,6 +349,6 @@ else:
     
     # Déconnexion
     st.divider()
-    if st.button("🚪 Se déconnecter", use_container_width=True):
+    if st.button("🚪 Se déconnecter", width='stretch'):
         st.session_state.admin_auth = False
         st.rerun()

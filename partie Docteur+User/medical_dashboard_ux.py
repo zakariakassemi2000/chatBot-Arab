@@ -160,7 +160,7 @@ def show_medical_ux_demo():
         
         fig = px.line(x=dates, y=consultations, title="Activité des consultations - 7 derniers jours")
         fig.update_layout(height=300)
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
     
     with col2:
         # Graph analyses par type
@@ -169,7 +169,7 @@ def show_medical_ux_demo():
         
         fig = px.pie(values=counts, names=types, title="Répartition des analyses")
         fig.update_layout(height=300)
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
     
     st.markdown("---")
     
@@ -245,11 +245,11 @@ def show_medical_ux_demo():
         
         # Boutons d'action
         st.markdown("#### ⚡ Actions")
-        if st.button("✏️ Ajouter note médicale", use_container_width=True):
+        if st.button("✏️ Ajouter note médicale", width='stretch'):
             pass
-        if st.button("📅 Planifier consultation", use_container_width=True):
+        if st.button("📅 Planifier consultation", width='stretch'):
             pass
-        if st.button("📄 Générer PDF", use_container_width=True):
+        if st.button("📄 Générer PDF", width='stretch'):
             pass
     
     with col2:

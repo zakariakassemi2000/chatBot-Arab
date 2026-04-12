@@ -1,0 +1,82 @@
+{
+  "version": "1.0",
+  "description": "PHQ-9 Arabic validation cases — based on Kroenke & Spitzer (2002)",
+  "reference": "PHQ-9: A new depression diagnostic and severity measure. Psychiatric Annals 32:9",
+  "scale": {
+    "0": "لا على الإطلاق",
+    "1": "عدة أيام",
+    "2": "أكثر من نصف الأيام",
+    "3": "كل يوم تقريباً"
+  },
+  "questions_arabic": [
+    "قلة الاهتمام أو المتعة في القيام بالأشياء",
+    "الشعور بالإحباط أو الاكتئاب أو اليأس",
+    "صعوبة النوم أو البقاء نائماً، أو النوم الزائد",
+    "الشعور بالتعب أو انخفاض الطاقة",
+    "ضعف الشهية أو الإفراط في تناول الطعام",
+    "الشعور بالفشل أو الشعور بأنك تخذل نفسك أو عائلتك",
+    "صعوبة التركيز على الأشياء",
+    "التحرك أو التحدث ببطء شديد لدرجة أن الآخرين لاحظوا ذلك",
+    "أفكار تتعلق بالأذى الذاتي أو بأنك ستكون ميتاً"
+  ],
+  "severity_thresholds": {
+    "normal": {"range": [0, 4], "label_ar": "طبيعي"},
+    "mild": {"range": [5, 9], "label_ar": "اكتئاب خفيف"},
+    "moderate": {"range": [10, 14], "label_ar": "اكتئاب متوسط"},
+    "mod_severe": {"range": [15, 19], "label_ar": "اكتئاب متوسط إلى شديد"},
+    "severe": {"range": [20, 27], "label_ar": "اكتئاب شديد"}
+  },
+  "test_cases": [
+    {
+      "id": "TC001",
+      "answers": [0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "expected_score": 0,
+      "expected_severity": "طبيعي",
+      "description": "No depression symptoms"
+    },
+    {
+      "id": "TC002",
+      "answers": [1, 1, 1, 1, 0, 0, 0, 0, 0],
+      "expected_score": 4,
+      "expected_severity": "طبيعي",
+      "description": "Subclinical threshold"
+    },
+    {
+      "id": "TC003",
+      "answers": [1, 2, 1, 2, 1, 0, 0, 0, 0],
+      "expected_score": 7,
+      "expected_severity": "اكتئاب خفيف",
+      "description": "Mild depression"
+    },
+    {
+      "id": "TC004",
+      "answers": [2, 2, 2, 2, 1, 1, 1, 0, 0],
+      "expected_score": 11,
+      "expected_severity": "اكتئاب متوسط",
+      "description": "Moderate depression — referral recommended"
+    },
+    {
+      "id": "TC005",
+      "answers": [3, 3, 2, 3, 2, 2, 1, 0, 0],
+      "expected_score": 16,
+      "expected_severity": "اكتئاب متوسط إلى شديد",
+      "description": "Moderate-severe — urgent evaluation"
+    },
+    {
+      "id": "TC006",
+      "answers": [3, 3, 3, 3, 2, 3, 2, 1, 3],
+      "expected_score": 23,
+      "expected_severity": "اكتئاب شديد",
+      "crisis_flag": true,
+      "description": "Severe depression with suicidal ideation (Q9=3)"
+    },
+    {
+      "id": "TC007",
+      "answers": [0, 0, 0, 0, 0, 0, 0, 0, 1],
+      "expected_score": 1,
+      "expected_severity": "طبيعي",
+      "crisis_flag": true,
+      "description": "Low score but Q9>0 — always flag crisis regardless of total"
+    }
+  ]
+}

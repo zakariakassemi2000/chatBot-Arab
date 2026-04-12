@@ -8,19 +8,19 @@ st.title("🏠 Accueil")
 # Barre de navigation
 col1, col2, col3, col4, col5 = st.columns(5)
 with col1:
-    if st.button("🏠 Accueil", use_container_width=True):
+    if st.button("🏠 Accueil", width='stretch'):
         st.switch_page("app.py")
 with col2:
-    if st.button("📂 Catégories", use_container_width=True):
+    if st.button("📂 Catégories", width='stretch'):
         st.switch_page("pages/2_Categories.py")
 with col3:
-    if st.button("🛒 Panier", use_container_width=True):
+    if st.button("🛒 Panier", width='stretch'):
         st.switch_page("pages/3_Panier.py")
 with col4:
-    if st.button("📦 Commander", use_container_width=True):
+    if st.button("📦 Commander", width='stretch'):
         st.switch_page("pages/4_Commande.py")
 with col5:
-    if st.button("⚙️ Admin", use_container_width=True):
+    if st.button("⚙️ Admin", width='stretch'):
         st.switch_page("pages/5_Admin.py")
 
 st.divider()

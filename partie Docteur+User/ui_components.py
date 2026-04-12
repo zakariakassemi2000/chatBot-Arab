@@ -15,7 +15,7 @@ def show_auth_interface(auth_manager):
         with st.form("login_form"):
             username = st.text_input("Nom d'utilisateur")
             password = st.text_input("Mot de passe", type="password")
-            submit = st.form_submit_button("Se connecter", use_container_width=True)
+            submit = st.form_submit_button("Se connecter", width='stretch')
             
             if submit:
                 if username and password:
@@ -39,7 +39,7 @@ def show_auth_interface(auth_manager):
             ville = st.selectbox("Ville", ["Casablanca", "Rabat", "Marrakech", "Fès", "Tanger", "Agadir", "Autre"])
             role = st.selectbox("Je suis", ["patient", "medecin"])
             
-            submit = st.form_submit_button("S'inscrire", use_container_width=True)
+            submit = st.form_submit_button("S'inscrire", width='stretch')
             
             if submit:
                 if new_password != confirm_password:
@@ -304,7 +304,7 @@ def show_patient_records(db, user_id):
             
             if consultations:
                 df = pd.DataFrame(consultations)
-                st.dataframe(df, use_container_width=True)
+                st.dataframe(df, width='stretch')
             else:
                 st.info("Aucune consultation enregistrée")
         except Exception as e:
@@ -395,7 +395,7 @@ def show_appointments_interface(db, notif_manager, user_id):
                 heure_rdv = st.time_input("Heure", value=datetime.now().time().replace(hour=9, minute=0))
                 motif = st.text_area("Motif de la consultation")
             
-            submit = st.form_submit_button("Confirmer", use_container_width=True)
+            submit = st.form_submit_button("Confirmer", width='stretch')
             
             if submit and medecin_choice:
                 try:

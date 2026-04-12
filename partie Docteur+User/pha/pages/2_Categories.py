@@ -63,7 +63,7 @@ with st.sidebar:
     st.markdown("---")
     
     # Bouton réinitialiser
-    if st.button("🔄 Réinitialiser les filtres", use_container_width=True):
+    if st.button("🔄 Réinitialiser les filtres", width='stretch'):
         st.session_state.selected_category = "Tous les produits"
         st.session_state.price_range = (0, 1000)
         st.session_state.show_promo_only = False
@@ -192,22 +192,22 @@ else:
                 
                 # Bouton d'achat
                 if product['stock'] > 0:
-                    if st.button("🛒 Ajouter au panier", key=f"add_{product['id']}", use_container_width=True):
+                    if st.button("🛒 Ajouter au panier", key=f"add_{product['id']}", width='stretch'):
                         st.session_state.cart.append(product)
                         st.success("✅ Ajouté au panier!")
                         st.rerun()
                 else:
-                    st.button("❌ Rupture de stock", disabled=True, use_container_width=True)
+                    st.button("❌ Rupture de stock", disabled=True, width='stretch')
 
 # Pagination simple
 if len(filtered_products) > 9:
     st.markdown("---")
     col1, col2, col3, col4, col5 = st.columns([2,1,1,1,2])
     with col2:
-        st.button("◀ Précédent", use_container_width=True)
+        st.button("◀ Précédent", width='stretch')
     with col3:
-        st.button("1", use_container_width=True)
+        st.button("1", width='stretch')
     with col4:
-        st.button("2", use_container_width=True)
+        st.button("2", width='stretch')
     with col5:
-        st.button("Suivant ▶", use_container_width=True)
+        st.button("Suivant ▶", width='stretch')
