@@ -56,8 +56,22 @@ def _configure_root_handlers():
     # ── File handler: always active, DEBUG level ──
     try:
         os.makedirs(LOG_DIR, exist_ok=True)
-        file_handler = RotatingFileHandler(
-            os.path.join(LOG_DIR, "shifa_ai.log"),
+        log_path = os.path.join(LOG_DIR, "shifa_ai.log")
+
+        # On Windows, RotatingFileHandler can fail with PermissionError
+        # when Streamlit holds the log file open across multiple workers.
+        # Use a custom subclass that silently skips rotation on lock errors.
+        class _SafeRotatingHandler(RotatingFileHandler):
+            """RotatingFileHandler that never crashes on Windows file locks."""
+            def doRollover(self):
+                try:
+                    super().doRollover()
+                except PermissionError:
+                    # Another process has the file locked — skip rotation
+                    pass
+
+        file_handler = _SafeRotatingHandler(
+            log_path,
             maxBytes=MAX_LOG_SIZE,
             backupCount=BACKUP_COUNT,
             encoding="utf-8",

@@ -58,7 +58,7 @@ class TestRetriever:
 
     def test_encode_query_shape(self, retriever):
         emb = retriever.encode_query("سؤال تجريبي")
-        assert emb.shape == (384,)  # MiniLM dimension
+        assert emb.shape == (768,)  # AraBERT v2 dimension
 
 
 class TestClassifier:

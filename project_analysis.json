@@ -1,0 +1,6331 @@
+{
+  "all_files_count": 292,
+  "py_files_count": 134,
+  "cycles": [],
+  "dead_code": {
+    "app.py": {
+      "classes": [
+        {
+          "name": "RateLimiter",
+          "line": 952
+        }
+      ],
+      "functions": [
+        {
+          "name": "get_b64",
+          "line": 99
+        },
+        {
+          "name": "save_history",
+          "line": 116
+        },
+        {
+          "name": "inject_custom_css",
+          "line": 143
+        },
+        {
+          "name": "load_medical_system",
+          "line": 929
+        },
+        {
+          "name": "can_proceed",
+          "line": 958
+        },
+        {
+          "name": "md_to_html",
+          "line": 1263
+        },
+        {
+          "name": "format_medical_report",
+          "line": 1270
+        }
+      ],
+      "variables": [
+        {
+          "name": "LOGO_PATH",
+          "line": 92
+        },
+        {
+          "name": "LOGO_PATH",
+          "line": 94
+        },
+        {
+          "name": "PATTERN_PATH",
+          "line": 95
+        },
+        {
+          "name": "HISTORY_FILE",
+          "line": 96
+        },
+        {
+          "name": "LOGO_B64",
+          "line": 110
+        },
+        {
+          "name": "LOGO_SRC",
+          "line": 111
+        },
+        {
+          "name": "PATTERN_B64",
+          "line": 113
+        },
+        {
+          "name": "PATTERN_SRC",
+          "line": 114
+        },
+        {
+          "name": "DB_STATUS",
+          "line": 969
+        },
+        {
+          "name": "AI_STATUS",
+          "line": 970
+        },
+        {
+          "name": "QUICK_QUESTIONS",
+          "line": 1618
+        },
+        {
+          "name": "CALCULATORS",
+          "line": 1989
+        }
+      ]
+    },
+    "evaluate_all.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "evaluate_segment1",
+          "line": 30
+        },
+        {
+          "name": "evaluate_segment2",
+          "line": 65
+        },
+        {
+          "name": "evaluate_segment3",
+          "line": 93
+        },
+        {
+          "name": "generate_latex_table",
+          "line": 147
+        }
+      ],
+      "variables": []
+    },
+    "launch_shifa.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "banner",
+          "line": 38
+        },
+        {
+          "name": "launch",
+          "line": 50
+        }
+      ],
+      "variables": [
+        {
+          "name": "MAIN_APP",
+          "line": 22
+        },
+        {
+          "name": "DOCTOR_APP",
+          "line": 23
+        },
+        {
+          "name": "MAIN_PORT",
+          "line": 26
+        },
+        {
+          "name": "DOCTOR_PORT",
+          "line": 27
+        },
+        {
+          "name": "GREEN",
+          "line": 30
+        },
+        {
+          "name": "CYAN",
+          "line": 31
+        },
+        {
+          "name": "YELLOW",
+          "line": 32
+        },
+        {
+          "name": "RED",
+          "line": 33
+        },
+        {
+          "name": "RESET",
+          "line": 34
+        },
+        {
+          "name": "BOLD",
+          "line": 35
+        }
+      ]
+    },
+    "llm_finetuning_guide.py": {
+      "classes": [],
+      "functions": [],
+      "variables": [
+        {
+          "name": "SYNTHETIC_DATA_GENERATOR_PROMPT",
+          "line": 53
+        },
+        {
+          "name": "FINETUNING_CONFIG",
+          "line": 82
+        },
+        {
+          "name": "TRAINING_SCRIPT",
+          "line": 112
+        },
+        {
+          "name": "EVALUATION_FRAMEWORK",
+          "line": 225
+        },
+        {
+          "name": "DEPLOYMENT_OPTIONS",
+          "line": 250
+        }
+      ]
+    },
+    "mental_module.py": {
+      "classes": [],
+      "functions": [],
+      "variables": [
+        {
+          "name": "MOOD_OPTIONS",
+          "line": 609
+        }
+      ]
+    },
+    "setup.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "setup",
+          "line": 28
+        }
+      ],
+      "variables": []
+    },
+    "test_qa.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "section",
+          "line": 13
+        }
+      ],
+      "variables": [
+        {
+          "name": "PASS",
+          "line": 9
+        },
+        {
+          "name": "FAIL",
+          "line": 10
+        }
+      ]
+    },
+    "train_bert_medical.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "load_existing_data",
+          "line": 68
+        },
+        {
+          "name": "load_huggingface_data",
+          "line": 99
+        },
+        {
+          "name": "train_model",
+          "line": 234
+        }
+      ],
+      "variables": []
+    },
+    "train_cancer_model.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "validate_dataset",
+          "line": 84
+        },
+        {
+          "name": "build_data_generators",
+          "line": 112
+        },
+        {
+          "name": "compute_class_weights",
+          "line": 174
+        },
+        {
+          "name": "build_model",
+          "line": 185
+        },
+        {
+          "name": "get_callbacks",
+          "line": 230
+        },
+        {
+          "name": "train_phase1",
+          "line": 264
+        },
+        {
+          "name": "train_phase2",
+          "line": 285
+        },
+        {
+          "name": "save_model",
+          "line": 323
+        }
+      ],
+      "variables": [
+        {
+          "name": "CLASS_NAMES",
+          "line": 73
+        },
+        {
+          "name": "NUM_CLASSES",
+          "line": 74
+        }
+      ]
+    },
+    "agents\\orchestrator.py": {
+      "classes": [
+        {
+          "name": "DetectedIntent",
+          "line": 65
+        },
+        {
+          "name": "IntentDetector",
+          "line": 90
+        }
+      ],
+      "functions": [
+        {
+          "name": "find_hospitals",
+          "line": 526
+        }
+      ],
+      "variables": [
+        {
+          "name": "BLOCKED",
+          "line": 56
+        },
+        {
+          "name": "IMAGE_ANALYSIS",
+          "line": 57
+        },
+        {
+          "name": "LOCATION",
+          "line": 58
+        },
+        {
+          "name": "SYMPTOM_SCAN",
+          "line": 59
+        },
+        {
+          "name": "GENERAL_CHAT",
+          "line": 61
+        }
+      ]
+    },
+    "agents\\rag_agent.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "encode_query",
+          "line": 125
+        },
+        {
+          "name": "get_raw_answer",
+          "line": 129
+        }
+      ],
+      "variables": []
+    },
+    "agents\\safety_agent.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "format_for_severity",
+          "line": 135
+        }
+      ],
+      "variables": []
+    },
+    "agents\\vision_agent.py": {
+      "classes": [],
+      "functions": [],
+      "variables": [
+        {
+          "name": "VISION_TYPE_LABELS",
+          "line": 18
+        }
+      ]
+    },
+    "core\\config.py": {
+      "classes": [],
+      "functions": [],
+      "variables": [
+        {
+          "name": "GROQ_API_KEY",
+          "line": 5
+        },
+        {
+          "name": "OPENAI_API_KEY",
+          "line": 6
+        },
+        {
+          "name": "HF_TOKEN",
+          "line": 7
+        },
+        {
+          "name": "FAISS_INDEX_PATH",
+          "line": 8
+        },
+        {
+          "name": "WHISPER_MODEL",
+          "line": 9
+        },
+        {
+          "name": "RAG_TOP_K",
+          "line": 10
+        },
+        {
+          "name": "MAX_HISTORY",
+          "line": 11
+        },
+        {
+          "name": "SAFETY_LEVEL",
+          "line": 12
+        },
+        {
+          "name": "GOOGLE_MAPS_API_KEY",
+          "line": 13
+        }
+      ]
+    },
+    "core\\model_manager.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "clear_vram",
+          "line": 54
+        }
+      ],
+      "variables": [
+        {
+          "name": "MAX_MODELS_IN_MEMORY",
+          "line": 15
+        }
+      ]
+    },
+    "core\\user_auth.py": {
+      "classes": [],
+      "functions": [],
+      "variables": [
+        {
+          "name": "DB_PATH",
+          "line": 17
+        }
+      ]
+    },
+    "data\\knowledge_base.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "detect_category",
+          "line": 110
+        },
+        {
+          "name": "detect_intent",
+          "line": 123
+        }
+      ],
+      "variables": [
+        {
+          "name": "CATEGORY_KEYWORDS",
+          "line": 14
+        },
+        {
+          "name": "INTENT_MAP",
+          "line": 82
+        }
+      ]
+    },
+    "engine\\brain_mri.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "get_vision_type",
+          "line": 67
+        }
+      ],
+      "variables": [
+        {
+          "name": "DETECTION_THRESHOLD",
+          "line": 42
+        }
+      ]
+    },
+    "engine\\breast.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "get_vision_type",
+          "line": 84
+        }
+      ],
+      "variables": []
+    },
+    "engine\\cancer.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "get_vision_type",
+          "line": 41
+        }
+      ],
+      "variables": []
+    },
+    "engine\\classifier.py": {
+      "classes": [],
+      "functions": [],
+      "variables": [
+        {
+          "name": "MODEL_PATH",
+          "line": 32
+        },
+        {
+          "name": "INTENT_TEMPLATES",
+          "line": 168
+        }
+      ]
+    },
+    "engine\\dermato.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "get_vision_type",
+          "line": 93
+        }
+      ],
+      "variables": []
+    },
+    "engine\\llm.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "custom_getaddrinfo",
+          "line": 67
+        }
+      ],
+      "variables": [
+        {
+          "name": "VISION_SYSTEM_PROMPT",
+          "line": 225
+        },
+        {
+          "name": "VISION_MODEL",
+          "line": 249
+        }
+      ]
+    },
+    "engine\\nearby_care.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "calculate_distance",
+          "line": 83
+        },
+        {
+          "name": "get_approximate_location",
+          "line": 452
+        },
+        {
+          "name": "resolve_user_location",
+          "line": 491
+        }
+      ],
+      "variables": [
+        {
+          "name": "OVERPASS_MIRRORS",
+          "line": 29
+        },
+        {
+          "name": "OVERPASS_TIMEOUT",
+          "line": 34
+        },
+        {
+          "name": "OSM_QUERY_TIMEOUT",
+          "line": 35
+        }
+      ]
+    },
+    "engine\\research_explorer.py": {
+      "classes": [
+        {
+          "name": "SemanticRanker",
+          "line": 78
+        }
+      ],
+      "functions": [
+        {
+          "name": "cosine_similarity",
+          "line": 115
+        },
+        {
+          "name": "popularity_score",
+          "line": 124
+        },
+        {
+          "name": "recency_score",
+          "line": 140
+        },
+        {
+          "name": "search_books",
+          "line": 203
+        },
+        {
+          "name": "search_articles",
+          "line": 325
+        },
+        {
+          "name": "search_videos",
+          "line": 386
+        },
+        {
+          "name": "format_results_markdown",
+          "line": 632
+        }
+      ],
+      "variables": [
+        {
+          "name": "YOUTUBE_API_KEY",
+          "line": 56
+        },
+        {
+          "name": "GOOGLE_BOOKS_API_KEY",
+          "line": 57
+        },
+        {
+          "name": "RANKING_WEIGHTS",
+          "line": 59
+        },
+        {
+          "name": "CACHE_DIR",
+          "line": 65
+        },
+        {
+          "name": "CACHE_TTL_SECONDS",
+          "line": 67
+        }
+      ]
+    },
+    "engine\\retriever.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "semantic_chunk",
+          "line": 79
+        },
+        {
+          "name": "detect_medical_specialty",
+          "line": 128
+        },
+        {
+          "name": "load_model",
+          "line": 215
+        }
+      ],
+      "variables": [
+        {
+          "name": "EMBED_MODEL_NAME",
+          "line": 38
+        },
+        {
+          "name": "RERANKER_MODEL_NAME",
+          "line": 41
+        },
+        {
+          "name": "INDEX_PATH",
+          "line": 184
+        },
+        {
+          "name": "DATA_PATH",
+          "line": 185
+        },
+        {
+          "name": "RRF_K",
+          "line": 188
+        },
+        {
+          "name": "FAISS_WEIGHT",
+          "line": 189
+        },
+        {
+          "name": "BM25_WEIGHT",
+          "line": 190
+        }
+      ]
+    },
+    "engine\\safety.py": {
+      "classes": [],
+      "functions": [],
+      "variables": [
+        {
+          "name": "EMERGENCY_KEYWORDS",
+          "line": 17
+        },
+        {
+          "name": "MOROCCO_EMERGENCY",
+          "line": 44
+        },
+        {
+          "name": "EMERGENCY_FOOTER",
+          "line": 52
+        },
+        {
+          "name": "CARDIAC_KEYWORDS",
+          "line": 64
+        },
+        {
+          "name": "CARDIAC_EMERGENCY_RESPONSE",
+          "line": 73
+        },
+        {
+          "name": "CAUTION_KEYWORDS",
+          "line": 93
+        },
+        {
+          "name": "FORBIDDEN_PATTERNS",
+          "line": 104
+        },
+        {
+          "name": "EMERGENCY_RESPONSE",
+          "line": 117
+        },
+        {
+          "name": "CAUTION_RESPONSE",
+          "line": 137
+        },
+        {
+          "name": "BOUNDARY_RESPONSE",
+          "line": 150
+        },
+        {
+          "name": "POST_LLM_FORBIDDEN",
+          "line": 168
+        },
+        {
+          "name": "POST_LLM_REPLACEMENT",
+          "line": 181
+        },
+        {
+          "name": "URGENCE_THRESHOLD",
+          "line": 198
+        }
+      ]
+    },
+    "engine\\triage.py": {
+      "classes": [],
+      "functions": [],
+      "variables": [
+        {
+          "name": "EMERGENCY_THRESHOLD",
+          "line": 267
+        },
+        {
+          "name": "MODERATE_THRESHOLD",
+          "line": 268
+        }
+      ]
+    },
+    "engine\\vision_base.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "MIN_CONFIDENCE",
+          "line": 71
+        },
+        {
+          "name": "is_medical_image",
+          "line": 78
+        },
+        {
+          "name": "forward_hook",
+          "line": 167
+        },
+        {
+          "name": "backward_hook",
+          "line": 170
+        }
+      ],
+      "variables": []
+    },
+    "engine\\voice.py": {
+      "classes": [
+        {
+          "name": "VoiceResponse",
+          "line": 21
+        },
+        {
+          "name": "VoicePipeline",
+          "line": 29
+        }
+      ],
+      "functions": [
+        {
+          "name": "process_audio",
+          "line": 56
+        }
+      ],
+      "variables": []
+    },
+    "engine\\xray.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "get_vision_type",
+          "line": 69
+        }
+      ],
+      "variables": []
+    },
+    "engine\\vision_ocr\\config.py": {
+      "classes": [],
+      "functions": [],
+      "variables": [
+        {
+          "name": "EXCEL_MEDICAMENTS",
+          "line": 26
+        },
+        {
+          "name": "EXCEL_DISPOSITIFS",
+          "line": 27
+        },
+        {
+          "name": "MAX_UPLOAD_SIZE_MB",
+          "line": 29
+        }
+      ]
+    },
+    "engine\\vision_ocr\\vlm_extraction.py": {
+      "classes": [
+        {
+          "name": "Medecin",
+          "line": 20
+        },
+        {
+          "name": "OrdonnanceResult",
+          "line": 33
+        }
+      ],
+      "functions": [],
+      "variables": []
+    },
+    "models\\imaging\\mri.py": {
+      "classes": [
+        {
+          "name": "BrainTumorAnalyzer",
+          "line": 8
+        }
+      ],
+      "functions": [
+        {
+          "name": "analyze",
+          "line": 41
+        }
+      ],
+      "variables": [
+        {
+          "name": "MODEL_ID",
+          "line": 15
+        }
+      ]
+    },
+    "models\\imaging\\xray.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "analyze",
+          "line": 57
+        }
+      ],
+      "variables": [
+        {
+          "name": "MODEL_ID",
+          "line": 15
+        },
+        {
+          "name": "DISEASES",
+          "line": 18
+        }
+      ]
+    },
+    "models\\monai_bundle\\brats_mri_segmentation\\scripts\\prepare_datalist.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "produce_sample_dict",
+          "line": 10
+        },
+        {
+          "name": "produce_datalist",
+          "line": 29
+        }
+      ],
+      "variables": []
+    },
+    "models\\multimodal\\med_flamingo.py": {
+      "classes": [
+        {
+          "name": "MedFlamingoAnalyzer",
+          "line": 12
+        }
+      ],
+      "functions": [
+        {
+          "name": "analyze",
+          "line": 70
+        }
+      ],
+      "variables": [
+        {
+          "name": "MODEL_ID",
+          "line": 13
+        }
+      ]
+    },
+    "models\\nlp\\biomistral.py": {
+      "classes": [
+        {
+          "name": "BioMistralChatbot",
+          "line": 9
+        }
+      ],
+      "functions": [
+        {
+          "name": "generate_answer",
+          "line": 63
+        }
+      ],
+      "variables": [
+        {
+          "name": "MODEL_ID",
+          "line": 17
+        }
+      ]
+    },
+    "modules\\ordonnance_scanner.py": {
+      "classes": [
+        {
+          "name": "MedicamentExtrait",
+          "line": 27
+        },
+        {
+          "name": "ResultatOrdonnance",
+          "line": 43
+        }
+      ],
+      "functions": [
+        {
+          "name": "load_medicaments_db",
+          "line": 59
+        },
+        {
+          "name": "ocr_extract_text",
+          "line": 183
+        },
+        {
+          "name": "extract_medications",
+          "line": 295
+        },
+        {
+          "name": "fuzzy_match_medication",
+          "line": 389
+        },
+        {
+          "name": "analyze_ordonnance",
+          "line": 420
+        }
+      ],
+      "variables": []
+    },
+    "modules\\mental\\detector.py": {
+      "classes": [],
+      "functions": [],
+      "variables": [
+        {
+          "name": "NEGATION_DICT",
+          "line": 18
+        }
+      ]
+    },
+    "modules\\mental\\persistence.py": {
+      "classes": [],
+      "functions": [],
+      "variables": [
+        {
+          "name": "DEFAULT_DB_PATH",
+          "line": 17
+        }
+      ]
+    },
+    "pages\\06_🦩_المساعد_متعدد_الوسائط.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "parse_vision_response",
+          "line": 18
+        }
+      ],
+      "variables": []
+    },
+    "pages\\10_🏥_الرعاية_القريبة.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "inject_nearby_care_page_styles",
+          "line": 80
+        },
+        {
+          "name": "infer_active_location",
+          "line": 259
+        },
+        {
+          "name": "fetch_places_with_cache",
+          "line": 285
+        }
+      ],
+      "variables": [
+        {
+          "name": "PAGE_TITLE",
+          "line": 35
+        },
+        {
+          "name": "PAGE_ICON",
+          "line": 36
+        },
+        {
+          "name": "CACHE_DURATION",
+          "line": 37
+        },
+        {
+          "name": "MAX_RESULTS_DISPLAY",
+          "line": 38
+        },
+        {
+          "name": "DEFAULT_RADIUS_KM",
+          "line": 39
+        }
+      ]
+    },
+    "pages\\12_🧠_الصحة_النفسية.py": {
+      "classes": [],
+      "functions": [],
+      "variables": [
+        {
+          "name": "ROOT",
+          "line": 11
+        }
+      ]
+    },
+    "partie Docteur+User\\append_stats.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "append_stats_methods",
+          "line": 6
+        }
+      ],
+      "variables": []
+    },
+    "partie Docteur+User\\app_config.py": {
+      "classes": [],
+      "functions": [],
+      "variables": [
+        {
+          "name": "VERSION",
+          "line": 5
+        },
+        {
+          "name": "DB_HOST",
+          "line": 8
+        },
+        {
+          "name": "DB_USER",
+          "line": 9
+        },
+        {
+          "name": "DB_PASSWORD",
+          "line": 10
+        },
+        {
+          "name": "DB_NAME",
+          "line": 11
+        },
+        {
+          "name": "SMTP_SERVER",
+          "line": 14
+        },
+        {
+          "name": "SMTP_PORT",
+          "line": 15
+        },
+        {
+          "name": "SMTP_USER",
+          "line": 16
+        },
+        {
+          "name": "SMTP_PASSWORD",
+          "line": 17
+        },
+        {
+          "name": "SMTP_FROM",
+          "line": 18
+        },
+        {
+          "name": "UPLOAD_FOLDER",
+          "line": 21
+        },
+        {
+          "name": "ORDO_FOLDER",
+          "line": 22
+        },
+        {
+          "name": "REPORTS_FOLDER",
+          "line": 23
+        },
+        {
+          "name": "BCRYPT_ROUNDS",
+          "line": 26
+        },
+        {
+          "name": "SECRET_KEY",
+          "line": 27
+        },
+        {
+          "name": "SESSION_TIMEOUT",
+          "line": 30
+        },
+        {
+          "name": "CONFIDENCE_THRESHOLD",
+          "line": 33
+        },
+        {
+          "name": "AUTO_ANALYSIS",
+          "line": 34
+        },
+        {
+          "name": "BASE_URL",
+          "line": 37
+        },
+        {
+          "name": "API_URL",
+          "line": 38
+        },
+        {
+          "name": "LOG_FILE",
+          "line": 42
+        },
+        {
+          "name": "APP_NAME",
+          "line": 45
+        },
+        {
+          "name": "APP_DESCRIPTION",
+          "line": 46
+        },
+        {
+          "name": "SUPPORTED_LANGUAGES",
+          "line": 47
+        },
+        {
+          "name": "DEFAULT_LANGUAGE",
+          "line": 48
+        },
+        {
+          "name": "MAX_FILE_SIZE",
+          "line": 51
+        },
+        {
+          "name": "ALLOWED_EXTENSIONS",
+          "line": 52
+        },
+        {
+          "name": "MIN_RDV_ADVANCE_DAYS",
+          "line": 55
+        },
+        {
+          "name": "MAX_RDV_PER_DAY",
+          "line": 56
+        },
+        {
+          "name": "RDV_DURATION_MINUTES",
+          "line": 57
+        },
+        {
+          "name": "NOTIFICATION_EMAIL",
+          "line": 60
+        },
+        {
+          "name": "NOTIFICATION_SMS",
+          "line": 61
+        },
+        {
+          "name": "NOTIFICATION_PUSH",
+          "line": 62
+        },
+        {
+          "name": "ICON_URL",
+          "line": 65
+        },
+        {
+          "name": "LOGO_URL",
+          "line": 66
+        },
+        {
+          "name": "ALLOWED_EXTENSIONS",
+          "line": 69
+        },
+        {
+          "name": "MAX_FILE_SIZE",
+          "line": 70
+        }
+      ]
+    },
+    "partie Docteur+User\\auth_manager.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "hash_password",
+          "line": 14
+        },
+        {
+          "name": "verify_password",
+          "line": 24
+        },
+        {
+          "name": "is_plaintext_password",
+          "line": 170
+        },
+        {
+          "name": "migrate_password",
+          "line": 177
+        },
+        {
+          "name": "log_action",
+          "line": 220
+        },
+        {
+          "name": "change_password",
+          "line": 244
+        },
+        {
+          "name": "reset_password",
+          "line": 278
+        }
+      ],
+      "variables": []
+    },
+    "partie Docteur+User\\database1.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "dict_factory",
+          "line": 22
+        },
+        {
+          "name": "connect_with_retry",
+          "line": 28
+        },
+        {
+          "name": "ensure_connection",
+          "line": 41
+        },
+        {
+          "name": "execute_query",
+          "line": 50
+        },
+        {
+          "name": "create_tables",
+          "line": 99
+        },
+        {
+          "name": "create_specialites",
+          "line": 345
+        },
+        {
+          "name": "get_user_by_username",
+          "line": 365
+        },
+        {
+          "name": "get_user_by_email",
+          "line": 368
+        },
+        {
+          "name": "get_user_by_id",
+          "line": 371
+        },
+        {
+          "name": "insert_user",
+          "line": 374
+        },
+        {
+          "name": "update_user",
+          "line": 386
+        },
+        {
+          "name": "update_last_login",
+          "line": 399
+        },
+        {
+          "name": "update_user_password",
+          "line": 402
+        },
+        {
+          "name": "log_action",
+          "line": 407
+        },
+        {
+          "name": "get_user_notifications",
+          "line": 411
+        },
+        {
+          "name": "mark_notification_as_read",
+          "line": 417
+        },
+        {
+          "name": "create_notification",
+          "line": 420
+        },
+        {
+          "name": "get_doctor_patients",
+          "line": 424
+        },
+        {
+          "name": "get_patient_details",
+          "line": 461
+        },
+        {
+          "name": "get_dashboard_stats",
+          "line": 508
+        },
+        {
+          "name": "get_doctor_statistics",
+          "line": 520
+        }
+      ],
+      "variables": []
+    },
+    "partie Docteur+User\\doctor_patients_ui1.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "show_patient_dossier",
+          "line": 362
+        },
+        {
+          "name": "show_patient_info",
+          "line": 407
+        },
+        {
+          "name": "show_patient_analyses_complet",
+          "line": 434
+        },
+        {
+          "name": "show_patient_pdfs",
+          "line": 485
+        },
+        {
+          "name": "show_patient_images",
+          "line": 523
+        },
+        {
+          "name": "show_patient_historique",
+          "line": 556
+        },
+        {
+          "name": "show_patient_consultation_calendar",
+          "line": 610
+        },
+        {
+          "name": "show_patient_details",
+          "line": 869
+        },
+        {
+          "name": "show_patient_analyses",
+          "line": 873
+        },
+        {
+          "name": "show_patient_consultations",
+          "line": 877
+        },
+        {
+          "name": "show_patient_messages",
+          "line": 881
+        }
+      ],
+      "variables": []
+    },
+    "partie Docteur+User\\fill_sqlite.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "fill_sqlite",
+          "line": 4
+        }
+      ],
+      "variables": []
+    },
+    "partie Docteur+User\\fix_existing_db.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "fix_database",
+          "line": 17
+        }
+      ],
+      "variables": []
+    },
+    "partie Docteur+User\\florence_analyzer.py": {
+      "classes": [
+        {
+          "name": "FlorenceBaseAnalyzer",
+          "line": 7
+        }
+      ],
+      "functions": [
+        {
+          "name": "analyze",
+          "line": 52
+        },
+        {
+          "name": "adjust_probabilities",
+          "line": 93
+        },
+        {
+          "name": "get_type_name",
+          "line": 97
+        },
+        {
+          "name": "generate_recommendations",
+          "line": 100
+        },
+        {
+          "name": "get_type_name",
+          "line": 196
+        },
+        {
+          "name": "adjust_probabilities",
+          "line": 199
+        },
+        {
+          "name": "get_type_name",
+          "line": 203
+        },
+        {
+          "name": "analyze",
+          "line": 206
+        },
+        {
+          "name": "get_type_name",
+          "line": 213
+        },
+        {
+          "name": "adjust_probabilities",
+          "line": 216
+        },
+        {
+          "name": "get_type_name",
+          "line": 220
+        },
+        {
+          "name": "get_type_name",
+          "line": 224
+        },
+        {
+          "name": "analyze",
+          "line": 227
+        },
+        {
+          "name": "get_type_name",
+          "line": 239
+        },
+        {
+          "name": "analyze",
+          "line": 242
+        },
+        {
+          "name": "get_type_name",
+          "line": 255
+        },
+        {
+          "name": "adjust_probabilities",
+          "line": 258
+        },
+        {
+          "name": "get_type_name",
+          "line": 262
+        },
+        {
+          "name": "get_type_name",
+          "line": 266
+        },
+        {
+          "name": "adjust_probabilities",
+          "line": 269
+        },
+        {
+          "name": "analyze",
+          "line": 275
+        },
+        {
+          "name": "get_type_name",
+          "line": 282
+        },
+        {
+          "name": "analyze",
+          "line": 285
+        }
+      ],
+      "variables": []
+    },
+    "partie Docteur+User\\florence_ui.py": {
+      "classes": [
+        {
+          "name": "FlorencePDFGenerator",
+          "line": 31
+        }
+      ],
+      "functions": [
+        {
+          "name": "generate_report",
+          "line": 33
+        },
+        {
+          "name": "inject_florence_css",
+          "line": 69
+        }
+      ],
+      "variables": []
+    },
+    "partie Docteur+User\\ia_priorisation.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "calculate_patient_score",
+          "line": 48
+        },
+        {
+          "name": "check_urgence_message",
+          "line": 116
+        },
+        {
+          "name": "check_analyses_critiques",
+          "line": 124
+        },
+        {
+          "name": "check_rdv_aujourdhui",
+          "line": 142
+        },
+        {
+          "name": "check_symptomes_graves",
+          "line": 147
+        },
+        {
+          "name": "check_absence_suivi",
+          "line": 165
+        },
+        {
+          "name": "check_antecedents_graves",
+          "line": 182
+        },
+        {
+          "name": "check_age_superieur_65",
+          "line": 196
+        },
+        {
+          "name": "check_pathologie_chronique",
+          "line": 201
+        },
+        {
+          "name": "get_priority_level",
+          "line": 215
+        },
+        {
+          "name": "batch_calculate_scores",
+          "line": 224
+        },
+        {
+          "name": "get_prioritized_patients_for_doctor",
+          "line": 253
+        },
+        {
+          "name": "test_ia_priorisation",
+          "line": 338
+        }
+      ],
+      "variables": []
+    },
+    "partie Docteur+User\\import_sqlite.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "convert_mysql_to_sqlite",
+          "line": 6
+        }
+      ],
+      "variables": []
+    },
+    "partie Docteur+User\\main.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "get_patient_folder",
+          "line": 541
+        }
+      ],
+      "variables": []
+    },
+    "partie Docteur+User\\medical_dashboard_ux.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "show_medical_ux_demo",
+          "line": 9
+        },
+        {
+          "name": "generate_patients_with_score",
+          "line": 359
+        }
+      ],
+      "variables": []
+    },
+    "partie Docteur+User\\migrate_passwords.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "migrate_all_passwords",
+          "line": 10
+        },
+        {
+          "name": "create_test_user",
+          "line": 70
+        }
+      ],
+      "variables": []
+    },
+    "partie Docteur+User\\notification_manager.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "setup_email_config",
+          "line": 13
+        },
+        {
+          "name": "create_notification",
+          "line": 21
+        },
+        {
+          "name": "get_user_notifications",
+          "line": 31
+        },
+        {
+          "name": "mark_as_read",
+          "line": 43
+        }
+      ],
+      "variables": []
+    },
+    "partie Docteur+User\\pdf_generator.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "generate_ordonnance",
+          "line": 9
+        },
+        {
+          "name": "generate_rapport_analyse",
+          "line": 56
+        }
+      ],
+      "variables": []
+    },
+    "partie Docteur+User\\TE.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "get_patient_folder",
+          "line": 439
+        }
+      ],
+      "variables": []
+    },
+    "partie Docteur+User\\ui_components.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "generate_urgence_response",
+          "line": 213
+        },
+        {
+          "name": "generate_regular_response",
+          "line": 234
+        },
+        {
+          "name": "generate_prescription",
+          "line": 254
+        }
+      ],
+      "variables": []
+    },
+    "partie Docteur+User\\pha\\config.py": {
+      "classes": [],
+      "functions": [],
+      "variables": [
+        {
+          "name": "SITE_ICON",
+          "line": 3
+        },
+        {
+          "name": "STOCK_ALERT_THRESHOLD",
+          "line": 33
+        },
+        {
+          "name": "EXPIRY_ALERT_DAYS",
+          "line": 34
+        },
+        {
+          "name": "FREE_SHIPPING_THRESHOLD",
+          "line": 35
+        },
+        {
+          "name": "SHIPPING_COST",
+          "line": 36
+        }
+      ]
+    },
+    "partie Docteur+User\\pha\\models.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "get_product",
+          "line": 23
+        },
+        {
+          "name": "update_order_status",
+          "line": 131
+        },
+        {
+          "name": "get_expired_products",
+          "line": 149
+        },
+        {
+          "name": "get_expiring_products",
+          "line": 162
+        }
+      ],
+      "variables": []
+    },
+    "partie Docteur+User\\pha\\pages\\5_Admin.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "color_days",
+          "line": 337
+        }
+      ],
+      "variables": []
+    },
+    "partie Docteur+User\\phar\\config.py": {
+      "classes": [],
+      "functions": [],
+      "variables": [
+        {
+          "name": "SITE_ICON",
+          "line": 3
+        },
+        {
+          "name": "FREE_SHIPPING_THRESHOLD",
+          "line": 38
+        },
+        {
+          "name": "SHIPPING_COST",
+          "line": 39
+        },
+        {
+          "name": "STOCK_ALERT",
+          "line": 40
+        },
+        {
+          "name": "EXPIRY_ALERT_DAYS",
+          "line": 41
+        }
+      ]
+    },
+    "partie Docteur+User\\phar\\pages\\4_Admin.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "color_status",
+          "line": 666
+        }
+      ],
+      "variables": []
+    },
+    "partie Docteur+User\\phar\\utils\\db.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "create_database",
+          "line": 41
+        }
+      ],
+      "variables": []
+    },
+    "tests\\benchmark_models.py": {
+      "classes": [
+        {
+          "name": "LSTMClassifier",
+          "line": 144
+        },
+        {
+          "name": "BERTTabularClassifier",
+          "line": 172
+        }
+      ],
+      "functions": [
+        {
+          "name": "load_data",
+          "line": 81
+        },
+        {
+          "name": "prepare_splits",
+          "line": 106
+        },
+        {
+          "name": "forward",
+          "line": 162
+        },
+        {
+          "name": "forward",
+          "line": 206
+        },
+        {
+          "name": "train_sklearn_model",
+          "line": 255
+        },
+        {
+          "name": "train_pytorch_model",
+          "line": 290
+        },
+        {
+          "name": "generate_visualizations",
+          "line": 478
+        },
+        {
+          "name": "print_summary",
+          "line": 581
+        }
+      ],
+      "variables": [
+        {
+          "name": "X",
+          "line": 88
+        }
+      ]
+    },
+    "tests\\benchmark_rag.py": {
+      "classes": [],
+      "functions": [],
+      "variables": [
+        {
+          "name": "ANNOTATED_QUERIES",
+          "line": 23
+        }
+      ]
+    },
+    "tests\\conftest.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "dummy_rgb_image",
+          "line": 29
+        },
+        {
+          "name": "dummy_mri_image",
+          "line": 36
+        },
+        {
+          "name": "dummy_xray_image",
+          "line": 44
+        },
+        {
+          "name": "tiny_image",
+          "line": 52
+        },
+        {
+          "name": "safety_guard",
+          "line": 63
+        },
+        {
+          "name": "triage_classifier",
+          "line": 70
+        },
+        {
+          "name": "distress_detector",
+          "line": 81
+        },
+        {
+          "name": "pytest_configure",
+          "line": 91
+        },
+        {
+          "name": "pytest_collection_modifyitems",
+          "line": 97
+        }
+      ],
+      "variables": []
+    },
+    "tests\\test_imaging.py": {
+      "classes": [
+        {
+          "name": "TestBreastDensityDetector",
+          "line": 29
+        },
+        {
+          "name": "TestBrainTumorDetector",
+          "line": 67
+        },
+        {
+          "name": "TestChestXrayAnalyzer",
+          "line": 114
+        }
+      ],
+      "functions": [
+        {
+          "name": "create_dummy_image",
+          "line": 21
+        },
+        {
+          "name": "test_model_loaded",
+          "line": 40
+        },
+        {
+          "name": "test_predict_returns_dict",
+          "line": 44
+        },
+        {
+          "name": "test_probabilities_sum_to_one",
+          "line": 51
+        },
+        {
+          "name": "test_interpret_density",
+          "line": 57
+        },
+        {
+          "name": "test_model_loaded",
+          "line": 78
+        },
+        {
+          "name": "test_predict_format",
+          "line": 81
+        },
+        {
+          "name": "test_class_names_valid",
+          "line": 90
+        },
+        {
+          "name": "test_probabilities_valid",
+          "line": 99
+        },
+        {
+          "name": "test_detection_confidence_range",
+          "line": 105
+        },
+        {
+          "name": "test_model_loaded",
+          "line": 125
+        },
+        {
+          "name": "test_predict_format",
+          "line": 128
+        },
+        {
+          "name": "test_interpret_result",
+          "line": 137
+        }
+      ],
+      "variables": []
+    },
+    "tests\\test_mental.py": {
+      "classes": [
+        {
+          "name": "TestCrisisDetection",
+          "line": 26
+        },
+        {
+          "name": "TestHighDistress",
+          "line": 54
+        },
+        {
+          "name": "TestMildDistress",
+          "line": 73
+        },
+        {
+          "name": "TestNoDistress",
+          "line": 91
+        },
+        {
+          "name": "TestDialectDetection",
+          "line": 110
+        },
+        {
+          "name": "TestPHQ9",
+          "line": 130
+        },
+        {
+          "name": "TestGAD7",
+          "line": 175
+        }
+      ],
+      "functions": [
+        {
+          "name": "test_crisis_detected",
+          "line": 37
+        },
+        {
+          "name": "test_negated_crisis_not_detected",
+          "line": 42
+        },
+        {
+          "name": "test_high_distress_msa",
+          "line": 57
+        },
+        {
+          "name": "test_single_high_keyword_not_level2",
+          "line": 62
+        },
+        {
+          "name": "test_mild_distress",
+          "line": 76
+        },
+        {
+          "name": "test_darija_mild",
+          "line": 81
+        },
+        {
+          "name": "test_no_distress",
+          "line": 101
+        },
+        {
+          "name": "test_darija_detected",
+          "line": 113
+        },
+        {
+          "name": "test_egyptian_detected",
+          "line": 116
+        },
+        {
+          "name": "test_levantine_detected",
+          "line": 119
+        },
+        {
+          "name": "test_msa_default",
+          "line": 122
+        },
+        {
+          "name": "test_questions_count",
+          "line": 133
+        },
+        {
+          "name": "test_options_count",
+          "line": 136
+        },
+        {
+          "name": "test_minimal_score",
+          "line": 139
+        },
+        {
+          "name": "test_maximal_score",
+          "line": 146
+        },
+        {
+          "name": "test_mild_score",
+          "line": 153
+        },
+        {
+          "name": "test_moderate_score",
+          "line": 159
+        },
+        {
+          "name": "test_badge_icons",
+          "line": 165
+        },
+        {
+          "name": "test_questions_count",
+          "line": 178
+        },
+        {
+          "name": "test_options_count",
+          "line": 181
+        },
+        {
+          "name": "test_minimal_score",
+          "line": 184
+        },
+        {
+          "name": "test_maximal_score",
+          "line": 190
+        },
+        {
+          "name": "test_mild_score",
+          "line": 196
+        }
+      ],
+      "variables": []
+    },
+    "tests\\test_orchestrator.py": {
+      "classes": [
+        {
+          "name": "TestOrchestratorInit",
+          "line": 28
+        },
+        {
+          "name": "TestIntentDetection",
+          "line": 50
+        },
+        {
+          "name": "TestAgentResponse",
+          "line": 83
+        },
+        {
+          "name": "TestSafetyAgentIntegration",
+          "line": 102
+        },
+        {
+          "name": "TestRAGAgentIntegration",
+          "line": 124
+        },
+        {
+          "name": "TestVisionAgentIntegration",
+          "line": 144
+        },
+        {
+          "name": "TestEndToEndFlow",
+          "line": 164
+        }
+      ],
+      "functions": [
+        {
+          "name": "make_dummy_image",
+          "line": 19
+        },
+        {
+          "name": "test_import",
+          "line": 31
+        },
+        {
+          "name": "test_instantiation",
+          "line": 35
+        },
+        {
+          "name": "test_intent_enum_exists",
+          "line": 40
+        },
+        {
+          "name": "test_emergency_intent",
+          "line": 58
+        },
+        {
+          "name": "test_boundary_intent",
+          "line": 65
+        },
+        {
+          "name": "test_medical_chat_intent",
+          "line": 72
+        },
+        {
+          "name": "test_response_structure",
+          "line": 86
+        },
+        {
+          "name": "test_safety_agent_import",
+          "line": 105
+        },
+        {
+          "name": "test_emergency_returns_override",
+          "line": 110
+        },
+        {
+          "name": "test_rag_agent_import",
+          "line": 127
+        },
+        {
+          "name": "test_rag_agent_instantiation",
+          "line": 131
+        },
+        {
+          "name": "test_vision_agent_import",
+          "line": 147
+        },
+        {
+          "name": "test_vision_agent_instantiation",
+          "line": 151
+        },
+        {
+          "name": "test_emergency_flow_returns_response",
+          "line": 172
+        },
+        {
+          "name": "test_safe_flow_returns_response",
+          "line": 183
+        }
+      ],
+      "variables": []
+    },
+    "tests\\test_rag.py": {
+      "classes": [
+        {
+          "name": "TestRetriever",
+          "line": 36
+        },
+        {
+          "name": "TestClassifier",
+          "line": 64
+        },
+        {
+          "name": "TestFormatResponse",
+          "line": 90
+        }
+      ],
+      "functions": [
+        {
+          "name": "test_search_returns_results",
+          "line": 39
+        },
+        {
+          "name": "test_search_relevance",
+          "line": 45
+        },
+        {
+          "name": "test_search_empty_query",
+          "line": 50
+        },
+        {
+          "name": "test_best_answer_returns_tuple",
+          "line": 55
+        },
+        {
+          "name": "test_encode_query_shape",
+          "line": 59
+        },
+        {
+          "name": "test_predict_returns_tuple",
+          "line": 67
+        },
+        {
+          "name": "test_symptom_intent",
+          "line": 73
+        },
+        {
+          "name": "test_info_intent",
+          "line": 78
+        },
+        {
+          "name": "test_top_k_returns_list",
+          "line": 83
+        },
+        {
+          "name": "test_format_symptom",
+          "line": 93
+        },
+        {
+          "name": "test_format_emergency",
+          "line": 98
+        }
+      ],
+      "variables": []
+    },
+    "tests\\test_safety.py": {
+      "classes": [
+        {
+          "name": "TestEmergencyDetection",
+          "line": 25
+        },
+        {
+          "name": "TestCardiacEmergency",
+          "line": 67
+        },
+        {
+          "name": "TestBoundaryEnforcement",
+          "line": 90
+        },
+        {
+          "name": "TestCautionDetection",
+          "line": 110
+        },
+        {
+          "name": "TestSafeMessages",
+          "line": 130
+        },
+        {
+          "name": "TestPostCheck",
+          "line": 151
+        },
+        {
+          "name": "TestDisclaimer",
+          "line": 194
+        },
+        {
+          "name": "TestEdgeCases",
+          "line": 211
+        },
+        {
+          "name": "TestNonRegression",
+          "line": 242
+        }
+      ],
+      "functions": [
+        {
+          "name": "test_emergency_detected",
+          "line": 52
+        },
+        {
+          "name": "test_emergency_has_numbers",
+          "line": 58
+        },
+        {
+          "name": "test_two_cardiac_keywords",
+          "line": 70
+        },
+        {
+          "name": "test_three_cardiac_keywords",
+          "line": 75
+        },
+        {
+          "name": "test_detect_emergency_method",
+          "line": 80
+        },
+        {
+          "name": "test_boundary_blocked",
+          "line": 99
+        },
+        {
+          "name": "test_caution_flagged",
+          "line": 119
+        },
+        {
+          "name": "test_safe_passes",
+          "line": 140
+        },
+        {
+          "name": "test_safe_response_unchanged",
+          "line": 154
+        },
+        {
+          "name": "test_prescription_caught",
+          "line": 159
+        },
+        {
+          "name": "test_dosage_caught",
+          "line": 165
+        },
+        {
+          "name": "test_diagnosis_caught",
+          "line": 170
+        },
+        {
+          "name": "test_empty_response",
+          "line": 175
+        },
+        {
+          "name": "test_none_response",
+          "line": 179
+        },
+        {
+          "name": "test_no_duplicate_disclaimer",
+          "line": 183
+        },
+        {
+          "name": "test_disclaimer_added",
+          "line": 197
+        },
+        {
+          "name": "test_no_duplicate_disclaimer",
+          "line": 201
+        },
+        {
+          "name": "test_empty_input",
+          "line": 214
+        },
+        {
+          "name": "test_very_long_input_blocked",
+          "line": 218
+        },
+        {
+          "name": "test_mixed_arabic_french",
+          "line": 224
+        },
+        {
+          "name": "test_format_response_critique",
+          "line": 229
+        },
+        {
+          "name": "test_format_response_elevee",
+          "line": 233
+        },
+        {
+          "name": "test_emergency_never_passes_as_safe",
+          "line": 256
+        },
+        {
+          "name": "test_boundary_never_passes",
+          "line": 267
+        }
+      ],
+      "variables": [
+        {
+          "name": "MUST_BE_EMERGENCY",
+          "line": 245
+        },
+        {
+          "name": "MUST_BE_BOUNDARY",
+          "line": 261
+        }
+      ]
+    },
+    "tests\\test_triage.py": {
+      "classes": [
+        {
+          "name": "TestEmergencyKeywords",
+          "line": 24
+        },
+        {
+          "name": "TestModerateKeywords",
+          "line": 63
+        },
+        {
+          "name": "TestSafeKeywords",
+          "line": 86
+        },
+        {
+          "name": "TestCardiacThreshold",
+          "line": 108
+        },
+        {
+          "name": "TestSymptomCombos",
+          "line": 134
+        },
+        {
+          "name": "TestUrgencyMarkers",
+          "line": 153
+        },
+        {
+          "name": "TestVitalSigns",
+          "line": 171
+        },
+        {
+          "name": "TestEdgeCases",
+          "line": 196
+        },
+        {
+          "name": "TestNonRegression",
+          "line": 237
+        }
+      ],
+      "functions": [
+        {
+          "name": "test_critical_keywords_emergency",
+          "line": 43
+        },
+        {
+          "name": "test_emergency_has_actions",
+          "line": 48
+        },
+        {
+          "name": "test_emergency_has_response",
+          "line": 53
+        },
+        {
+          "name": "test_moderate_keywords",
+          "line": 76
+        },
+        {
+          "name": "test_safe_queries",
+          "line": 98
+        },
+        {
+          "name": "test_two_cardiac_keywords",
+          "line": 111
+        },
+        {
+          "name": "test_three_cardiac_keywords",
+          "line": 117
+        },
+        {
+          "name": "test_one_cardiac_not_emergency",
+          "line": 122
+        },
+        {
+          "name": "test_chest_arm_combo",
+          "line": 137
+        },
+        {
+          "name": "test_headache_paralysis_combo",
+          "line": 143
+        },
+        {
+          "name": "test_sudden_onset_boosts_score",
+          "line": 156
+        },
+        {
+          "name": "test_severity_boosts_score",
+          "line": 161
+        },
+        {
+          "name": "test_high_temperature",
+          "line": 174
+        },
+        {
+          "name": "test_dangerous_blood_pressure",
+          "line": 179
+        },
+        {
+          "name": "test_high_heart_rate",
+          "line": 183
+        },
+        {
+          "name": "test_normal_temperature_no_vital_flag",
+          "line": 187
+        },
+        {
+          "name": "test_empty_input",
+          "line": 199
+        },
+        {
+          "name": "test_whitespace_only",
+          "line": 204
+        },
+        {
+          "name": "test_text_with_diacritics",
+          "line": 208
+        },
+        {
+          "name": "test_alef_variants",
+          "line": 213
+        },
+        {
+          "name": "test_result_to_dict",
+          "line": 218
+        },
+        {
+          "name": "test_score_capped_at_one",
+          "line": 226
+        },
+        {
+          "name": "test_life_threatening_never_safe",
+          "line": 251
+        }
+      ],
+      "variables": [
+        {
+          "name": "LIFE_THREATENING",
+          "line": 240
+        }
+      ]
+    },
+    "tests\\test_validator.py": {
+      "classes": [
+        {
+          "name": "TestBasicQuality",
+          "line": 41
+        },
+        {
+          "name": "TestColorProfile",
+          "line": 71
+        },
+        {
+          "name": "TestFullValidation",
+          "line": 87
+        }
+      ],
+      "functions": [
+        {
+          "name": "make_image",
+          "line": 18
+        },
+        {
+          "name": "make_grayscale_image",
+          "line": 24
+        },
+        {
+          "name": "make_colorful_image",
+          "line": 31
+        },
+        {
+          "name": "test_valid_image",
+          "line": 44
+        },
+        {
+          "name": "test_too_small",
+          "line": 49
+        },
+        {
+          "name": "test_too_large",
+          "line": 55
+        },
+        {
+          "name": "test_weird_aspect_ratio",
+          "line": 60
+        },
+        {
+          "name": "test_normal_aspect_ratio",
+          "line": 65
+        },
+        {
+          "name": "test_grayscale_detected",
+          "line": 74
+        },
+        {
+          "name": "test_colorful_detected",
+          "line": 80
+        },
+        {
+          "name": "test_tiny_image_rejected",
+          "line": 90
+        },
+        {
+          "name": "test_normal_grayscale_passes_quality",
+          "line": 97
+        }
+      ],
+      "variables": []
+    },
+    "utils\\config.py": {
+      "classes": [],
+      "functions": [],
+      "variables": [
+        {
+          "name": "HF_TOKEN",
+          "line": 20
+        },
+        {
+          "name": "MODELS_DIR",
+          "line": 23
+        },
+        {
+          "name": "FAISS_INDEX_PATH",
+          "line": 24
+        },
+        {
+          "name": "RETRIEVER_DATA_PATH",
+          "line": 25
+        },
+        {
+          "name": "CLASSIFIER_MODEL_PATH",
+          "line": 26
+        },
+        {
+          "name": "CANCER_MODEL_PATH",
+          "line": 27
+        },
+        {
+          "name": "BRAIN_TUMOR_MODEL_PATH",
+          "line": 28
+        },
+        {
+          "name": "MONAI_DIR",
+          "line": 29
+        },
+        {
+          "name": "HF_MONAI_MODEL",
+          "line": 32
+        },
+        {
+          "name": "HF_BRAIN_TUMOR_MODEL",
+          "line": 33
+        },
+        {
+          "name": "HF_XRAY_MODEL",
+          "line": 34
+        },
+        {
+          "name": "HF_DERM_MODEL",
+          "line": 35
+        },
+        {
+          "name": "HF_WHISPER_MODEL",
+          "line": 36
+        },
+        {
+          "name": "USE_WHISPER_STT",
+          "line": 38
+        },
+        {
+          "name": "LLM_MODEL_NAME",
+          "line": 41
+        },
+        {
+          "name": "LLM_TEMPERATURE",
+          "line": 42
+        },
+        {
+          "name": "LLM_MAX_TOKENS",
+          "line": 43
+        },
+        {
+          "name": "LLM_HISTORY_LIMIT",
+          "line": 44
+        },
+        {
+          "name": "FAISS_TOP_K",
+          "line": 47
+        },
+        {
+          "name": "FAISS_THRESHOLD",
+          "line": 48
+        },
+        {
+          "name": "HISTORY_FILE",
+          "line": 51
+        },
+        {
+          "name": "LOGO_FILENAME",
+          "line": 52
+        },
+        {
+          "name": "MAX_INPUT_LENGTH",
+          "line": 56
+        }
+      ]
+    },
+    "utils\\geolocation.py": {
+      "classes": [],
+      "functions": [],
+      "variables": [
+        {
+          "name": "DEFAULT_LAT",
+          "line": 31
+        },
+        {
+          "name": "DEFAULT_LON",
+          "line": 32
+        }
+      ]
+    },
+    "utils\\gradcam.py": {
+      "classes": [
+        {
+          "name": "ModelWrapper",
+          "line": 59
+        }
+      ],
+      "functions": [
+        {
+          "name": "generate_gradcam_heatmap",
+          "line": 26
+        },
+        {
+          "name": "forward",
+          "line": 64
+        },
+        {
+          "name": "is_available",
+          "line": 116
+        }
+      ],
+      "variables": [
+        {
+          "name": "GRADCAM_AVAILABLE",
+          "line": 21
+        },
+        {
+          "name": "GRADCAM_AVAILABLE",
+          "line": 23
+        }
+      ]
+    },
+    "utils\\image_validator.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "classify_medical_clip",
+          "line": 153
+        },
+        {
+          "name": "detect_image_type",
+          "line": 207
+        }
+      ],
+      "variables": [
+        {
+          "name": "CLIP_AVAILABLE",
+          "line": 25
+        },
+        {
+          "name": "CLIP_AVAILABLE",
+          "line": 38
+        },
+        {
+          "name": "CLIP_AVAILABLE",
+          "line": 43
+        },
+        {
+          "name": "MEDICAL_LABELS",
+          "line": 51
+        },
+        {
+          "name": "NON_MEDICAL_LABELS",
+          "line": 59
+        },
+        {
+          "name": "IMAGE_TYPE_LABELS",
+          "line": 70
+        }
+      ]
+    },
+    "utils\\logger.py": {
+      "classes": [],
+      "functions": [
+        {
+          "name": "doRollover",
+          "line": 66
+        }
+      ],
+      "variables": [
+        {
+          "name": "LOG_FORMAT",
+          "line": 21
+        },
+        {
+          "name": "LOG_DATE_FORMAT",
+          "line": 22
+        },
+        {
+          "name": "LOG_LEVEL",
+          "line": 23
+        },
+        {
+          "name": "LOG_DIR",
+          "line": 27
+        },
+        {
+          "name": "MAX_LOG_SIZE",
+          "line": 30
+        },
+        {
+          "name": "BACKUP_COUNT",
+          "line": 31
+        }
+      ]
+    }
+  },
+  "classification": {
+    ".dockerignore": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    ".env": {
+      "category": "SAFE TO DELETE",
+      "reason": "Not imported, not referenced in code, not an entry point",
+      "confidence": 95
+    },
+    ".env.example": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: IMPROVEMENT_PLAN.md, MASTER_PROMPT.md, project_analysis.json",
+      "confidence": 80
+    },
+    "app.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "background_zellige.png": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "config.json": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "consultation_history.json": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: app.py, IMPROVEMENT_PLAN.md, project_analysis.json",
+      "confidence": 80
+    },
+    "docker-compose.yml": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "Dockerfile": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "evaluate_all.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "IMPROVEMENT_PLAN.md": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "launch_shifa.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "llm_finetuning_guide.py": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json, README.md",
+      "confidence": 80
+    },
+    "logo.png": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: app.py, project_analysis.json, frontend\\index.html",
+      "confidence": 80
+    },
+    "logs.txt": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "MASTER_PROMPT.md": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "mental_module.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: app.py, pages\\12_🧠_الصحة_النفسية.py",
+      "confidence": 100
+    },
+    "packages.txt": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: MASTER_PROMPT.md, project_analysis.json",
+      "confidence": 80
+    },
+    "project_analysis.json": {
+      "category": "SAFE TO DELETE",
+      "reason": "Not imported, not referenced in code, not an entry point",
+      "confidence": 95
+    },
+    "qa_testing_report.txt": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "rapport_ocr_vlm.md": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "rapport_technique_global.md": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "rapport_technologies_ocr.md": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "README.md": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: IMPROVEMENT_PLAN.md, MASTER_PROMPT.md, project_analysis.json",
+      "confidence": 80
+    },
+    "requirements.txt": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "review.sh": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "run_audit.py": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "sample_ordonnance.jpeg": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "setup.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "SHIFA_DOCS_V2.md": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "status.txt": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "Stylized_Heart_and_Cross_Logo_for_SHIFA_AI__1_-removebg-preview.png": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: app.py, project_analysis.json, partie Docteur+User\\main.py",
+      "confidence": 80
+    },
+    "test_qa.py": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "test_qa_output.log": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "train_bert_medical.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: evaluate_all.py",
+      "confidence": 100
+    },
+    "train_cancer_model.py": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json, qa_testing_report.txt, tests\\benchmark_models.py",
+      "confidence": 80
+    },
+    "train_report_prioritizer.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: evaluate_all.py",
+      "confidence": 100
+    },
+    "WhatsApp Image 2026-04-04 at 13.21.38.jpeg": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "WhatsApp Image 2026-04-05 at 11.24.10.jpeg": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    ".streamlit\\config.toml": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    ".streamlit\\secrets.toml": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: MASTER_PROMPT.md, project_analysis.json, README.md",
+      "confidence": 80
+    },
+    "agents\\base_agent.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: agents\\llm_agent.py, agents\\location_agent.py, agents\\orchestrator.py",
+      "confidence": 100
+    },
+    "agents\\llm_agent.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: test_qa.py, agents\\orchestrator.py",
+      "confidence": 100
+    },
+    "agents\\location_agent.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: agents\\orchestrator.py",
+      "confidence": 100
+    },
+    "agents\\orchestrator.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: app.py, agents\\__init__.py, engine\\voice.py",
+      "confidence": 100
+    },
+    "agents\\rag_agent.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: agents\\orchestrator.py, tests\\test_orchestrator.py",
+      "confidence": 100
+    },
+    "agents\\safety_agent.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: agents\\orchestrator.py, tests\\test_orchestrator.py",
+      "confidence": 100
+    },
+    "agents\\vision_agent.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: agents\\orchestrator.py, tests\\test_orchestrator.py",
+      "confidence": 100
+    },
+    "agents\\__init__.py": {
+      "category": "SAFE TO DELETE",
+      "reason": "Not imported, not referenced in code, not an entry point",
+      "confidence": 95
+    },
+    "components\\card.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: engine\\nearby_care.py, pages\\10_🏥_الرعاية_القريبة.py",
+      "confidence": 100
+    },
+    "components\\__init__.py": {
+      "category": "SAFE TO DELETE",
+      "reason": "Not imported, not referenced in code, not an entry point",
+      "confidence": 95
+    },
+    "core\\config.py": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: IMPROVEMENT_PLAN.md, MASTER_PROMPT.md, project_analysis.json",
+      "confidence": 80
+    },
+    "core\\model_manager.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: models\\imaging\\mri.py, models\\imaging\\xray.py, models\\multimodal\\med_flamingo.py",
+      "confidence": 100
+    },
+    "core\\user_auth.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: app.py",
+      "confidence": 100
+    },
+    "data\\dispositifs-medicaux-admis-au-remboursement-cnops-2014 (1).xls": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json, engine\\vision_ocr\\config.py",
+      "confidence": 80
+    },
+    "data\\knowledge_base.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: setup.py, agents\\rag_agent.py, scripts\\rebuild_index.py",
+      "confidence": 100
+    },
+    "data\\medicaments_maroc.json": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json, modules\\ordonnance_scanner.py",
+      "confidence": 80
+    },
+    "data\\mental_health.db": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json, modules\\mental\\persistence.py",
+      "confidence": 80
+    },
+    "data\\ref-des-medicaments-cnops-2014.xlsx": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json, rapport_technologies_ocr.md, engine\\vision_ocr\\config.py",
+      "confidence": 80
+    },
+    "data\\shifa_users.db": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json, core\\user_auth.py",
+      "confidence": 80
+    },
+    "data\\__init__.py": {
+      "category": "SAFE TO DELETE",
+      "reason": "Not imported, not referenced in code, not an entry point",
+      "confidence": 95
+    },
+    "data\\research_cache\\05eabb5a5b27f9c36ad26117a38dbace.json": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "data\\research_cache\\a95f99abe007b9e5d87887d94da72b3d.json": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "datasets\\arabic_psychotherapy_synthetic.jsonl": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json, README.md",
+      "confidence": 80
+    },
+    "datasets\\crisis_keywords_arabic.json": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json, README.md, modules\\mental\\detector.py",
+      "confidence": 80
+    },
+    "datasets\\phq9_validation_arabic.json": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json, README.md",
+      "confidence": 80
+    },
+    "engine\\audio.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: app.py",
+      "confidence": 100
+    },
+    "engine\\brain_mri.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: engine\\vision_router.py, tests\\test_imaging.py",
+      "confidence": 100
+    },
+    "engine\\breast.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: engine\\vision_router.py",
+      "confidence": 100
+    },
+    "engine\\cancer.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: engine\\vision_router.py",
+      "confidence": 100
+    },
+    "engine\\classifier.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: setup.py, agents\\rag_agent.py, tests\\test_rag.py",
+      "confidence": 100
+    },
+    "engine\\dermato.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: engine\\vision_router.py",
+      "confidence": 100
+    },
+    "engine\\llm.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: agents\\llm_agent.py, pages\\06_🦩_المساعد_متعدد_الوسائط.py",
+      "confidence": 100
+    },
+    "engine\\nearby_care.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: app.py, test_qa.py, agents\\location_agent.py",
+      "confidence": 100
+    },
+    "engine\\research_explorer.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: app.py",
+      "confidence": 100
+    },
+    "engine\\retriever.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: run_audit.py, setup.py, test_qa.py",
+      "confidence": 100
+    },
+    "engine\\safety.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: run_audit.py, test_qa.py, agents\\safety_agent.py",
+      "confidence": 100
+    },
+    "engine\\triage.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: test_qa.py, agents\\orchestrator.py, agents\\safety_agent.py",
+      "confidence": 100
+    },
+    "engine\\vision_base.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: engine\\breast.py, engine\\dermato.py, engine\\xray.py",
+      "confidence": 100
+    },
+    "engine\\vision_router.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: test_qa.py, agents\\vision_agent.py",
+      "confidence": 100
+    },
+    "engine\\voice.py": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "engine\\WhatsApp Image 2026-04-15 at 22.51.44.jpeg": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "engine\\xray.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: engine\\vision_router.py",
+      "confidence": 100
+    },
+    "engine\\__init__.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: evaluate_all.py, train_bert_medical.py, train_report_prioritizer.py",
+      "confidence": 100
+    },
+    "engine\\vision_ocr\\config.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: engine\\vision_ocr\\correction.py, engine\\vision_ocr\\validators.py, engine\\vision_ocr\\vlm_extraction.py",
+      "confidence": 100
+    },
+    "engine\\vision_ocr\\correction.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: engine\\vision_ocr\\decision_engine.py",
+      "confidence": 100
+    },
+    "engine\\vision_ocr\\decision_engine.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: ui\\ordonnance_ui.py",
+      "confidence": 100
+    },
+    "engine\\vision_ocr\\scraper_medicament_ma.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: engine\\vision_ocr\\decision_engine.py",
+      "confidence": 100
+    },
+    "engine\\vision_ocr\\validators.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: engine\\vision_ocr\\decision_engine.py",
+      "confidence": 100
+    },
+    "engine\\vision_ocr\\vlm_extraction.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: ui\\ordonnance_ui.py",
+      "confidence": 100
+    },
+    "engine\\vision_ocr\\__init__.py": {
+      "category": "SAFE TO DELETE",
+      "reason": "Not imported, not referenced in code, not an entry point",
+      "confidence": 95
+    },
+    "frontend\\index.html": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "frontend\\package-lock.json": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "frontend\\package.json": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "frontend\\tsconfig.json": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "frontend\\vite.config.js": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "frontend\\public\\favicon.svg": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "frontend\\public\\icons.svg": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "frontend\\public\\logo.png": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: app.py, project_analysis.json, frontend\\index.html",
+      "confidence": 80
+    },
+    "frontend\\src\\App.jsx": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "frontend\\src\\counter.ts": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "frontend\\src\\index.css": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "frontend\\src\\main.jsx": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json, frontend\\index.html",
+      "confidence": 80
+    },
+    "frontend\\src\\main.ts": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "frontend\\src\\style.css": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "frontend\\src\\components\\AccessibleButton.tsx": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "frontend\\src\\components\\AccessibleInput.tsx": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "frontend\\src\\components\\AdvancedModules.jsx": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "frontend\\src\\components\\EmergencyBanner.jsx": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "frontend\\src\\components\\Footer.jsx": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "frontend\\src\\components\\HeroSection.jsx": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "frontend\\src\\components\\QuickServices.jsx": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "frontend\\src\\components\\ServiceCard.jsx": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "frontend\\src\\context\\NavigationContext.tsx": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "frontend\\src\\data\\navigation.ts": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "frontend\\src\\data\\services.js": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "frontend\\src\\layout\\BottomNav.tsx": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "frontend\\src\\layout\\MobileDrawer.tsx": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "frontend\\src\\layout\\ShifaShell.tsx": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "frontend\\src\\layout\\Sidebar.tsx": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "frontend\\src\\layout\\TopBar.tsx": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "frontend\\src\\pages\\AssistantPage.tsx": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "frontend\\src\\pages\\CarePage.tsx": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "frontend\\src\\pages\\CheckupPage.tsx": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "frontend\\src\\pages\\HomePage.tsx": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "frontend\\src\\pages\\MentalPage.tsx": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "frontend\\src\\pages\\care\\careData.ts": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "frontend\\src\\pages\\care\\ErrorState.tsx": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "frontend\\src\\pages\\care\\InitialState.tsx": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "frontend\\src\\pages\\care\\LoadingState.tsx": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "frontend\\src\\pages\\care\\ResultsState.tsx": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "frontend\\src\\types\\navigation.ts": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "models\\brain_tumor_model.keras": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json, engine\\brain_mri.py, utils\\config.py",
+      "confidence": 80
+    },
+    "models\\breast_cancer_model_v2.keras": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json, qa_testing_report.txt, train_cancer_model.py",
+      "confidence": 80
+    },
+    "models\\faiss_index.bin": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json, core\\config.py, utils\\config.py",
+      "confidence": 80
+    },
+    "models\\faiss_index_camel.bin": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json, engine\\retriever.py",
+      "confidence": 80
+    },
+    "models\\faiss_index_camel_meta.pkl": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json, engine\\retriever.py",
+      "confidence": 80
+    },
+    "models\\image_generator_model.pkl": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "models\\intent_classifier.pkl": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json, engine\\classifier.py, utils\\config.py",
+      "confidence": 80
+    },
+    "models\\retriever_data.pkl": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json, train_bert_medical.py, scripts\\rebuild_index.py",
+      "confidence": 80
+    },
+    "models\\__init__.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: partie Docteur+User\\pha\\pages\\1_Accueil1.py, partie Docteur+User\\pha\\pages\\2_Categories.py, partie Docteur+User\\pha\\pages\\3_Panier.py",
+      "confidence": 100
+    },
+    "models\\benchmark_results\\benchmark_results.json": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: evaluate_all.py, project_analysis.json, tests\\benchmark_models.py",
+      "confidence": 80
+    },
+    "models\\benchmark_results\\rag_benchmark.json": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json, tests\\benchmark_rag.py",
+      "confidence": 80
+    },
+    "models\\benchmark_results\\safety_benchmark.json": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json, tests\\benchmark_safety.py",
+      "confidence": 80
+    },
+    "models\\benchmark_results\\triage_benchmark.json": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json, tests\\benchmark_triage.py",
+      "confidence": 80
+    },
+    "models\\evaluation_results\\all_results.json": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: evaluate_all.py, project_analysis.json",
+      "confidence": 80
+    },
+    "models\\evaluation_results\\results_table.tex": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: evaluate_all.py, project_analysis.json",
+      "confidence": 80
+    },
+    "models\\imaging\\mri.py": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: IMPROVEMENT_PLAN.md, MASTER_PROMPT.md, project_analysis.json",
+      "confidence": 80
+    },
+    "models\\imaging\\xray.py": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: IMPROVEMENT_PLAN.md, MASTER_PROMPT.md, project_analysis.json",
+      "confidence": 80
+    },
+    "models\\imaging\\__init__.py": {
+      "category": "SAFE TO DELETE",
+      "reason": "Not imported, not referenced in code, not an entry point",
+      "confidence": 95
+    },
+    "models\\monai_breast_density\\model.pt": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json, engine\\breast.py, models\\monai_bundle\\brats_mri_segmentation\\configs\\evaluate.json",
+      "confidence": 80
+    },
+    "models\\monai_breast_density\\_hf_cache\\.cache\\huggingface\\download\\models\\model.pt.metadata": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "models\\monai_breast_density\\_hf_cache\\models\\model.pt": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json, engine\\breast.py, models\\monai_bundle\\brats_mri_segmentation\\configs\\evaluate.json",
+      "confidence": 80
+    },
+    "models\\monai_bundle\\brats_mri_segmentation\\LICENSE": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json, models\\monai_bundle\\brats_mri_segmentation\\docs\\README.md",
+      "confidence": 80
+    },
+    "models\\monai_bundle\\brats_mri_segmentation\\.cache\\huggingface\\download\\LICENSE.metadata": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "models\\monai_bundle\\brats_mri_segmentation\\.cache\\huggingface\\download\\configs\\evaluate.json.metadata": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "models\\monai_bundle\\brats_mri_segmentation\\.cache\\huggingface\\download\\configs\\inference.json.metadata": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "models\\monai_bundle\\brats_mri_segmentation\\.cache\\huggingface\\download\\configs\\inference_trt.json.metadata": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "models\\monai_bundle\\brats_mri_segmentation\\.cache\\huggingface\\download\\configs\\logging.conf.metadata": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "models\\monai_bundle\\brats_mri_segmentation\\.cache\\huggingface\\download\\configs\\metadata.json.metadata": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "models\\monai_bundle\\brats_mri_segmentation\\.cache\\huggingface\\download\\configs\\multi_gpu_train.json.metadata": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "models\\monai_bundle\\brats_mri_segmentation\\.cache\\huggingface\\download\\configs\\train.json.metadata": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "models\\monai_bundle\\brats_mri_segmentation\\.cache\\huggingface\\download\\docs\\data_license.txt.metadata": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "models\\monai_bundle\\brats_mri_segmentation\\.cache\\huggingface\\download\\docs\\README.md.metadata": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "models\\monai_bundle\\brats_mri_segmentation\\.cache\\huggingface\\download\\models\\model.pt.metadata": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "models\\monai_bundle\\brats_mri_segmentation\\.cache\\huggingface\\download\\models\\model.ts.metadata": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "models\\monai_bundle\\brats_mri_segmentation\\.cache\\huggingface\\download\\scripts\\prepare_datalist.py.metadata": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "models\\monai_bundle\\brats_mri_segmentation\\configs\\evaluate.json": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json, models\\monai_bundle\\brats_mri_segmentation\\docs\\README.md",
+      "confidence": 80
+    },
+    "models\\monai_bundle\\brats_mri_segmentation\\configs\\inference.json": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json, models\\monai_bundle\\brats_mri_segmentation\\docs\\README.md",
+      "confidence": 80
+    },
+    "models\\monai_bundle\\brats_mri_segmentation\\configs\\inference_trt.json": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json, models\\monai_bundle\\brats_mri_segmentation\\docs\\README.md",
+      "confidence": 80
+    },
+    "models\\monai_bundle\\brats_mri_segmentation\\configs\\logging.conf": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "models\\monai_bundle\\brats_mri_segmentation\\configs\\metadata.json": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json, models\\monai_bundle\\brats_mri_segmentation\\docs\\README.md",
+      "confidence": 80
+    },
+    "models\\monai_bundle\\brats_mri_segmentation\\configs\\multi_gpu_train.json": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json, models\\monai_bundle\\brats_mri_segmentation\\docs\\README.md",
+      "confidence": 80
+    },
+    "models\\monai_bundle\\brats_mri_segmentation\\configs\\train.json": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json, models\\monai_bundle\\brats_mri_segmentation\\docs\\README.md",
+      "confidence": 80
+    },
+    "models\\monai_bundle\\brats_mri_segmentation\\docs\\data_license.txt": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "models\\monai_bundle\\brats_mri_segmentation\\docs\\README.md": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: IMPROVEMENT_PLAN.md, MASTER_PROMPT.md, project_analysis.json",
+      "confidence": 80
+    },
+    "models\\monai_bundle\\brats_mri_segmentation\\models\\model.pt": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json, engine\\breast.py, models\\monai_bundle\\brats_mri_segmentation\\configs\\evaluate.json",
+      "confidence": 80
+    },
+    "models\\monai_bundle\\brats_mri_segmentation\\models\\model.ts": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "models\\monai_bundle\\brats_mri_segmentation\\scripts\\prepare_datalist.py": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json, models\\monai_bundle\\brats_mri_segmentation\\docs\\README.md",
+      "confidence": 80
+    },
+    "models\\multimodal\\med_flamingo.py": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "models\\multimodal\\__init__.py": {
+      "category": "SAFE TO DELETE",
+      "reason": "Not imported, not referenced in code, not an entry point",
+      "confidence": 95
+    },
+    "models\\nlp\\biomistral.py": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json, qa_testing_report.txt",
+      "confidence": 80
+    },
+    "models\\nlp\\__init__.py": {
+      "category": "SAFE TO DELETE",
+      "reason": "Not imported, not referenced in code, not an entry point",
+      "confidence": 95
+    },
+    "modules\\ordonnance_scanner.py": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "modules\\__init__.py": {
+      "category": "SAFE TO DELETE",
+      "reason": "Not imported, not referenced in code, not an entry point",
+      "confidence": 95
+    },
+    "modules\\mental\\config.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: mental_module.py, modules\\mental\\__init__.py",
+      "confidence": 100
+    },
+    "modules\\mental\\detector.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: mental_module.py, modules\\mental\\__init__.py, tests\\conftest.py",
+      "confidence": 100
+    },
+    "modules\\mental\\gad7.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: mental_module.py, modules\\mental\\__init__.py, tests\\test_mental.py",
+      "confidence": 100
+    },
+    "modules\\mental\\llm_client.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: mental_module.py, modules\\mental\\__init__.py",
+      "confidence": 100
+    },
+    "modules\\mental\\persistence.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: mental_module.py, modules\\mental\\__init__.py",
+      "confidence": 100
+    },
+    "modules\\mental\\phq9.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: mental_module.py, modules\\mental\\__init__.py, tests\\test_mental.py",
+      "confidence": 100
+    },
+    "modules\\mental\\__init__.py": {
+      "category": "SAFE TO DELETE",
+      "reason": "Not imported, not referenced in code, not an entry point",
+      "confidence": 95
+    },
+    "pages\\06_🦩_المساعد_متعدد_الوسائط.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "pages\\10_🏥_الرعاية_القريبة.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "pages\\11_📋_مسح_الوصفة.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "pages\\12_🧠_الصحة_النفسية.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\ai_shifa.db": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\ai_shifa_pro.db": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\append_stats.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\app_config.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\auth_manager.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\database1.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\doctor_patients_ui1.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\fill_sqlite.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\fix_existing_db.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\florence_analyzer.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\florence_ui.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\ia_priorisation.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\import_sqlite.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\main.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\medical_dashboard_ux.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\migrate_passwords.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\notification_manager.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\pdf_generator.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\requirements.txt": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\TE.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\ui_components.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\pha\\app.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\pha\\config.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\pha\\db.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\pha\\models.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\pha\\requirements.txt": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\pha\\images\\1.jpg": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\pha\\images\\2.jpg": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\pha\\images\\3.jpg": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\pha\\images\\4.jpg": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\pha\\images\\5.png": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\pha\\images\\6.jpg": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\pha\\images\\7.jpg": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\pha\\images\\8.jpg": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\pha\\pages\\1_Accueil1.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\pha\\pages\\2_Categories.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\pha\\pages\\3_Panier.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\pha\\pages\\4_Commande.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\pha\\pages\\5_Admin.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\phar\\app.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\phar\\config.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\phar\\requirements.txt": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\phar\\.streamlit\\config.toml": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\phar\\pages\\1_Categories.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\phar\\pages\\2_Panier.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\phar\\pages\\3_Commande.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\phar\\pages\\4_Admin.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\phar\\utils\\db.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\phar\\utils\\models.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\phar\\utils\\session.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\phar\\utils\\__init__.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\storage\\patients\\2\\mri-brain-scan-fusion-axial-t-flair-t.png": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\storage\\patients\\2\\mri-brain-scan-fusion-axial-t-flair-t_1.png": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\storage\\patients\\2\\mri-brain-scan-fusion-axial-t-flair-t_2.png": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\storage\\patients\\2\\mri-brain-scan-fusion-axial-t-flair-t_3.png": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\storage\\patients\\2\\mri-brain-scan-fusion-axial-t-flair-t_4.png": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\storage\\patients\\2\\OAS1_0028_MR1_mpr-1_112.jpg": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\storage\\patients\\2\\OAS1_0028_MR1_mpr-2_129.jpg": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\storage\\patients\\2\\OAS1_0184_MR1_mpr-4_159.jpg": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\storage\\patients\\2\\proo.pdf": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "partie Docteur+User\\storage\\patients\\2\\proo_1.pdf": {
+      "category": "DO NOT DELETE",
+      "reason": "Entry point or configuration file",
+      "confidence": 100
+    },
+    "requirements\\audio.txt": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: IMPROVEMENT_PLAN.md, project_analysis.json",
+      "confidence": 80
+    },
+    "requirements\\base.txt": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: IMPROVEMENT_PLAN.md, project_analysis.json",
+      "confidence": 80
+    },
+    "requirements\\dev.txt": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: IMPROVEMENT_PLAN.md, project_analysis.json",
+      "confidence": 80
+    },
+    "requirements\\imaging.txt": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: IMPROVEMENT_PLAN.md, project_analysis.json",
+      "confidence": 80
+    },
+    "scripts\\audit_scan.py": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "scripts\\rebuild_index.py": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "styles\\theme.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: pages\\10_🏥_الرعاية_القريبة.py",
+      "confidence": 100
+    },
+    "styles\\__init__.py": {
+      "category": "SAFE TO DELETE",
+      "reason": "Not imported, not referenced in code, not an entry point",
+      "confidence": 95
+    },
+    "tests\\benchmark_models.py": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: evaluate_all.py, project_analysis.json",
+      "confidence": 80
+    },
+    "tests\\benchmark_rag.py": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "tests\\benchmark_safety.py": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "tests\\benchmark_triage.py": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "tests\\conftest.py": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "tests\\test_imaging.py": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "tests\\test_mental.py": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "tests\\test_orchestrator.py": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "tests\\test_rag.py": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "tests\\test_safety.py": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "tests\\test_triage.py": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "tests\\test_validator.py": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "tests\\__init__.py": {
+      "category": "SAFE TO DELETE",
+      "reason": "Not imported, not referenced in code, not an entry point",
+      "confidence": 95
+    },
+    "tests\\fixtures\\cat.jpg": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "tests\\fixtures\\mri.jpg": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "tests\\fixtures\\rgba.png": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "tests\\fixtures\\skin.jpg": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "tests\\fixtures\\small.jpg": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "tests\\fixtures\\xray.jpg": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: project_analysis.json",
+      "confidence": 80
+    },
+    "ui\\ordonnance_ui.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: app.py, pages\\11_📋_مسح_الوصفة.py",
+      "confidence": 100
+    },
+    "ui\\__init__.py": {
+      "category": "SAFE TO DELETE",
+      "reason": "Not imported, not referenced in code, not an entry point",
+      "confidence": 95
+    },
+    "utils\\config.py": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: IMPROVEMENT_PLAN.md, MASTER_PROMPT.md, project_analysis.json",
+      "confidence": 80
+    },
+    "utils\\geolocation.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: engine\\nearby_care.py, pages\\10_🏥_الرعاية_القريبة.py",
+      "confidence": 100
+    },
+    "utils\\gradcam.py": {
+      "category": "NEEDS VERIFICATION",
+      "reason": "Referenced literally in files: MASTER_PROMPT.md, project_analysis.json, rapport_technique_global.md",
+      "confidence": 80
+    },
+    "utils\\image_validator.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: tests\\test_validator.py",
+      "confidence": 100
+    },
+    "utils\\logger.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: agents\\base_agent.py, agents\\orchestrator.py, engine\\llm.py",
+      "confidence": 100
+    },
+    "utils\\__init__.py": {
+      "category": "DO NOT DELETE",
+      "reason": "Imported by python files: partie Docteur+User\\phar\\app.py, partie Docteur+User\\phar\\pages\\1_Categories.py, partie Docteur+User\\phar\\pages\\2_Panier.py",
+      "confidence": 100
+    }
+  },
+  "file_references": {
+    ".dockerignore": [
+      "project_analysis.json"
+    ],
+    ".env": [],
+    ".env.example": [
+      "IMPROVEMENT_PLAN.md",
+      "MASTER_PROMPT.md",
+      "project_analysis.json"
+    ],
+    "app.py": [
+      "IMPROVEMENT_PLAN.md",
+      "launch_shifa.py",
+      "MASTER_PROMPT.md",
+      "project_analysis.json",
+      "rapport_technique_global.md",
+      "rapport_technologies_ocr.md",
+      "README.md",
+      "setup.py",
+      "SHIFA_DOCS_V2.md",
+      "agents\\orchestrator.py",
+      "engine\\nearby_care.py",
+      "pages\\06_🦩_المساعد_متعدد_الوسائط.py",
+      "pages\\10_🏥_الرعاية_القريبة.py",
+      "partie Docteur+User\\main.py",
+      "partie Docteur+User\\pha\\app.py",
+      "partie Docteur+User\\pha\\pages\\1_Accueil1.py",
+      "partie Docteur+User\\pha\\pages\\3_Panier.py",
+      "partie Docteur+User\\phar\\app.py",
+      "partie Docteur+User\\phar\\pages\\1_Categories.py",
+      "partie Docteur+User\\phar\\pages\\2_Panier.py"
+    ],
+    "background_zellige.png": [
+      "project_analysis.json"
+    ],
+    "config.json": [
+      "project_analysis.json"
+    ],
+    "consultation_history.json": [
+      "app.py",
+      "IMPROVEMENT_PLAN.md",
+      "project_analysis.json",
+      "run_audit.py",
+      "scripts\\audit_scan.py",
+      "utils\\config.py"
+    ],
+    "docker-compose.yml": [
+      "IMPROVEMENT_PLAN.md",
+      "project_analysis.json"
+    ],
+    "Dockerfile": [
+      "IMPROVEMENT_PLAN.md",
+      "project_analysis.json"
+    ],
+    "evaluate_all.py": [
+      "project_analysis.json"
+    ],
+    "IMPROVEMENT_PLAN.md": [
+      "project_analysis.json"
+    ],
+    "launch_shifa.py": [
+      "project_analysis.json"
+    ],
+    "llm_finetuning_guide.py": [
+      "project_analysis.json",
+      "README.md"
+    ],
+    "logo.png": [
+      "app.py",
+      "project_analysis.json",
+      "frontend\\index.html",
+      "partie Docteur+User\\main.py"
+    ],
+    "logs.txt": [
+      "project_analysis.json"
+    ],
+    "MASTER_PROMPT.md": [
+      "project_analysis.json"
+    ],
+    "mental_module.py": [
+      "llm_finetuning_guide.py",
+      "project_analysis.json",
+      "README.md"
+    ],
+    "packages.txt": [
+      "MASTER_PROMPT.md",
+      "project_analysis.json"
+    ],
+    "project_analysis.json": [],
+    "qa_testing_report.txt": [
+      "project_analysis.json"
+    ],
+    "rapport_ocr_vlm.md": [
+      "project_analysis.json"
+    ],
+    "rapport_technique_global.md": [
+      "project_analysis.json"
+    ],
+    "rapport_technologies_ocr.md": [
+      "project_analysis.json"
+    ],
+    "README.md": [
+      "IMPROVEMENT_PLAN.md",
+      "MASTER_PROMPT.md",
+      "project_analysis.json"
+    ],
+    "requirements.txt": [
+      "IMPROVEMENT_PLAN.md",
+      "MASTER_PROMPT.md",
+      "project_analysis.json",
+      "SHIFA_DOCS_V2.md"
+    ],
+    "review.sh": [
+      "project_analysis.json"
+    ],
+    "run_audit.py": [
+      "project_analysis.json"
+    ],
+    "sample_ordonnance.jpeg": [
+      "project_analysis.json"
+    ],
+    "setup.py": [],
+    "SHIFA_DOCS_V2.md": [
+      "project_analysis.json"
+    ],
+    "status.txt": [
+      "project_analysis.json"
+    ],
+    "Stylized_Heart_and_Cross_Logo_for_SHIFA_AI__1_-removebg-preview.png": [
+      "app.py",
+      "project_analysis.json",
+      "partie Docteur+User\\main.py",
+      "utils\\config.py"
+    ],
+    "test_qa.py": [
+      "project_analysis.json"
+    ],
+    "test_qa_output.log": [
+      "project_analysis.json"
+    ],
+    "train_bert_medical.py": [
+      "evaluate_all.py",
+      "project_analysis.json"
+    ],
+    "train_cancer_model.py": [
+      "project_analysis.json",
+      "qa_testing_report.txt",
+      "tests\\benchmark_models.py"
+    ],
+    "train_report_prioritizer.py": [
+      "project_analysis.json"
+    ],
+    "WhatsApp Image 2026-04-04 at 13.21.38.jpeg": [
+      "project_analysis.json"
+    ],
+    "WhatsApp Image 2026-04-05 at 11.24.10.jpeg": [
+      "project_analysis.json"
+    ],
+    ".streamlit\\config.toml": [
+      "project_analysis.json"
+    ],
+    ".streamlit\\secrets.toml": [
+      "MASTER_PROMPT.md",
+      "project_analysis.json",
+      "README.md",
+      "SHIFA_DOCS_V2.md"
+    ],
+    "agents\\base_agent.py": [
+      "project_analysis.json"
+    ],
+    "agents\\llm_agent.py": [
+      "project_analysis.json"
+    ],
+    "agents\\location_agent.py": [
+      "project_analysis.json"
+    ],
+    "agents\\orchestrator.py": [
+      "project_analysis.json"
+    ],
+    "agents\\rag_agent.py": [
+      "project_analysis.json"
+    ],
+    "agents\\safety_agent.py": [
+      "project_analysis.json",
+      "rapport_technique_global.md"
+    ],
+    "agents\\vision_agent.py": [
+      "project_analysis.json"
+    ],
+    "agents\\__init__.py": [],
+    "components\\card.py": [
+      "project_analysis.json"
+    ],
+    "components\\__init__.py": [],
+    "core\\config.py": [
+      "IMPROVEMENT_PLAN.md",
+      "MASTER_PROMPT.md",
+      "project_analysis.json",
+      "rapport_technologies_ocr.md",
+      "partie Docteur+User\\app_config.py",
+      "partie Docteur+User\\phar\\utils\\db.py"
+    ],
+    "core\\model_manager.py": [
+      "project_analysis.json"
+    ],
+    "core\\user_auth.py": [
+      "project_analysis.json"
+    ],
+    "data\\dispositifs-medicaux-admis-au-remboursement-cnops-2014 (1).xls": [
+      "project_analysis.json",
+      "engine\\vision_ocr\\config.py"
+    ],
+    "data\\knowledge_base.py": [
+      "project_analysis.json"
+    ],
+    "data\\medicaments_maroc.json": [
+      "project_analysis.json",
+      "modules\\ordonnance_scanner.py"
+    ],
+    "data\\mental_health.db": [
+      "project_analysis.json",
+      "modules\\mental\\persistence.py"
+    ],
+    "data\\ref-des-medicaments-cnops-2014.xlsx": [
+      "project_analysis.json",
+      "rapport_technologies_ocr.md",
+      "engine\\vision_ocr\\config.py"
+    ],
+    "data\\shifa_users.db": [
+      "project_analysis.json",
+      "core\\user_auth.py"
+    ],
+    "data\\__init__.py": [],
+    "data\\research_cache\\05eabb5a5b27f9c36ad26117a38dbace.json": [
+      "project_analysis.json"
+    ],
+    "data\\research_cache\\a95f99abe007b9e5d87887d94da72b3d.json": [
+      "project_analysis.json"
+    ],
+    "datasets\\arabic_psychotherapy_synthetic.jsonl": [
+      "project_analysis.json",
+      "README.md"
+    ],
+    "datasets\\crisis_keywords_arabic.json": [
+      "project_analysis.json",
+      "README.md",
+      "modules\\mental\\detector.py"
+    ],
+    "datasets\\phq9_validation_arabic.json": [
+      "project_analysis.json",
+      "README.md"
+    ],
+    "engine\\audio.py": [
+      "project_analysis.json",
+      "rapport_technique_global.md"
+    ],
+    "engine\\brain_mri.py": [
+      "IMPROVEMENT_PLAN.md",
+      "MASTER_PROMPT.md",
+      "project_analysis.json",
+      "rapport_technologies_ocr.md",
+      "scripts\\audit_scan.py"
+    ],
+    "engine\\breast.py": [
+      "project_analysis.json",
+      "rapport_technologies_ocr.md",
+      "scripts\\audit_scan.py"
+    ],
+    "engine\\cancer.py": [
+      "project_analysis.json",
+      "rapport_technologies_ocr.md"
+    ],
+    "engine\\classifier.py": [
+      "project_analysis.json"
+    ],
+    "engine\\dermato.py": [
+      "MASTER_PROMPT.md",
+      "project_analysis.json",
+      "rapport_technologies_ocr.md",
+      "scripts\\audit_scan.py"
+    ],
+    "engine\\llm.py": [
+      "MASTER_PROMPT.md",
+      "project_analysis.json",
+      "rapport_technique_global.md",
+      "rapport_technologies_ocr.md"
+    ],
+    "engine\\nearby_care.py": [
+      "project_analysis.json",
+      "rapport_technique_global.md",
+      "scripts\\audit_scan.py"
+    ],
+    "engine\\research_explorer.py": [
+      "project_analysis.json"
+    ],
+    "engine\\retriever.py": [
+      "IMPROVEMENT_PLAN.md",
+      "MASTER_PROMPT.md",
+      "project_analysis.json",
+      "rapport_technique_global.md",
+      "rapport_technologies_ocr.md"
+    ],
+    "engine\\safety.py": [
+      "IMPROVEMENT_PLAN.md",
+      "MASTER_PROMPT.md",
+      "project_analysis.json",
+      "SHIFA_DOCS_V2.md",
+      "engine\\triage.py",
+      "tests\\benchmark_safety.py"
+    ],
+    "engine\\triage.py": [
+      "project_analysis.json",
+      "rapport_technique_global.md",
+      "tests\\benchmark_triage.py"
+    ],
+    "engine\\vision_base.py": [
+      "MASTER_PROMPT.md",
+      "project_analysis.json"
+    ],
+    "engine\\vision_router.py": [
+      "MASTER_PROMPT.md",
+      "project_analysis.json",
+      "rapport_technique_global.md",
+      "rapport_technologies_ocr.md"
+    ],
+    "engine\\voice.py": [
+      "project_analysis.json"
+    ],
+    "engine\\WhatsApp Image 2026-04-15 at 22.51.44.jpeg": [
+      "project_analysis.json"
+    ],
+    "engine\\xray.py": [
+      "IMPROVEMENT_PLAN.md",
+      "MASTER_PROMPT.md",
+      "project_analysis.json",
+      "rapport_technologies_ocr.md",
+      "scripts\\audit_scan.py"
+    ],
+    "engine\\__init__.py": [],
+    "engine\\vision_ocr\\config.py": [
+      "IMPROVEMENT_PLAN.md",
+      "MASTER_PROMPT.md",
+      "project_analysis.json",
+      "rapport_technologies_ocr.md",
+      "partie Docteur+User\\app_config.py",
+      "partie Docteur+User\\phar\\utils\\db.py"
+    ],
+    "engine\\vision_ocr\\correction.py": [
+      "project_analysis.json",
+      "rapport_ocr_vlm.md",
+      "rapport_technologies_ocr.md"
+    ],
+    "engine\\vision_ocr\\decision_engine.py": [
+      "project_analysis.json",
+      "rapport_ocr_vlm.md",
+      "rapport_technologies_ocr.md"
+    ],
+    "engine\\vision_ocr\\scraper_medicament_ma.py": [
+      "project_analysis.json",
+      "rapport_ocr_vlm.md",
+      "rapport_technologies_ocr.md"
+    ],
+    "engine\\vision_ocr\\validators.py": [
+      "project_analysis.json",
+      "rapport_technologies_ocr.md"
+    ],
+    "engine\\vision_ocr\\vlm_extraction.py": [
+      "project_analysis.json",
+      "rapport_ocr_vlm.md",
+      "rapport_technologies_ocr.md"
+    ],
+    "engine\\vision_ocr\\__init__.py": [],
+    "frontend\\index.html": [
+      "project_analysis.json"
+    ],
+    "frontend\\package-lock.json": [
+      "project_analysis.json"
+    ],
+    "frontend\\package.json": [
+      "project_analysis.json"
+    ],
+    "frontend\\tsconfig.json": [
+      "project_analysis.json"
+    ],
+    "frontend\\vite.config.js": [
+      "project_analysis.json"
+    ],
+    "frontend\\public\\favicon.svg": [
+      "project_analysis.json"
+    ],
+    "frontend\\public\\icons.svg": [
+      "project_analysis.json"
+    ],
+    "frontend\\public\\logo.png": [
+      "app.py",
+      "project_analysis.json",
+      "frontend\\index.html",
+      "partie Docteur+User\\main.py"
+    ],
+    "frontend\\src\\App.jsx": [
+      "project_analysis.json"
+    ],
+    "frontend\\src\\counter.ts": [
+      "project_analysis.json"
+    ],
+    "frontend\\src\\index.css": [
+      "project_analysis.json"
+    ],
+    "frontend\\src\\main.jsx": [
+      "project_analysis.json",
+      "frontend\\index.html"
+    ],
+    "frontend\\src\\main.ts": [
+      "project_analysis.json"
+    ],
+    "frontend\\src\\style.css": [
+      "project_analysis.json"
+    ],
+    "frontend\\src\\components\\AccessibleButton.tsx": [
+      "project_analysis.json"
+    ],
+    "frontend\\src\\components\\AccessibleInput.tsx": [
+      "project_analysis.json"
+    ],
+    "frontend\\src\\components\\AdvancedModules.jsx": [
+      "project_analysis.json"
+    ],
+    "frontend\\src\\components\\EmergencyBanner.jsx": [
+      "project_analysis.json"
+    ],
+    "frontend\\src\\components\\Footer.jsx": [
+      "project_analysis.json"
+    ],
+    "frontend\\src\\components\\HeroSection.jsx": [
+      "project_analysis.json"
+    ],
+    "frontend\\src\\components\\QuickServices.jsx": [
+      "project_analysis.json"
+    ],
+    "frontend\\src\\components\\ServiceCard.jsx": [
+      "project_analysis.json"
+    ],
+    "frontend\\src\\context\\NavigationContext.tsx": [
+      "project_analysis.json"
+    ],
+    "frontend\\src\\data\\navigation.ts": [
+      "project_analysis.json"
+    ],
+    "frontend\\src\\data\\services.js": [
+      "project_analysis.json"
+    ],
+    "frontend\\src\\layout\\BottomNav.tsx": [
+      "project_analysis.json"
+    ],
+    "frontend\\src\\layout\\MobileDrawer.tsx": [
+      "project_analysis.json"
+    ],
+    "frontend\\src\\layout\\ShifaShell.tsx": [
+      "project_analysis.json"
+    ],
+    "frontend\\src\\layout\\Sidebar.tsx": [
+      "project_analysis.json"
+    ],
+    "frontend\\src\\layout\\TopBar.tsx": [
+      "project_analysis.json"
+    ],
+    "frontend\\src\\pages\\AssistantPage.tsx": [
+      "project_analysis.json"
+    ],
+    "frontend\\src\\pages\\CarePage.tsx": [
+      "project_analysis.json"
+    ],
+    "frontend\\src\\pages\\CheckupPage.tsx": [
+      "project_analysis.json"
+    ],
+    "frontend\\src\\pages\\HomePage.tsx": [
+      "project_analysis.json"
+    ],
+    "frontend\\src\\pages\\MentalPage.tsx": [
+      "project_analysis.json"
+    ],
+    "frontend\\src\\pages\\care\\careData.ts": [
+      "project_analysis.json"
+    ],
+    "frontend\\src\\pages\\care\\ErrorState.tsx": [
+      "project_analysis.json"
+    ],
+    "frontend\\src\\pages\\care\\InitialState.tsx": [
+      "project_analysis.json"
+    ],
+    "frontend\\src\\pages\\care\\LoadingState.tsx": [
+      "project_analysis.json"
+    ],
+    "frontend\\src\\pages\\care\\ResultsState.tsx": [
+      "project_analysis.json"
+    ],
+    "frontend\\src\\types\\navigation.ts": [
+      "project_analysis.json"
+    ],
+    "models\\brain_tumor_model.keras": [
+      "project_analysis.json",
+      "engine\\brain_mri.py",
+      "utils\\config.py"
+    ],
+    "models\\breast_cancer_model_v2.keras": [
+      "project_analysis.json",
+      "qa_testing_report.txt",
+      "train_cancer_model.py",
+      "engine\\cancer.py",
+      "utils\\config.py"
+    ],
+    "models\\faiss_index.bin": [
+      "project_analysis.json",
+      "core\\config.py",
+      "utils\\config.py"
+    ],
+    "models\\faiss_index_camel.bin": [
+      "project_analysis.json",
+      "engine\\retriever.py"
+    ],
+    "models\\faiss_index_camel_meta.pkl": [
+      "project_analysis.json",
+      "engine\\retriever.py"
+    ],
+    "models\\image_generator_model.pkl": [
+      "project_analysis.json"
+    ],
+    "models\\intent_classifier.pkl": [
+      "project_analysis.json",
+      "engine\\classifier.py",
+      "utils\\config.py"
+    ],
+    "models\\retriever_data.pkl": [
+      "project_analysis.json",
+      "train_bert_medical.py",
+      "scripts\\rebuild_index.py",
+      "utils\\config.py"
+    ],
+    "models\\__init__.py": [],
+    "models\\benchmark_results\\benchmark_results.json": [
+      "evaluate_all.py",
+      "project_analysis.json",
+      "tests\\benchmark_models.py"
+    ],
+    "models\\benchmark_results\\rag_benchmark.json": [
+      "project_analysis.json",
+      "tests\\benchmark_rag.py"
+    ],
+    "models\\benchmark_results\\safety_benchmark.json": [
+      "project_analysis.json",
+      "tests\\benchmark_safety.py"
+    ],
+    "models\\benchmark_results\\triage_benchmark.json": [
+      "project_analysis.json",
+      "tests\\benchmark_triage.py"
+    ],
+    "models\\evaluation_results\\all_results.json": [
+      "evaluate_all.py",
+      "project_analysis.json"
+    ],
+    "models\\evaluation_results\\results_table.tex": [
+      "evaluate_all.py",
+      "project_analysis.json"
+    ],
+    "models\\imaging\\mri.py": [
+      "IMPROVEMENT_PLAN.md",
+      "MASTER_PROMPT.md",
+      "project_analysis.json",
+      "qa_testing_report.txt",
+      "rapport_technologies_ocr.md",
+      "scripts\\audit_scan.py"
+    ],
+    "models\\imaging\\xray.py": [
+      "IMPROVEMENT_PLAN.md",
+      "MASTER_PROMPT.md",
+      "project_analysis.json",
+      "rapport_technologies_ocr.md",
+      "scripts\\audit_scan.py"
+    ],
+    "models\\imaging\\__init__.py": [],
+    "models\\monai_breast_density\\model.pt": [
+      "project_analysis.json",
+      "engine\\breast.py",
+      "models\\monai_bundle\\brats_mri_segmentation\\configs\\evaluate.json",
+      "models\\monai_bundle\\brats_mri_segmentation\\configs\\inference.json",
+      "models\\monai_bundle\\brats_mri_segmentation\\configs\\train.json",
+      "models\\monai_bundle\\brats_mri_segmentation\\docs\\README.md",
+      "models\\multimodal\\med_flamingo.py"
+    ],
+    "models\\monai_breast_density\\_hf_cache\\.cache\\huggingface\\download\\models\\model.pt.metadata": [
+      "project_analysis.json"
+    ],
+    "models\\monai_breast_density\\_hf_cache\\models\\model.pt": [
+      "project_analysis.json",
+      "engine\\breast.py",
+      "models\\monai_bundle\\brats_mri_segmentation\\configs\\evaluate.json",
+      "models\\monai_bundle\\brats_mri_segmentation\\configs\\inference.json",
+      "models\\monai_bundle\\brats_mri_segmentation\\configs\\train.json",
+      "models\\monai_bundle\\brats_mri_segmentation\\docs\\README.md",
+      "models\\multimodal\\med_flamingo.py"
+    ],
+    "models\\monai_bundle\\brats_mri_segmentation\\LICENSE": [
+      "project_analysis.json",
+      "models\\monai_bundle\\brats_mri_segmentation\\docs\\README.md"
+    ],
+    "models\\monai_bundle\\brats_mri_segmentation\\.cache\\huggingface\\download\\LICENSE.metadata": [
+      "project_analysis.json"
+    ],
+    "models\\monai_bundle\\brats_mri_segmentation\\.cache\\huggingface\\download\\configs\\evaluate.json.metadata": [
+      "project_analysis.json"
+    ],
+    "models\\monai_bundle\\brats_mri_segmentation\\.cache\\huggingface\\download\\configs\\inference.json.metadata": [
+      "project_analysis.json"
+    ],
+    "models\\monai_bundle\\brats_mri_segmentation\\.cache\\huggingface\\download\\configs\\inference_trt.json.metadata": [
+      "project_analysis.json"
+    ],
+    "models\\monai_bundle\\brats_mri_segmentation\\.cache\\huggingface\\download\\configs\\logging.conf.metadata": [
+      "project_analysis.json"
+    ],
+    "models\\monai_bundle\\brats_mri_segmentation\\.cache\\huggingface\\download\\configs\\metadata.json.metadata": [
+      "project_analysis.json"
+    ],
+    "models\\monai_bundle\\brats_mri_segmentation\\.cache\\huggingface\\download\\configs\\multi_gpu_train.json.metadata": [
+      "project_analysis.json"
+    ],
+    "models\\monai_bundle\\brats_mri_segmentation\\.cache\\huggingface\\download\\configs\\train.json.metadata": [
+      "project_analysis.json"
+    ],
+    "models\\monai_bundle\\brats_mri_segmentation\\.cache\\huggingface\\download\\docs\\data_license.txt.metadata": [
+      "project_analysis.json"
+    ],
+    "models\\monai_bundle\\brats_mri_segmentation\\.cache\\huggingface\\download\\docs\\README.md.metadata": [
+      "project_analysis.json"
+    ],
+    "models\\monai_bundle\\brats_mri_segmentation\\.cache\\huggingface\\download\\models\\model.pt.metadata": [
+      "project_analysis.json"
+    ],
+    "models\\monai_bundle\\brats_mri_segmentation\\.cache\\huggingface\\download\\models\\model.ts.metadata": [
+      "project_analysis.json"
+    ],
+    "models\\monai_bundle\\brats_mri_segmentation\\.cache\\huggingface\\download\\scripts\\prepare_datalist.py.metadata": [
+      "project_analysis.json"
+    ],
+    "models\\monai_bundle\\brats_mri_segmentation\\configs\\evaluate.json": [
+      "project_analysis.json",
+      "models\\monai_bundle\\brats_mri_segmentation\\docs\\README.md"
+    ],
+    "models\\monai_bundle\\brats_mri_segmentation\\configs\\inference.json": [
+      "project_analysis.json",
+      "models\\monai_bundle\\brats_mri_segmentation\\docs\\README.md"
+    ],
+    "models\\monai_bundle\\brats_mri_segmentation\\configs\\inference_trt.json": [
+      "project_analysis.json",
+      "models\\monai_bundle\\brats_mri_segmentation\\docs\\README.md"
+    ],
+    "models\\monai_bundle\\brats_mri_segmentation\\configs\\logging.conf": [
+      "project_analysis.json"
+    ],
+    "models\\monai_bundle\\brats_mri_segmentation\\configs\\metadata.json": [
+      "project_analysis.json",
+      "models\\monai_bundle\\brats_mri_segmentation\\docs\\README.md"
+    ],
+    "models\\monai_bundle\\brats_mri_segmentation\\configs\\multi_gpu_train.json": [
+      "project_analysis.json",
+      "models\\monai_bundle\\brats_mri_segmentation\\docs\\README.md"
+    ],
+    "models\\monai_bundle\\brats_mri_segmentation\\configs\\train.json": [
+      "project_analysis.json",
+      "models\\monai_bundle\\brats_mri_segmentation\\docs\\README.md"
+    ],
+    "models\\monai_bundle\\brats_mri_segmentation\\docs\\data_license.txt": [
+      "project_analysis.json"
+    ],
+    "models\\monai_bundle\\brats_mri_segmentation\\docs\\README.md": [
+      "IMPROVEMENT_PLAN.md",
+      "MASTER_PROMPT.md",
+      "project_analysis.json",
+      "README.md"
+    ],
+    "models\\monai_bundle\\brats_mri_segmentation\\models\\model.pt": [
+      "project_analysis.json",
+      "engine\\breast.py",
+      "models\\monai_bundle\\brats_mri_segmentation\\configs\\evaluate.json",
+      "models\\monai_bundle\\brats_mri_segmentation\\configs\\inference.json",
+      "models\\monai_bundle\\brats_mri_segmentation\\configs\\train.json",
+      "models\\monai_bundle\\brats_mri_segmentation\\docs\\README.md",
+      "models\\multimodal\\med_flamingo.py"
+    ],
+    "models\\monai_bundle\\brats_mri_segmentation\\models\\model.ts": [
+      "project_analysis.json"
+    ],
+    "models\\monai_bundle\\brats_mri_segmentation\\scripts\\prepare_datalist.py": [
+      "project_analysis.json",
+      "models\\monai_bundle\\brats_mri_segmentation\\docs\\README.md"
+    ],
+    "models\\multimodal\\med_flamingo.py": [
+      "project_analysis.json"
+    ],
+    "models\\multimodal\\__init__.py": [],
+    "models\\nlp\\biomistral.py": [
+      "project_analysis.json",
+      "qa_testing_report.txt"
+    ],
+    "models\\nlp\\__init__.py": [],
+    "modules\\ordonnance_scanner.py": [
+      "project_analysis.json"
+    ],
+    "modules\\__init__.py": [],
+    "modules\\mental\\config.py": [
+      "IMPROVEMENT_PLAN.md",
+      "MASTER_PROMPT.md",
+      "project_analysis.json",
+      "rapport_technologies_ocr.md",
+      "partie Docteur+User\\app_config.py",
+      "partie Docteur+User\\phar\\utils\\db.py"
+    ],
+    "modules\\mental\\detector.py": [
+      "project_analysis.json",
+      "train_cancer_model.py"
+    ],
+    "modules\\mental\\gad7.py": [
+      "project_analysis.json"
+    ],
+    "modules\\mental\\llm_client.py": [
+      "project_analysis.json"
+    ],
+    "modules\\mental\\persistence.py": [
+      "project_analysis.json"
+    ],
+    "modules\\mental\\phq9.py": [
+      "project_analysis.json"
+    ],
+    "modules\\mental\\__init__.py": [],
+    "pages\\06_🦩_المساعد_متعدد_الوسائط.py": [
+      "app.py",
+      "project_analysis.json"
+    ],
+    "pages\\10_🏥_الرعاية_القريبة.py": [
+      "app.py",
+      "project_analysis.json",
+      "SHIFA_DOCS_V2.md"
+    ],
+    "pages\\11_📋_مسح_الوصفة.py": [
+      "project_analysis.json"
+    ],
+    "pages\\12_🧠_الصحة_النفسية.py": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\ai_shifa.db": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\ai_shifa_pro.db": [
+      "project_analysis.json",
+      "partie Docteur+User\\database1.py",
+      "partie Docteur+User\\fill_sqlite.py",
+      "partie Docteur+User\\import_sqlite.py"
+    ],
+    "partie Docteur+User\\append_stats.py": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\app_config.py": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\auth_manager.py": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\database1.py": [
+      "project_analysis.json",
+      "partie Docteur+User\\append_stats.py"
+    ],
+    "partie Docteur+User\\doctor_patients_ui1.py": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\fill_sqlite.py": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\fix_existing_db.py": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\florence_analyzer.py": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\florence_ui.py": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\ia_priorisation.py": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\import_sqlite.py": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\main.py": [
+      "app.py",
+      "launch_shifa.py",
+      "project_analysis.json",
+      "README.md",
+      "partie Docteur+User\\TE.py",
+      "partie Docteur+User\\phar\\app.py"
+    ],
+    "partie Docteur+User\\medical_dashboard_ux.py": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\migrate_passwords.py": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\notification_manager.py": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\pdf_generator.py": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\requirements.txt": [
+      "IMPROVEMENT_PLAN.md",
+      "MASTER_PROMPT.md",
+      "project_analysis.json",
+      "SHIFA_DOCS_V2.md"
+    ],
+    "partie Docteur+User\\TE.py": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\ui_components.py": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\pha\\app.py": [
+      "IMPROVEMENT_PLAN.md",
+      "launch_shifa.py",
+      "MASTER_PROMPT.md",
+      "project_analysis.json",
+      "rapport_technique_global.md",
+      "rapport_technologies_ocr.md",
+      "README.md",
+      "setup.py",
+      "SHIFA_DOCS_V2.md",
+      "agents\\orchestrator.py",
+      "engine\\nearby_care.py",
+      "pages\\06_🦩_المساعد_متعدد_الوسائط.py",
+      "pages\\10_🏥_الرعاية_القريبة.py",
+      "partie Docteur+User\\main.py",
+      "partie Docteur+User\\pha\\pages\\1_Accueil1.py",
+      "partie Docteur+User\\pha\\pages\\3_Panier.py",
+      "partie Docteur+User\\phar\\app.py",
+      "partie Docteur+User\\phar\\pages\\1_Categories.py",
+      "partie Docteur+User\\phar\\pages\\2_Panier.py"
+    ],
+    "partie Docteur+User\\pha\\config.py": [
+      "IMPROVEMENT_PLAN.md",
+      "MASTER_PROMPT.md",
+      "project_analysis.json",
+      "rapport_technologies_ocr.md",
+      "partie Docteur+User\\app_config.py",
+      "partie Docteur+User\\phar\\utils\\db.py"
+    ],
+    "partie Docteur+User\\pha\\db.py": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\pha\\models.py": [
+      "evaluate_all.py",
+      "project_analysis.json",
+      "tests\\benchmark_models.py"
+    ],
+    "partie Docteur+User\\pha\\requirements.txt": [
+      "IMPROVEMENT_PLAN.md",
+      "MASTER_PROMPT.md",
+      "project_analysis.json",
+      "SHIFA_DOCS_V2.md"
+    ],
+    "partie Docteur+User\\pha\\images\\1.jpg": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\pha\\images\\2.jpg": [
+      "project_analysis.json",
+      "partie Docteur+User\\phar\\utils\\db.py"
+    ],
+    "partie Docteur+User\\pha\\images\\3.jpg": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\pha\\images\\4.jpg": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\pha\\images\\5.png": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\pha\\images\\6.jpg": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\pha\\images\\7.jpg": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\pha\\images\\8.jpg": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\pha\\pages\\1_Accueil1.py": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\pha\\pages\\2_Categories.py": [
+      "project_analysis.json",
+      "partie Docteur+User\\pha\\app.py",
+      "partie Docteur+User\\pha\\pages\\1_Accueil1.py",
+      "partie Docteur+User\\pha\\pages\\3_Panier.py",
+      "partie Docteur+User\\pha\\pages\\4_Commande.py"
+    ],
+    "partie Docteur+User\\pha\\pages\\3_Panier.py": [
+      "project_analysis.json",
+      "partie Docteur+User\\pha\\app.py",
+      "partie Docteur+User\\pha\\pages\\1_Accueil1.py"
+    ],
+    "partie Docteur+User\\pha\\pages\\4_Commande.py": [
+      "project_analysis.json",
+      "partie Docteur+User\\pha\\app.py",
+      "partie Docteur+User\\pha\\pages\\1_Accueil1.py",
+      "partie Docteur+User\\pha\\pages\\3_Panier.py"
+    ],
+    "partie Docteur+User\\pha\\pages\\5_Admin.py": [
+      "project_analysis.json",
+      "partie Docteur+User\\pha\\app.py",
+      "partie Docteur+User\\pha\\pages\\1_Accueil1.py"
+    ],
+    "partie Docteur+User\\phar\\app.py": [
+      "IMPROVEMENT_PLAN.md",
+      "launch_shifa.py",
+      "MASTER_PROMPT.md",
+      "project_analysis.json",
+      "rapport_technique_global.md",
+      "rapport_technologies_ocr.md",
+      "README.md",
+      "setup.py",
+      "SHIFA_DOCS_V2.md",
+      "agents\\orchestrator.py",
+      "engine\\nearby_care.py",
+      "pages\\06_🦩_المساعد_متعدد_الوسائط.py",
+      "pages\\10_🏥_الرعاية_القريبة.py",
+      "partie Docteur+User\\main.py",
+      "partie Docteur+User\\pha\\app.py",
+      "partie Docteur+User\\pha\\pages\\1_Accueil1.py",
+      "partie Docteur+User\\pha\\pages\\3_Panier.py",
+      "partie Docteur+User\\phar\\pages\\1_Categories.py",
+      "partie Docteur+User\\phar\\pages\\2_Panier.py"
+    ],
+    "partie Docteur+User\\phar\\config.py": [
+      "IMPROVEMENT_PLAN.md",
+      "MASTER_PROMPT.md",
+      "project_analysis.json",
+      "rapport_technologies_ocr.md",
+      "partie Docteur+User\\app_config.py",
+      "partie Docteur+User\\phar\\utils\\db.py"
+    ],
+    "partie Docteur+User\\phar\\requirements.txt": [
+      "IMPROVEMENT_PLAN.md",
+      "MASTER_PROMPT.md",
+      "project_analysis.json",
+      "SHIFA_DOCS_V2.md"
+    ],
+    "partie Docteur+User\\phar\\.streamlit\\config.toml": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\phar\\pages\\1_Categories.py": [
+      "project_analysis.json",
+      "partie Docteur+User\\phar\\app.py",
+      "partie Docteur+User\\phar\\pages\\2_Panier.py",
+      "partie Docteur+User\\phar\\pages\\3_Commande.py"
+    ],
+    "partie Docteur+User\\phar\\pages\\2_Panier.py": [
+      "project_analysis.json",
+      "partie Docteur+User\\phar\\app.py"
+    ],
+    "partie Docteur+User\\phar\\pages\\3_Commande.py": [
+      "project_analysis.json",
+      "partie Docteur+User\\phar\\app.py",
+      "partie Docteur+User\\phar\\pages\\2_Panier.py"
+    ],
+    "partie Docteur+User\\phar\\pages\\4_Admin.py": [
+      "project_analysis.json",
+      "partie Docteur+User\\phar\\app.py"
+    ],
+    "partie Docteur+User\\phar\\utils\\db.py": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\phar\\utils\\models.py": [
+      "evaluate_all.py",
+      "project_analysis.json",
+      "tests\\benchmark_models.py"
+    ],
+    "partie Docteur+User\\phar\\utils\\session.py": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\phar\\utils\\__init__.py": [],
+    "partie Docteur+User\\storage\\patients\\2\\mri-brain-scan-fusion-axial-t-flair-t.png": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\storage\\patients\\2\\mri-brain-scan-fusion-axial-t-flair-t_1.png": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\storage\\patients\\2\\mri-brain-scan-fusion-axial-t-flair-t_2.png": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\storage\\patients\\2\\mri-brain-scan-fusion-axial-t-flair-t_3.png": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\storage\\patients\\2\\mri-brain-scan-fusion-axial-t-flair-t_4.png": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\storage\\patients\\2\\OAS1_0028_MR1_mpr-1_112.jpg": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\storage\\patients\\2\\OAS1_0028_MR1_mpr-2_129.jpg": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\storage\\patients\\2\\OAS1_0184_MR1_mpr-4_159.jpg": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\storage\\patients\\2\\proo.pdf": [
+      "project_analysis.json"
+    ],
+    "partie Docteur+User\\storage\\patients\\2\\proo_1.pdf": [
+      "project_analysis.json"
+    ],
+    "requirements\\audio.txt": [
+      "IMPROVEMENT_PLAN.md",
+      "project_analysis.json"
+    ],
+    "requirements\\base.txt": [
+      "IMPROVEMENT_PLAN.md",
+      "project_analysis.json"
+    ],
+    "requirements\\dev.txt": [
+      "IMPROVEMENT_PLAN.md",
+      "project_analysis.json"
+    ],
+    "requirements\\imaging.txt": [
+      "IMPROVEMENT_PLAN.md",
+      "project_analysis.json"
+    ],
+    "scripts\\audit_scan.py": [
+      "project_analysis.json"
+    ],
+    "scripts\\rebuild_index.py": [
+      "project_analysis.json"
+    ],
+    "styles\\theme.py": [
+      "project_analysis.json"
+    ],
+    "styles\\__init__.py": [],
+    "tests\\benchmark_models.py": [
+      "evaluate_all.py",
+      "project_analysis.json"
+    ],
+    "tests\\benchmark_rag.py": [
+      "project_analysis.json"
+    ],
+    "tests\\benchmark_safety.py": [
+      "project_analysis.json"
+    ],
+    "tests\\benchmark_triage.py": [
+      "project_analysis.json"
+    ],
+    "tests\\conftest.py": [
+      "project_analysis.json"
+    ],
+    "tests\\test_imaging.py": [
+      "project_analysis.json"
+    ],
+    "tests\\test_mental.py": [
+      "project_analysis.json"
+    ],
+    "tests\\test_orchestrator.py": [
+      "project_analysis.json"
+    ],
+    "tests\\test_rag.py": [
+      "project_analysis.json"
+    ],
+    "tests\\test_safety.py": [
+      "project_analysis.json"
+    ],
+    "tests\\test_triage.py": [
+      "project_analysis.json"
+    ],
+    "tests\\test_validator.py": [
+      "project_analysis.json"
+    ],
+    "tests\\__init__.py": [],
+    "tests\\fixtures\\cat.jpg": [
+      "project_analysis.json"
+    ],
+    "tests\\fixtures\\mri.jpg": [
+      "project_analysis.json"
+    ],
+    "tests\\fixtures\\rgba.png": [
+      "project_analysis.json"
+    ],
+    "tests\\fixtures\\skin.jpg": [
+      "project_analysis.json"
+    ],
+    "tests\\fixtures\\small.jpg": [
+      "project_analysis.json"
+    ],
+    "tests\\fixtures\\xray.jpg": [
+      "project_analysis.json"
+    ],
+    "ui\\ordonnance_ui.py": [
+      "project_analysis.json",
+      "rapport_ocr_vlm.md",
+      "rapport_technologies_ocr.md"
+    ],
+    "ui\\__init__.py": [],
+    "utils\\config.py": [
+      "IMPROVEMENT_PLAN.md",
+      "MASTER_PROMPT.md",
+      "project_analysis.json",
+      "rapport_technologies_ocr.md",
+      "partie Docteur+User\\app_config.py",
+      "partie Docteur+User\\phar\\utils\\db.py"
+    ],
+    "utils\\geolocation.py": [
+      "project_analysis.json",
+      "rapport_technique_global.md",
+      "SHIFA_DOCS_V2.md"
+    ],
+    "utils\\gradcam.py": [
+      "MASTER_PROMPT.md",
+      "project_analysis.json",
+      "rapport_technique_global.md"
+    ],
+    "utils\\image_validator.py": [
+      "project_analysis.json",
+      "SHIFA_DOCS_V2.md"
+    ],
+    "utils\\logger.py": [
+      "IMPROVEMENT_PLAN.md",
+      "MASTER_PROMPT.md",
+      "project_analysis.json"
+    ],
+    "utils\\__init__.py": []
+  },
+  "py_files": {
+    "app.py": {
+      "imports": [
+        "agents\\orchestrator.py",
+        "mental_module.py",
+        "engine\\nearby_care.py",
+        "ui\\ordonnance_ui.py",
+        "engine\\audio.py",
+        "core\\user_auth.py",
+        "engine\\research_explorer.py"
+      ],
+      "imported_by": []
+    },
+    "evaluate_all.py": {
+      "imports": [
+        "engine\\__init__.py",
+        "train_report_prioritizer.py",
+        "train_bert_medical.py"
+      ],
+      "imported_by": []
+    },
+    "launch_shifa.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "llm_finetuning_guide.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "mental_module.py": {
+      "imports": [
+        "modules\\mental\\gad7.py",
+        "modules\\mental\\llm_client.py",
+        "modules\\mental\\phq9.py",
+        "modules\\mental\\detector.py",
+        "modules\\mental\\persistence.py",
+        "modules\\mental\\config.py"
+      ],
+      "imported_by": [
+        "app.py",
+        "pages\\12_🧠_الصحة_النفسية.py"
+      ]
+    },
+    "run_audit.py": {
+      "imports": [
+        "engine\\safety.py",
+        "engine\\retriever.py"
+      ],
+      "imported_by": []
+    },
+    "setup.py": {
+      "imports": [
+        "engine\\retriever.py",
+        "engine\\classifier.py",
+        "data\\knowledge_base.py"
+      ],
+      "imported_by": []
+    },
+    "test_qa.py": {
+      "imports": [
+        "engine\\nearby_care.py",
+        "engine\\safety.py",
+        "agents\\llm_agent.py",
+        "engine\\vision_router.py",
+        "engine\\triage.py",
+        "engine\\retriever.py"
+      ],
+      "imported_by": []
+    },
+    "train_bert_medical.py": {
+      "imports": [
+        "engine\\__init__.py"
+      ],
+      "imported_by": [
+        "evaluate_all.py"
+      ]
+    },
+    "train_cancer_model.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "train_report_prioritizer.py": {
+      "imports": [
+        "engine\\__init__.py"
+      ],
+      "imported_by": [
+        "evaluate_all.py"
+      ]
+    },
+    "agents\\base_agent.py": {
+      "imports": [
+        "utils\\logger.py"
+      ],
+      "imported_by": [
+        "agents\\llm_agent.py",
+        "agents\\location_agent.py",
+        "agents\\orchestrator.py",
+        "agents\\rag_agent.py",
+        "agents\\safety_agent.py",
+        "agents\\vision_agent.py"
+      ]
+    },
+    "agents\\llm_agent.py": {
+      "imports": [
+        "engine\\llm.py",
+        "agents\\base_agent.py"
+      ],
+      "imported_by": [
+        "test_qa.py",
+        "agents\\orchestrator.py"
+      ]
+    },
+    "agents\\location_agent.py": {
+      "imports": [
+        "engine\\nearby_care.py",
+        "agents\\base_agent.py"
+      ],
+      "imported_by": [
+        "agents\\orchestrator.py"
+      ]
+    },
+    "agents\\orchestrator.py": {
+      "imports": [
+        "agents\\llm_agent.py",
+        "agents\\base_agent.py",
+        "agents\\location_agent.py",
+        "agents\\vision_agent.py",
+        "utils\\logger.py",
+        "agents\\safety_agent.py",
+        "engine\\triage.py",
+        "agents\\rag_agent.py"
+      ],
+      "imported_by": [
+        "app.py",
+        "agents\\__init__.py",
+        "engine\\voice.py",
+        "tests\\test_orchestrator.py"
+      ]
+    },
+    "agents\\rag_agent.py": {
+      "imports": [
+        "engine\\retriever.py",
+        "engine\\classifier.py",
+        "data\\knowledge_base.py",
+        "agents\\base_agent.py"
+      ],
+      "imported_by": [
+        "agents\\orchestrator.py",
+        "tests\\test_orchestrator.py"
+      ]
+    },
+    "agents\\safety_agent.py": {
+      "imports": [
+        "engine\\safety.py",
+        "engine\\triage.py",
+        "agents\\base_agent.py"
+      ],
+      "imported_by": [
+        "agents\\orchestrator.py",
+        "tests\\test_orchestrator.py"
+      ]
+    },
+    "agents\\vision_agent.py": {
+      "imports": [
+        "engine\\vision_router.py",
+        "agents\\base_agent.py"
+      ],
+      "imported_by": [
+        "agents\\orchestrator.py",
+        "tests\\test_orchestrator.py"
+      ]
+    },
+    "agents\\__init__.py": {
+      "imports": [
+        "agents\\orchestrator.py"
+      ],
+      "imported_by": []
+    },
+    "components\\card.py": {
+      "imports": [],
+      "imported_by": [
+        "engine\\nearby_care.py",
+        "pages\\10_🏥_الرعاية_القريبة.py"
+      ]
+    },
+    "components\\__init__.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "core\\config.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "core\\model_manager.py": {
+      "imports": [],
+      "imported_by": [
+        "models\\imaging\\mri.py",
+        "models\\imaging\\xray.py",
+        "models\\multimodal\\med_flamingo.py",
+        "models\\nlp\\biomistral.py"
+      ]
+    },
+    "core\\user_auth.py": {
+      "imports": [],
+      "imported_by": [
+        "app.py"
+      ]
+    },
+    "data\\knowledge_base.py": {
+      "imports": [],
+      "imported_by": [
+        "setup.py",
+        "agents\\rag_agent.py",
+        "scripts\\rebuild_index.py"
+      ]
+    },
+    "data\\__init__.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "engine\\audio.py": {
+      "imports": [],
+      "imported_by": [
+        "app.py"
+      ]
+    },
+    "engine\\brain_mri.py": {
+      "imports": [],
+      "imported_by": [
+        "engine\\vision_router.py",
+        "tests\\test_imaging.py"
+      ]
+    },
+    "engine\\breast.py": {
+      "imports": [
+        "engine\\vision_base.py"
+      ],
+      "imported_by": [
+        "engine\\vision_router.py"
+      ]
+    },
+    "engine\\cancer.py": {
+      "imports": [],
+      "imported_by": [
+        "engine\\vision_router.py"
+      ]
+    },
+    "engine\\classifier.py": {
+      "imports": [],
+      "imported_by": [
+        "setup.py",
+        "agents\\rag_agent.py",
+        "tests\\test_rag.py"
+      ]
+    },
+    "engine\\dermato.py": {
+      "imports": [
+        "engine\\vision_base.py"
+      ],
+      "imported_by": [
+        "engine\\vision_router.py"
+      ]
+    },
+    "engine\\llm.py": {
+      "imports": [
+        "utils\\logger.py"
+      ],
+      "imported_by": [
+        "agents\\llm_agent.py",
+        "pages\\06_🦩_المساعد_متعدد_الوسائط.py"
+      ]
+    },
+    "engine\\nearby_care.py": {
+      "imports": [
+        "utils\\geolocation.py",
+        "components\\card.py"
+      ],
+      "imported_by": [
+        "app.py",
+        "test_qa.py",
+        "agents\\location_agent.py",
+        "pages\\10_🏥_الرعاية_القريبة.py"
+      ]
+    },
+    "engine\\research_explorer.py": {
+      "imports": [],
+      "imported_by": [
+        "app.py"
+      ]
+    },
+    "engine\\retriever.py": {
+      "imports": [],
+      "imported_by": [
+        "run_audit.py",
+        "setup.py",
+        "test_qa.py",
+        "agents\\rag_agent.py",
+        "scripts\\rebuild_index.py",
+        "tests\\benchmark_rag.py",
+        "tests\\test_rag.py"
+      ]
+    },
+    "engine\\safety.py": {
+      "imports": [],
+      "imported_by": [
+        "run_audit.py",
+        "test_qa.py",
+        "agents\\safety_agent.py",
+        "modules\\mental\\llm_client.py",
+        "tests\\benchmark_safety.py",
+        "tests\\conftest.py",
+        "tests\\test_safety.py"
+      ]
+    },
+    "engine\\triage.py": {
+      "imports": [],
+      "imported_by": [
+        "test_qa.py",
+        "agents\\orchestrator.py",
+        "agents\\safety_agent.py",
+        "tests\\benchmark_triage.py",
+        "tests\\conftest.py",
+        "tests\\test_triage.py"
+      ]
+    },
+    "engine\\vision_base.py": {
+      "imports": [],
+      "imported_by": [
+        "engine\\breast.py",
+        "engine\\dermato.py",
+        "engine\\xray.py"
+      ]
+    },
+    "engine\\vision_router.py": {
+      "imports": [
+        "engine\\breast.py",
+        "engine\\brain_mri.py",
+        "engine\\dermato.py",
+        "engine\\cancer.py",
+        "engine\\xray.py"
+      ],
+      "imported_by": [
+        "test_qa.py",
+        "agents\\vision_agent.py"
+      ]
+    },
+    "engine\\voice.py": {
+      "imports": [
+        "agents\\orchestrator.py"
+      ],
+      "imported_by": []
+    },
+    "engine\\xray.py": {
+      "imports": [
+        "engine\\vision_base.py"
+      ],
+      "imported_by": [
+        "engine\\vision_router.py"
+      ]
+    },
+    "engine\\__init__.py": {
+      "imports": [],
+      "imported_by": [
+        "evaluate_all.py",
+        "train_bert_medical.py",
+        "train_report_prioritizer.py",
+        "tests\\test_imaging.py"
+      ]
+    },
+    "engine\\vision_ocr\\config.py": {
+      "imports": [],
+      "imported_by": [
+        "engine\\vision_ocr\\correction.py",
+        "engine\\vision_ocr\\validators.py",
+        "engine\\vision_ocr\\vlm_extraction.py"
+      ]
+    },
+    "engine\\vision_ocr\\correction.py": {
+      "imports": [
+        "engine\\vision_ocr\\config.py"
+      ],
+      "imported_by": [
+        "engine\\vision_ocr\\decision_engine.py"
+      ]
+    },
+    "engine\\vision_ocr\\decision_engine.py": {
+      "imports": [
+        "engine\\vision_ocr\\correction.py",
+        "engine\\vision_ocr\\validators.py",
+        "engine\\vision_ocr\\scraper_medicament_ma.py"
+      ],
+      "imported_by": [
+        "ui\\ordonnance_ui.py"
+      ]
+    },
+    "engine\\vision_ocr\\scraper_medicament_ma.py": {
+      "imports": [],
+      "imported_by": [
+        "engine\\vision_ocr\\decision_engine.py"
+      ]
+    },
+    "engine\\vision_ocr\\validators.py": {
+      "imports": [
+        "engine\\vision_ocr\\config.py"
+      ],
+      "imported_by": [
+        "engine\\vision_ocr\\decision_engine.py"
+      ]
+    },
+    "engine\\vision_ocr\\vlm_extraction.py": {
+      "imports": [
+        "engine\\vision_ocr\\config.py"
+      ],
+      "imported_by": [
+        "ui\\ordonnance_ui.py"
+      ]
+    },
+    "engine\\vision_ocr\\__init__.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "models\\__init__.py": {
+      "imports": [],
+      "imported_by": [
+        "partie Docteur+User\\pha\\pages\\1_Accueil1.py",
+        "partie Docteur+User\\pha\\pages\\2_Categories.py",
+        "partie Docteur+User\\pha\\pages\\3_Panier.py",
+        "partie Docteur+User\\pha\\pages\\4_Commande.py",
+        "partie Docteur+User\\pha\\pages\\5_Admin.py"
+      ]
+    },
+    "models\\imaging\\mri.py": {
+      "imports": [
+        "core\\model_manager.py"
+      ],
+      "imported_by": []
+    },
+    "models\\imaging\\xray.py": {
+      "imports": [
+        "core\\model_manager.py"
+      ],
+      "imported_by": []
+    },
+    "models\\imaging\\__init__.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "models\\monai_bundle\\brats_mri_segmentation\\scripts\\prepare_datalist.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "models\\multimodal\\med_flamingo.py": {
+      "imports": [
+        "core\\model_manager.py"
+      ],
+      "imported_by": []
+    },
+    "models\\multimodal\\__init__.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "models\\nlp\\biomistral.py": {
+      "imports": [
+        "core\\model_manager.py"
+      ],
+      "imported_by": []
+    },
+    "models\\nlp\\__init__.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "modules\\ordonnance_scanner.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "modules\\__init__.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "modules\\mental\\config.py": {
+      "imports": [],
+      "imported_by": [
+        "mental_module.py",
+        "modules\\mental\\__init__.py"
+      ]
+    },
+    "modules\\mental\\detector.py": {
+      "imports": [],
+      "imported_by": [
+        "mental_module.py",
+        "modules\\mental\\__init__.py",
+        "tests\\conftest.py",
+        "tests\\test_mental.py"
+      ]
+    },
+    "modules\\mental\\gad7.py": {
+      "imports": [],
+      "imported_by": [
+        "mental_module.py",
+        "modules\\mental\\__init__.py",
+        "tests\\test_mental.py"
+      ]
+    },
+    "modules\\mental\\llm_client.py": {
+      "imports": [
+        "engine\\safety.py"
+      ],
+      "imported_by": [
+        "mental_module.py",
+        "modules\\mental\\__init__.py"
+      ]
+    },
+    "modules\\mental\\persistence.py": {
+      "imports": [],
+      "imported_by": [
+        "mental_module.py",
+        "modules\\mental\\__init__.py"
+      ]
+    },
+    "modules\\mental\\phq9.py": {
+      "imports": [],
+      "imported_by": [
+        "mental_module.py",
+        "modules\\mental\\__init__.py",
+        "tests\\test_mental.py"
+      ]
+    },
+    "modules\\mental\\__init__.py": {
+      "imports": [
+        "modules\\mental\\gad7.py",
+        "modules\\mental\\llm_client.py",
+        "modules\\mental\\phq9.py",
+        "modules\\mental\\detector.py",
+        "modules\\mental\\persistence.py",
+        "modules\\mental\\config.py"
+      ],
+      "imported_by": []
+    },
+    "pages\\06_🦩_المساعد_متعدد_الوسائط.py": {
+      "imports": [
+        "engine\\llm.py"
+      ],
+      "imported_by": []
+    },
+    "pages\\10_🏥_الرعاية_القريبة.py": {
+      "imports": [
+        "styles\\theme.py",
+        "engine\\nearby_care.py",
+        "utils\\geolocation.py",
+        "components\\card.py"
+      ],
+      "imported_by": []
+    },
+    "pages\\11_📋_مسح_الوصفة.py": {
+      "imports": [
+        "ui\\ordonnance_ui.py"
+      ],
+      "imported_by": []
+    },
+    "pages\\12_🧠_الصحة_النفسية.py": {
+      "imports": [
+        "mental_module.py"
+      ],
+      "imported_by": []
+    },
+    "partie Docteur+User\\append_stats.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "partie Docteur+User\\app_config.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "partie Docteur+User\\auth_manager.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "partie Docteur+User\\database1.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "partie Docteur+User\\doctor_patients_ui1.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "partie Docteur+User\\fill_sqlite.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "partie Docteur+User\\fix_existing_db.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "partie Docteur+User\\florence_analyzer.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "partie Docteur+User\\florence_ui.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "partie Docteur+User\\ia_priorisation.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "partie Docteur+User\\import_sqlite.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "partie Docteur+User\\main.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "partie Docteur+User\\medical_dashboard_ux.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "partie Docteur+User\\migrate_passwords.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "partie Docteur+User\\notification_manager.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "partie Docteur+User\\pdf_generator.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "partie Docteur+User\\TE.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "partie Docteur+User\\ui_components.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "partie Docteur+User\\pha\\app.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "partie Docteur+User\\pha\\config.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "partie Docteur+User\\pha\\db.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "partie Docteur+User\\pha\\models.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "partie Docteur+User\\pha\\pages\\1_Accueil1.py": {
+      "imports": [
+        "models\\__init__.py"
+      ],
+      "imported_by": []
+    },
+    "partie Docteur+User\\pha\\pages\\2_Categories.py": {
+      "imports": [
+        "models\\__init__.py"
+      ],
+      "imported_by": []
+    },
+    "partie Docteur+User\\pha\\pages\\3_Panier.py": {
+      "imports": [
+        "models\\__init__.py"
+      ],
+      "imported_by": []
+    },
+    "partie Docteur+User\\pha\\pages\\4_Commande.py": {
+      "imports": [
+        "models\\__init__.py"
+      ],
+      "imported_by": []
+    },
+    "partie Docteur+User\\pha\\pages\\5_Admin.py": {
+      "imports": [
+        "models\\__init__.py"
+      ],
+      "imported_by": []
+    },
+    "partie Docteur+User\\phar\\app.py": {
+      "imports": [
+        "utils\\__init__.py"
+      ],
+      "imported_by": []
+    },
+    "partie Docteur+User\\phar\\config.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "partie Docteur+User\\phar\\pages\\1_Categories.py": {
+      "imports": [
+        "utils\\__init__.py"
+      ],
+      "imported_by": []
+    },
+    "partie Docteur+User\\phar\\pages\\2_Panier.py": {
+      "imports": [
+        "utils\\__init__.py"
+      ],
+      "imported_by": []
+    },
+    "partie Docteur+User\\phar\\pages\\3_Commande.py": {
+      "imports": [
+        "utils\\__init__.py"
+      ],
+      "imported_by": []
+    },
+    "partie Docteur+User\\phar\\pages\\4_Admin.py": {
+      "imports": [
+        "utils\\__init__.py"
+      ],
+      "imported_by": []
+    },
+    "partie Docteur+User\\phar\\utils\\db.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "partie Docteur+User\\phar\\utils\\models.py": {
+      "imports": [
+        "utils\\__init__.py"
+      ],
+      "imported_by": []
+    },
+    "partie Docteur+User\\phar\\utils\\session.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "partie Docteur+User\\phar\\utils\\__init__.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "scripts\\audit_scan.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "scripts\\rebuild_index.py": {
+      "imports": [
+        "data\\knowledge_base.py",
+        "engine\\retriever.py"
+      ],
+      "imported_by": []
+    },
+    "styles\\theme.py": {
+      "imports": [],
+      "imported_by": [
+        "pages\\10_🏥_الرعاية_القريبة.py"
+      ]
+    },
+    "styles\\__init__.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "tests\\benchmark_models.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "tests\\benchmark_rag.py": {
+      "imports": [
+        "engine\\retriever.py"
+      ],
+      "imported_by": []
+    },
+    "tests\\benchmark_safety.py": {
+      "imports": [
+        "engine\\safety.py"
+      ],
+      "imported_by": []
+    },
+    "tests\\benchmark_triage.py": {
+      "imports": [
+        "engine\\triage.py"
+      ],
+      "imported_by": []
+    },
+    "tests\\conftest.py": {
+      "imports": [
+        "modules\\mental\\detector.py",
+        "engine\\triage.py",
+        "engine\\safety.py"
+      ],
+      "imported_by": []
+    },
+    "tests\\test_imaging.py": {
+      "imports": [
+        "engine\\__init__.py",
+        "engine\\brain_mri.py"
+      ],
+      "imported_by": []
+    },
+    "tests\\test_mental.py": {
+      "imports": [
+        "modules\\mental\\gad7.py",
+        "modules\\mental\\phq9.py",
+        "modules\\mental\\detector.py"
+      ],
+      "imported_by": []
+    },
+    "tests\\test_orchestrator.py": {
+      "imports": [
+        "agents\\orchestrator.py",
+        "agents\\safety_agent.py",
+        "agents\\vision_agent.py",
+        "agents\\rag_agent.py"
+      ],
+      "imported_by": []
+    },
+    "tests\\test_rag.py": {
+      "imports": [
+        "engine\\classifier.py",
+        "engine\\retriever.py"
+      ],
+      "imported_by": []
+    },
+    "tests\\test_safety.py": {
+      "imports": [
+        "engine\\safety.py"
+      ],
+      "imported_by": []
+    },
+    "tests\\test_triage.py": {
+      "imports": [
+        "engine\\triage.py"
+      ],
+      "imported_by": []
+    },
+    "tests\\test_validator.py": {
+      "imports": [
+        "utils\\image_validator.py"
+      ],
+      "imported_by": []
+    },
+    "tests\\__init__.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "ui\\ordonnance_ui.py": {
+      "imports": [
+        "engine\\vision_ocr\\vlm_extraction.py",
+        "engine\\vision_ocr\\decision_engine.py"
+      ],
+      "imported_by": [
+        "app.py",
+        "pages\\11_📋_مسح_الوصفة.py"
+      ]
+    },
+    "ui\\__init__.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "utils\\config.py": {
+      "imports": [],
+      "imported_by": []
+    },
+    "utils\\geolocation.py": {
+      "imports": [],
+      "imported_by": [
+        "engine\\nearby_care.py",
+        "pages\\10_🏥_الرعاية_القريبة.py"
+      ]
+    },
+    "utils\\gradcam.py": {
+      "imports": [
+        "utils\\logger.py"
+      ],
+      "imported_by": []
+    },
+    "utils\\image_validator.py": {
+      "imports": [
+        "utils\\logger.py"
+      ],
+      "imported_by": [
+        "tests\\test_validator.py"
+      ]
+    },
+    "utils\\logger.py": {
+      "imports": [],
+      "imported_by": [
+        "agents\\base_agent.py",
+        "agents\\orchestrator.py",
+        "engine\\llm.py",
+        "utils\\gradcam.py",
+        "utils\\image_validator.py"
+      ]
+    },
+    "utils\\__init__.py": {
+      "imports": [],
+      "imported_by": [
+        "partie Docteur+User\\phar\\app.py",
+        "partie Docteur+User\\phar\\pages\\1_Categories.py",
+        "partie Docteur+User\\phar\\pages\\2_Panier.py",
+        "partie Docteur+User\\phar\\pages\\3_Commande.py",
+        "partie Docteur+User\\phar\\pages\\4_Admin.py",
+        "partie Docteur+User\\phar\\utils\\models.py"
+      ]
+    }
+  }
+}

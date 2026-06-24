@@ -46,8 +46,8 @@ class VisionRouter:
                 from engine.xray import XRayModel
                 self._models[vision_type] = XRayModel()
             elif vision_type == "brain_mri":
-                from engine.brain_mri import BrainMRIModel
-                self._models[vision_type] = BrainMRIModel()
+                from engine.brain_mri import BrainTumorKerasDetector
+                self._models[vision_type] = BrainTumorKerasDetector()
             elif vision_type == "cancer":
                 from engine.cancer import CancerDetectorTF
                 self._models[vision_type] = CancerDetectorTF()

@@ -32,17 +32,16 @@ if 'user' not in st.session_state:
 
 # ============================================
 # DESIGN ROUGE PROFESSIONNEL
-# ============================================
-st.markdown("""
+# ====================================st.markdown("""
     <style>
-    /* === FOND GLOBAL SOMBRE === */
+    /* === FOND GLOBAL === */
     .stApp, .main, section.main {
-        background-color: #0d0d1a !important;
-        color: #FFFFFF !important;
+        background-color: #f8fafc !important;
+        color: #0f172a !important;
     }
 
     div.block-container {
-        background-color: #0a0a1a !important;
+        background-color: transparent !important;
     }
 
     /* === CONTAINERS TRANSPARENTS === */
@@ -52,14 +51,14 @@ st.markdown("""
         background-color: transparent !important;
     }
 
-    /* Style général - Thème Rouge Sombre */
+    /* Style général - Thème Bleu Médical */
     .main-header {
-        background: linear-gradient(90deg, #e63946 0%, #ef4444 100%);
+        background: linear-gradient(90deg, #2563eb 0%, #0ea5e9 100%);
         padding: 1rem;
         border-radius: 10px;
         color: white;
         margin-bottom: 2rem;
-        box-shadow: 0 4px 6px rgba(230, 57, 70, 0.3);
+        box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
     }
     
     /* Style des boutons de navigation */
@@ -69,87 +68,87 @@ st.markdown("""
     }
     
     div.row-widget.stRadio > div[role="radiogroup"] > label {
-        background-color: #1a1a2e !important;
+        background-color: #ffffff !important;
         padding: 0.75rem 1rem;
         border-radius: 10px;
-        border: 1px solid #e63946 !important;
+        border: 1px solid #e2e8f0 !important;
         transition: all 0.3s ease;
         cursor: pointer;
         margin: 0;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-        color: #FFFFFF !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        color: #0f172a !important;
     }
     
     div.row-widget.stRadio > div[role="radiogroup"] > label:hover {
-        background-color: #2a2a4e !important;
-        border-color: #e63946 !important;
+        background-color: #f1f5f9 !important;
+        border-color: #2563eb !important;
         transform: translateX(5px);
-        box-shadow: 0 4px 6px rgba(230, 57, 70, 0.3);
+        box-shadow: 0 4px 6px rgba(37, 99, 235, 0.1);
     }
     
-    /* Bouton sélectionné - ROUGE */
+    /* Bouton sélectionné - BLEU */
     div.row-widget.stRadio > div[role="radiogroup"] > label[data-baseweb="radio"] > div:first-child {
-        background-color: #e63946 !important;
-        border-color: #e63946 !important;
-        box-shadow: 0 2px 8px rgba(230, 57, 70, 0.4) !important;
+        background-color: #2563eb !important;
+        border-color: #2563eb !important;
+        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3) !important;
     }
     
     /* Texte du bouton sélectionné */
     div.row-widget.stRadio > div[role="radiogroup"] > label[data-baseweb="radio"] p {
-        color: #FFFFFF !important;
+        color: #2563eb !important;
         font-weight: 600 !important;
     }
     
     /* === BOUTONS === */
     .stButton > button {
-        background-color: #e63946 !important;
+        background-color: #2563eb !important;
         color: #FFFFFF !important;
         border: none !important;
         border-radius: 8px !important;
         padding: 0.5rem 1rem !important;
         font-weight: 600 !important;
-        box-shadow: 0 4px 6px rgba(230, 57, 70, 0.3) !important;
+        box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2) !important;
         transition: all 0.3s ease !important;
         width: 100%;
     }
     
     .stButton > button:hover {
-        background-color: #c1121f !important;
-        box-shadow: 0 6px 10px rgba(230, 57, 70, 0.4) !important;
+        background-color: #1d4ed8 !important;
+        box-shadow: 0 6px 10px rgba(37, 99, 235, 0.3) !important;
         transform: translateY(-2px) !important;
     }
     
     .stButton > button:active {
         transform: translateY(0px) !important;
-        box-shadow: 0 2px 4px rgba(230, 57, 70, 0.3) !important;
+        box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2) !important;
     }
     
     /* Style des boutons secondaires */
     .stButton > button.secondary {
-        background-color: #1a1a2e !important;
-        color: #e63946 !important;
-        border: 2px solid #e63946 !important;
+        background-color: #ffffff !important;
+        color: #2563eb !important;
+        border: 2px solid #2563eb !important;
         box-shadow: none !important;
     }
     
     .stButton > button.secondary:hover {
-        background-color: #2a2a4e !important;
+        background-color: #f1f5f9 !important;
     }
     
     /* Style des expanders */
     .streamlit-expanderHeader {
-        background-color: #1a1a2e !important;
+        background-color: #ffffff !important;
         border-radius: 8px;
-        border-left: 4px solid #e63946;
-        color: #FFFFFF !important;
+        border-left: 4px solid #2563eb;
+        color: #0f172a !important;
     }
     
     /* Style des cartes produits */
     .product-card {
-        background: #1a1a2e !important;
+        background: #ffffff !important;
         border-radius: 10px;
         padding: 1rem;
-        border: 1px solid #e63946 !important;
+        border: 1px solid #e2e8f0 !important;
         transition: all 0.3s ease;
         position: relative;
         overflow: hidden;
@@ -157,8 +156,8 @@ st.markdown("""
     
     .product-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(230, 57, 70, 0.3);
-        border-color: #e63946;
+        box-shadow: 0 10px 20px rgba(37, 99, 235, 0.15);
+        border-color: #2563eb;
     }
     
     .product-card.promo::before {
@@ -166,7 +165,7 @@ st.markdown("""
         position: absolute;
         top: 10px;
         right: -30px;
-        background: #e63946;
+        background: #2563eb;
         color: white;
         padding: 5px 30px;
         transform: rotate(45deg);
@@ -176,16 +175,16 @@ st.markdown("""
     
     /* Style des alertes expiration */
     .expired-alert {
-        background: rgba(230, 57, 70, 0.15) !important;
-        border-left: 4px solid #e63946;
+        background: rgba(239, 68, 68, 0.1) !important;
+        border-left: 4px solid #ef4444;
         padding: 1rem;
         border-radius: 8px;
         margin: 0.5rem 0;
     }
     
     .warning-alert {
-        background: rgba(255, 193, 7, 0.15) !important;
-        border-left: 4px solid #ffc107;
+        background: rgba(245, 158, 11, 0.1) !important;
+        border-left: 4px solid #f59e0b;
         padding: 1rem;
         border-radius: 8px;
         margin: 0.5rem 0;
@@ -193,95 +192,85 @@ st.markdown("""
     
     /* Style des notifications */
     .stAlert {
-        border-left: 4px solid #e63946;
+        border-left: 4px solid #2563eb;
         border-radius: 8px;
-        background-color: #1a1a2e !important;
+        background-color: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
     }
     
-    /* === SIDEBAR SOMBRE === */
+    /* === SIDEBAR CLAIR === */
     section[data-testid="stSidebar"] {
-        background-color: #0d0d1a !important;
-        border-right: 1px solid #e63946;
+        background-color: #ffffff !important;
+        border-right: 1px solid #e2e8f0;
     }
     
     section[data-testid="stSidebar"] .stButton > button {
-        background-color: #e63946 !important;
+        background-color: #2563eb !important;
     }
     
     /* Titre dans la sidebar */
     .sidebar-title {
-        background: linear-gradient(135deg, #e63946 0%, #ef4444 100%);
+        background: linear-gradient(135deg, #2563eb 0%, #0ea5e9 100%);
         color: white;
         padding: 1rem;
         border-radius: 10px;
         text-align: center;
         margin-bottom: 1rem;
         font-weight: bold;
-        box-shadow: 0 4px 6px rgba(230, 57, 70, 0.3);
-    }
-    
-    /* Animation pour les icônes */
-    @keyframes pulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.05); }
-        100% { transform: scale(1); }
-    }
-    
-    .nav-icon {
-        animation: pulse 2s infinite;
-        display: inline-block;
+        box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
     }
     
     /* Style des métriques */
     div[data-testid="stMetricValue"] {
-        color: #e63946 !important;
+        color: #2563eb !important;
         font-size: 2rem !important;
         font-weight: bold !important;
     }
     
     div[data-testid="stMetricLabel"] {
-        color: #FFFFFF !important;
+        color: #0f172a !important;
         font-weight: 500 !important;
     }
     
-    /* Style des métriques avec fond sombre */
+    /* Style des métriques avec fond clair */
     .metric-card {
-        background: #1a1a2e !important;
+        background: #ffffff !important;
         padding: 1rem;
         border-radius: 10px;
-        border: 1px solid #e63946 !important;
-        border-bottom: 3px solid #e63946;
+        border: 1px solid #e2e8f0 !important;
+        border-bottom: 3px solid #2563eb;
         text-align: center;
     }
     
-    /* === TABS SOMBRES === */
+    /* === TABS CLAIRS === */
     .stTabs [data-baseweb="tab-list"] {
         gap: 8px;
     }
     
     .stTabs [data-baseweb="tab"] {
-        background-color: #1a1a2e !important;
+        background-color: transparent !important;
         border-radius: 8px;
         padding: 0.5rem 1rem;
-        border: 1px solid #e63946 !important;
-        color: #FFFFFF !important;
+        border: none !important;
+        color: #475569 !important;
     }
     
     .stTabs [aria-selected="true"] {
-        background-color: #e63946 !important;
-        color: #FFFFFF !important;
+        background-color: #ffffff !important;
+        color: #2563eb !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
     }
     
-    /* === FORMULAIRES SOMBRES === */
+    /* === FORMULAIRES CLAIRS === */
     div[data-testid="stForm"] {
-        background-color: #1a1a2e !important;
+        background-color: #ffffff !important;
         padding: 1.5rem;
         border-radius: 10px;
-        border: 1px solid #e63946 !important;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        border: 1px solid #e2e8f0 !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     }
     
-    /* === INPUTS SOMBRES === */
+    /* === INPUTS === */
     input, textarea, select,
     .stTextInput > div > div > input,
     .stTextArea textarea,
@@ -290,39 +279,39 @@ st.markdown("""
     [data-baseweb="textarea"] textarea,
     .stTextInput input, .stTextArea textarea,
     .stSelectbox select {
-        background-color: #1a1a2e !important;
-        color: #FFFFFF !important;
-        border: 1px solid #e63946 !important;
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+        border: 1px solid #e2e8f0 !important;
         border-radius: 8px !important;
-        caret-color: #e63946 !important;
+        caret-color: #2563eb !important;
     }
     
     .stTextInput > div > div > input:focus {
-        border-color: #e63946 !important;
-        box-shadow: 0 0 0 2px rgba(230, 57, 70, 0.3) !important;
+        border-color: #2563eb !important;
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15) !important;
     }
     
     /* === PLACEHOLDERS === */
-    ::placeholder { color: #888888 !important; }
+    ::placeholder { color: #64748b !important; }
     input::placeholder, textarea::placeholder {
-        color: #888888 !important;
+        color: #64748b !important;
     }
     
-    /* === LABELS BLANCS === */
+    /* === LABELS === */
     label, .stTextInput label, .stSelectbox label,
     .stTextArea label, .stRadio label, .stCheckbox label {
-        color: #FFFFFF !important;
+        color: #0f172a !important;
         font-weight: 500 !important;
     }
 
-    /* === TEXTE GLOBAL BLANC === */
+    /* === TEXTE GLOBAL === */
     label, p, span, div, h1, h2, h3, h4, h5, h6 {
-        color: #FFFFFF !important;
+        color: #0f172a !important;
     }
     
     /* Style des badges promo */
     .promo-badge {
-        background: #e63946;
+        background: #2563eb;
         color: white;
         padding: 3px 8px;
         border-radius: 20px;
@@ -335,12 +324,12 @@ st.markdown("""
     .price {
         font-size: 1.5rem;
         font-weight: bold;
-        color: #e63946 !important;
+        color: #2563eb !important;
     }
     
     /* Style stock indicator */
     .stock-low {
-        color: #e63946 !important;
+        color: #ef4444 !important;
         font-weight: bold;
     }
     
@@ -354,42 +343,43 @@ st.markdown("""
         font-size: 0.8rem;
         padding: 2px 6px;
         border-radius: 4px;
-        background: #1a1a2e !important;
+        background: #f1f5f9 !important;
     }
     
     .expiry-date.warning {
-        background: rgba(230, 57, 70, 0.15) !important;
-        color: #e63946 !important;
+        background: rgba(245, 158, 11, 0.1) !important;
+        color: #f59e0b !important;
     }
     
     /* Style du footer */
     .footer {
-        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-        color: white;
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        color: #0f172a;
         padding: 2rem;
         border-radius: 10px;
         margin-top: 2rem;
+        border: 1px solid #e2e8f0;
     }
 
     /* === DIVIDERS === */
     hr {
-        border-color: rgba(230, 57, 70, 0.3) !important;
+        border-color: #e2e8f0 !important;
     }
 
-    /* === SCROLLBAR SOMBRE === */
+    /* === SCROLLBAR CLAIR === */
     ::-webkit-scrollbar {
         width: 8px;
         height: 8px;
     }
     ::-webkit-scrollbar-track {
-        background: #0d0d1a;
+        background: #f8fafc;
     }
     ::-webkit-scrollbar-thumb {
-        background: #e63946;
+        background: #cbd5e1;
         border-radius: 4px;
     }
     ::-webkit-scrollbar-thumb:hover {
-        background: #c1121f;
+        background: #2563eb;
     }
     </style>
 """, unsafe_allow_html=True)

@@ -18,17 +18,17 @@ st.set_page_config(
 # Initialisation session
 init_session_state()
 
-# CSS personnalisé - Design Rouge
+# CSS personnalisé - Design Light Medical
 st.markdown(f"""
     <style>
-        /* === FOND GLOBAL SOMBRE === */
+        /* === FOND GLOBAL === */
         .stApp {{
-            background: #0d0d1a !important;
-            color: #FFFFFF !important;
+            background: #f8fafc !important;
+            color: #0f172a !important;
         }}
 
         div.block-container {{
-            background-color: #0a0a1a !important;
+            background-color: transparent !important;
         }}
 
         /* === CONTAINERS TRANSPARENTS === */
@@ -38,14 +38,14 @@ st.markdown(f"""
             background-color: transparent !important;
         }}
         
-        /* Header avec dégradé rouge */
+        /* Header avec dégradé bleu */
         .main-header {{
             background: linear-gradient(135deg, {COLORS['primary']} 0%, {COLORS['primary_light']} 100%);
             padding: 2rem;
             border-radius: 20px;
             color: white;
             margin-bottom: 2rem;
-            box-shadow: 0 10px 25px -5px rgba(230, 57, 70, 0.3);
+            box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.2);
             text-align: center;
             animation: slideIn 0.5s ease-out;
         }}
@@ -62,13 +62,13 @@ st.markdown(f"""
             }}
         }}
         
-        /* Cartes produits sombres */
+        /* Cartes produits claires */
         div[data-testid="stVerticalBlockBorderWrapper"] > div {{
-            background: #1a1a2e !important;
+            background: #ffffff !important;
             border-radius: 15px;
             padding: 1rem;
-            border: 1px solid #e63946 !important;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            border: 1px solid #e2e8f0 !important;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
@@ -76,7 +76,8 @@ st.markdown(f"""
         
         div[data-testid="stVerticalBlockBorderWrapper"] > div:hover {{
             transform: translateY(-8px);
-            box-shadow: 0 20px 25px -5px rgba(230, 57, 70, 0.3), 0 10px 10px -5px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 25px -5px rgba(37, 99, 235, 0.15), 0 10px 10px -5px rgba(0,0,0,0.02);
+            border-color: {COLORS['primary']} !important;
         }}
         
         /* Badge promo */
@@ -103,7 +104,7 @@ st.markdown(f"""
             padding: 0.75rem 1.5rem;
             font-weight: 600;
             font-size: 1rem;
-            box-shadow: 0 4px 6px rgba(230, 57, 70, 0.25);
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
             transition: all 0.3s ease;
             width: 100%;
             position: relative;
@@ -112,13 +113,13 @@ st.markdown(f"""
         
         .stButton > button:hover {{
             transform: translateY(-3px);
-            box-shadow: 0 10px 15px -3px rgba(230, 57, 70, 0.4);
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
             background: linear-gradient(135deg, {COLORS['primary_dark']} 0%, {COLORS['primary']} 100%);
         }}
         
         .stButton > button:active {{
             transform: translateY(0);
-            box-shadow: 0 2px 4px rgba(230, 57, 70, 0.3);
+            box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
         }}
         
         .stButton > button::after {{
@@ -141,14 +142,14 @@ st.markdown(f"""
         
         /* Bouton secondaire */
         .stButton > button.secondary {{
-            background: #1a1a2e !important;
+            background: #ffffff !important;
             color: {COLORS['primary']} !important;
             border: 2px solid {COLORS['primary']} !important;
             box-shadow: none;
         }}
         
         .stButton > button.secondary:hover {{
-            background: #2a2a4e !important;
+            background: #f1f5f9 !important;
             color: {COLORS['primary_dark']} !important;
             border-color: {COLORS['primary_dark']} !important;
         }}
@@ -171,12 +172,12 @@ st.markdown(f"""
         }}
         
         .stock-low {{
-            background: rgba(230, 57, 70, 0.15) !important;
-            color: {COLORS['primary']} !important;
+            background: rgba(239, 68, 68, 0.1) !important;
+            color: #ef4444 !important;
         }}
         
         .stock-ok {{
-            background: rgba(16, 185, 129, 0.15) !important;
+            background: rgba(16, 185, 129, 0.1) !important;
             color: {COLORS['success']} !important;
         }}
         
@@ -196,7 +197,7 @@ st.markdown(f"""
         
         /* Catégorie badge */
         .category-badge {{
-            background: rgba(230, 57, 70, 0.15) !important;
+            background: rgba(37, 99, 235, 0.1) !important;
             color: {COLORS['primary']} !important;
             padding: 0.25rem 0.75rem;
             border-radius: 20px;
@@ -205,10 +206,10 @@ st.markdown(f"""
             margin-bottom: 0.5rem;
         }}
         
-        /* === SIDEBAR SOMBRE === */
+        /* === SIDEBAR CLAIR === */
         section[data-testid="stSidebar"] {{
-            background: #0d0d1a !important;
-            border-right: 1px solid #e63946;
+            background: #ffffff !important;
+            border-right: 1px solid #e2e8f0;
         }}
         
         /* Cart summary */
@@ -219,24 +220,24 @@ st.markdown(f"""
             color: white;
             text-align: center;
             margin-bottom: 1rem;
-            box-shadow: 0 4px 6px rgba(230, 57, 70, 0.3);
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
         }}
         
         /* Navigation pills */
         .nav-pill {{
-            background: #1a1a2e !important;
+            background: #ffffff !important;
             padding: 0.75rem;
             border-radius: 10px;
             text-align: center;
-            border: 1px solid #e63946 !important;
+            border: 1px solid #e2e8f0 !important;
             transition: all 0.3s ease;
             cursor: pointer;
             margin: 0.25rem 0;
-            color: #FFFFFF !important;
+            color: #0f172a !important;
         }}
         
         .nav-pill:hover {{
-            background: #2a2a4e !important;
+            background: #f1f5f9 !important;
             border-color: {COLORS['primary']};
             transform: translateX(5px);
         }}
@@ -258,66 +259,67 @@ st.markdown(f"""
             animation: checkmark 0.5s ease-in-out;
         }}
 
-        /* === INPUTS SOMBRES === */
+        /* === INPUTS === */
         input, textarea, select,
         .stTextInput > div > div > input,
         .stTextArea textarea,
         .stSelectbox > div > div > select,
         [data-baseweb="input"] input,
         [data-baseweb="textarea"] textarea {{
-            background-color: #1a1a2e !important;
-            color: #FFFFFF !important;
-            border: 1px solid #e63946 !important;
+            background-color: #ffffff !important;
+            color: #0f172a !important;
+            border: 1px solid #e2e8f0 !important;
             border-radius: 8px !important;
-            caret-color: #e63946 !important;
+            caret-color: {COLORS['primary']} !important;
         }}
 
         /* === PLACEHOLDERS === */
-        ::placeholder {{ color: #888888 !important; }}
+        ::placeholder {{ color: #64748b !important; }}
         input::placeholder, textarea::placeholder {{
-            color: #888888 !important;
+            color: #64748b !important;
         }}
 
-        /* === LABELS & TEXTE BLANCS === */
+        /* === LABELS & TEXTE === */
         label, .stTextInput label, .stSelectbox label {{
-            color: #FFFFFF !important;
+            color: #0f172a !important;
             font-weight: 500 !important;
         }}
 
         label, p, span, div, h1, h2, h3, h4, h5, h6 {{
-            color: #FFFFFF !important;
+            color: #0f172a !important;
         }}
 
-        /* === TABS SOMBRES === */
+        /* === TABS CLAIRS === */
         .stTabs [data-baseweb="tab"] {{
-            background-color: #1a1a2e !important;
-            color: #FFFFFF !important;
-            border: 1px solid #e63946 !important;
+            background-color: transparent !important;
+            color: #475569 !important;
+            border: none !important;
         }}
         .stTabs [aria-selected="true"] {{
-            background-color: #e63946 !important;
-            color: #FFFFFF !important;
+            background-color: #ffffff !important;
+            color: {COLORS['primary']} !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
         }}
 
         /* === DIVIDERS === */
         hr {{
-            border-color: rgba(230, 57, 70, 0.3) !important;
+            border-color: #e2e8f0 !important;
         }}
 
-        /* === SCROLLBAR SOMBRE === */
+        /* === SCROLLBAR CLAIR === */
         ::-webkit-scrollbar {{
             width: 8px;
             height: 8px;
         }}
         ::-webkit-scrollbar-track {{
-            background: #0d0d1a;
+            background: #f8fafc;
         }}
         ::-webkit-scrollbar-thumb {{
-            background: #e63946;
+            background: #cbd5e1;
             border-radius: 4px;
         }}
         ::-webkit-scrollbar-thumb:hover {{
-            background: #c1121f;
+            background: {COLORS['primary']};
         }}
     </style>
 """, unsafe_allow_html=True)

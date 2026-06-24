@@ -105,7 +105,12 @@ class MentalLLMClient:
         """Fallback: call Groq API directly."""
         try:
             from groq import Groq
-            client = Groq(api_key=self._groq_key)
+            import httpx
+            http_client = httpx.Client(
+                limits=httpx.Limits(max_connections=50, max_keepalive_connections=10),
+                timeout=httpx.Timeout(15.0, connect=5.0)
+            )
+            client = Groq(api_key=self._groq_key, http_client=http_client, max_retries=3)
             full_messages = [{"role": "system", "content": system_prompt}] + messages
             response = client.chat.completions.create(
                 messages=full_messages,

@@ -2,6 +2,7 @@
 
 import streamlit as st
 import os
+import base64
 import logging
 import warnings
 from pathlib import Path
@@ -23,6 +24,23 @@ warnings.filterwarnings('ignore')
 BASE_DIR = Path(__file__).parent          # partie Docteur+User/
 PROJECT_ROOT = BASE_DIR.parent            # chatBot Arab/
 load_dotenv(PROJECT_ROOT / ".env")         # Charge les clés API (GROQ_API_KEY, etc.)
+
+# ── Load logo as base64 ──
+@st.cache_data
+def _get_logo_b64():
+    """Charge le logo en base64 pour l'injection HTML"""
+    for logo_name in [
+        "Stylized_Heart_and_Cross_Logo_for_SHIFA_AI__1_-removebg-preview.png",
+        "logo.png"
+    ]:
+        logo_path = PROJECT_ROOT / logo_name
+        if logo_path.exists():
+            try:
+                with open(logo_path, "rb") as f:
+                    return base64.b64encode(f.read()).decode()
+            except Exception:
+                pass
+    return None
 
 # Configuration du logging
 logging.basicConfig(
@@ -74,20 +92,20 @@ def main():
 def show_main_interface():
     """Interface principale après connexion"""
     
-    # CSS GLOBAL - THÈME SOMBRE UNIFIÉ SHIFA AI
+    # CSS GLOBAL - THÈME CLAIR MÉDICAL SHIFA AI
     st.markdown("""
         <style>
         /* === FOND GLOBAL === */
         .stApp, .main, section.main {
-            background-color: #0d0d1a !important;
-            color: #FFFFFF !important;
+            background-color: #F8FAFC !important;
+            color: #0F172A !important;
         }
 
         div.block-container {
-            background-color: #0a0a1a !important;
+            background-color: transparent !important;
         }
 
-        /* === CONTAINERS TRANSPARENTS (éviter fond blanc) === */
+        /* === CONTAINERS TRANSPARENTS === */
         section[data-testid="stForm"],
         div[data-testid="stVerticalBlock"] > div,
         .element-container, .stForm {
@@ -96,12 +114,12 @@ def show_main_interface():
 
         /* Style général */
         .main-header {
-            background: linear-gradient(90deg, #dc2626 0%, #ef4444 100%);
+            background: linear-gradient(90deg, #2563EB 0%, #0EA5E9 100%);
             padding: 1rem;
             border-radius: 10px;
             color: white;
             margin-bottom: 2rem;
-            box-shadow: 0 4px 6px rgba(220, 38, 38, 0.3);
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
         }
         
         /* Style des boutons de navigation */
@@ -111,176 +129,164 @@ def show_main_interface():
         }
         
         div.row-widget.stRadio > div[role="radiogroup"] > label {
-            background-color: #1a1a2e !important;
+            background-color: #FFFFFF !important;
             padding: 0.75rem 1rem;
             border-radius: 10px;
-            border: 1px solid #e63946 !important;
+            border: 1px solid #E2E8F0 !important;
             transition: all 0.3s ease;
             cursor: pointer;
             margin: 0;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-            color: #FFFFFF !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            color: #0F172A !important;
         }
         
         div.row-widget.stRadio > div[role="radiogroup"] > label:hover {
-            background-color: #2a2a4e !important;
-            border-color: #e63946 !important;
+            background-color: #F1F5F9 !important;
+            border-color: #2563EB !important;
             transform: translateX(5px);
-            box-shadow: 0 4px 6px rgba(230, 57, 70, 0.3);
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.1);
         }
         
-        /* Bouton sélectionné - ROUGE */
+        /* Bouton sélectionné - BLEU */
         div.row-widget.stRadio > div[role="radiogroup"] > label[data-baseweb="radio"] > div:first-child {
-            background-color: #e63946 !important;
-            border-color: #e63946 !important;
-            box-shadow: 0 2px 8px rgba(230, 57, 70, 0.4) !important;
+            background-color: #2563EB !important;
+            border-color: #2563EB !important;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3) !important;
         }
         
         /* Texte du bouton sélectionné */
         div.row-widget.stRadio > div[role="radiogroup"] > label[data-baseweb="radio"] p {
-            color: #FFFFFF !important;
+            color: #2563EB !important;
             font-weight: 600 !important;
         }
         
         /* === BOUTONS === */
         .stButton > button {
-            background-color: #e63946 !important;
+            background-color: #2563EB !important;
             color: #FFFFFF !important;
             border: none !important;
             border-radius: 8px !important;
             padding: 0.5rem 1rem !important;
             font-weight: 600 !important;
-            box-shadow: 0 4px 6px rgba(230, 57, 70, 0.3) !important;
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2) !important;
             transition: all 0.3s ease !important;
             width: 100%;
         }
         
         .stButton > button:hover {
-            background-color: #c1121f !important;
-            box-shadow: 0 6px 10px rgba(230, 57, 70, 0.4) !important;
+            background-color: #1D4ED8 !important;
+            box-shadow: 0 6px 10px rgba(37, 99, 235, 0.3) !important;
             transform: translateY(-2px) !important;
         }
         
         .stButton > button:active {
             transform: translateY(0px) !important;
-            box-shadow: 0 2px 4px rgba(230, 57, 70, 0.3) !important;
+            box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2) !important;
         }
         
         /* Style des boutons secondaires */
         .stButton > button.secondary {
-            background-color: #1a1a2e !important;
-            color: #e63946 !important;
-            border: 2px solid #e63946 !important;
+            background-color: #FFFFFF !important;
+            color: #2563EB !important;
+            border: 2px solid #2563EB !important;
             box-shadow: none !important;
         }
         
         .stButton > button.secondary:hover {
-            background-color: #2a2a4e !important;
+            background-color: #F1F5F9 !important;
         }
         
         /* Style des expanders */
         .streamlit-expanderHeader {
-            background-color: #1a1a2e !important;
+            background-color: #FFFFFF !important;
             border-radius: 8px;
-            border-left: 4px solid #e63946;
-            color: #FFFFFF !important;
-        }
-        
-        /* Style des cartes */
-        div.stMarkdown div:has(> .patient-card) {
-            transition: all 0.3s ease;
+            border-left: 4px solid #2563EB;
+            color: #0F172A !important;
         }
         
         /* Style des notifications */
         .stAlert {
-            border-left: 4px solid #e63946;
+            border-left: 4px solid #2563EB;
             border-radius: 8px;
-            background-color: #1a1a2e !important;
+            background-color: #FFFFFF !important;
+            border: 1px solid #E2E8F0 !important;
         }
         
-        /* === SIDEBAR SOMBRE === */
+        /* === SIDEBAR CLAIR === */
         section[data-testid="stSidebar"] {
-            background-color: #0d0d1a !important;
-            border-right: 1px solid #e63946;
+            background-color: #FFFFFF !important;
+            border-right: 1px solid #E2E8F0;
         }
         
         section[data-testid="stSidebar"] .stButton > button {
-            background-color: #e63946 !important;
+            background-color: #2563EB !important;
         }
         
         /* Titre dans la sidebar */
         .sidebar-title {
-            background: linear-gradient(135deg, #e63946 0%, #ef4444 100%);
+            background: linear-gradient(135deg, #2563EB 0%, #0ea5e9 100%);
             color: white;
             padding: 1rem;
             border-radius: 10px;
             text-align: center;
             margin-bottom: 1rem;
             font-weight: bold;
-            box-shadow: 0 4px 6px rgba(230, 57, 70, 0.3);
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
         }
         
         /* Style du bouton de déconnexion */
         .logout-button .stButton > button {
-            background: linear-gradient(135deg, #1e293b 0%, #334155 100%) !important;
-            box-shadow: 0 4px 6px rgba(30, 41, 59, 0.3) !important;
+            background: linear-gradient(135deg, #64748B 0%, #475569 100%) !important;
+            box-shadow: 0 4px 6px rgba(100, 116, 139, 0.2) !important;
         }
         
         .logout-button .stButton > button:hover {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
-        }
-        
-        /* Animation pour les icônes */
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        
-        .nav-icon {
-            animation: pulse 2s infinite;
-            display: inline-block;
+            background: linear-gradient(135deg, #475569 0%, #334155 100%) !important;
         }
         
         /* Style des métriques */
         div[data-testid="stMetricValue"] {
-            color: #e63946 !important;
+            color: #2563EB !important;
             font-size: 2rem !important;
         }
         
         div[data-testid="stMetricLabel"] {
-            color: #FFFFFF !important;
+            color: #0F172A !important;
             font-weight: 500 !important;
         }
         
-        /* === TABS SOMBRES === */
+        /* === TABS CLAIRS === */
         .stTabs [data-baseweb="tab-list"] {
             gap: 8px;
+            background-color: #F1F5F9 !important;
+            padding: 4px !important;
+            border-radius: 10px;
         }
         
         .stTabs [data-baseweb="tab"] {
-            background-color: #1a1a2e !important;
+            background-color: transparent !important;
             border-radius: 8px;
             padding: 0.5rem 1rem;
-            border: 1px solid #e63946 !important;
-            color: #FFFFFF !important;
+            border: none !important;
+            color: #475569 !important;
         }
         
         .stTabs [aria-selected="true"] {
-            background-color: #e63946 !important;
-            color: #FFFFFF !important;
+            background-color: #FFFFFF !important;
+            color: #2563EB !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
         }
         
-        /* === FORMULAIRES SOMBRES === */
+        /* === FORMULAIRES === */
         div[data-testid="stForm"] {
-            background-color: #1a1a2e !important;
+            background-color: #FFFFFF !important;
             padding: 1.5rem;
             border-radius: 10px;
-            border: 1px solid #e63946 !important;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            border: 1px solid #E2E8F0 !important;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
         }
         
-        /* === INPUTS SOMBRES === */
+        /* === INPUTS === */
         input, textarea, select,
         .stTextInput > div > div > input,
         .stTextArea textarea,
@@ -289,74 +295,74 @@ def show_main_interface():
         [data-baseweb="textarea"] textarea,
         .stTextInput input, .stTextArea textarea,
         .stSelectbox select {
-            background-color: #1a1a2e !important;
-            color: #FFFFFF !important;
-            border: 1px solid #e63946 !important;
+            background-color: #FFFFFF !important;
+            color: #0F172A !important;
+            border: 1px solid #E2E8F0 !important;
             border-radius: 8px !important;
-            caret-color: #e63946 !important;
+            caret-color: #2563EB !important;
         }
         
         .stTextInput > div > div > input:focus {
-            border-color: #e63946 !important;
-            box-shadow: 0 0 0 2px rgba(230, 57, 70, 0.3) !important;
+            border-color: #2563EB !important;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15) !important;
         }
         
         /* === PLACEHOLDERS === */
         ::placeholder {
-            color: #888888 !important;
+            color: #64748B !important;
         }
         input::placeholder, textarea::placeholder {
-            color: #888888 !important;
+            color: #64748B !important;
         }
         
-        /* === LABELS BLANCS === */
+        /* === LABELS === */
         label, .stTextInput label, .stSelectbox label,
         .stTextArea label, .stRadio label, .stCheckbox label {
-            color: #FFFFFF !important;
+            color: #0F172A !important;
             font-weight: 500 !important;
         }
 
-        /* === TEXTE GLOBAL BLANC === */
+        /* === TEXTE GLOBAL === */
         label, p, span, div, h1, h2, h3, h4, h5, h6 {
-            color: #FFFFFF !important;
+            color: #0F172A !important;
         }
         
         /* === SELECTBOX === */
         div[data-testid="stSelectbox"] > div > div {
             border-radius: 8px;
-            background-color: #1a1a2e !important;
-            color: #FFFFFF !important;
+            background-color: #FFFFFF !important;
+            color: #0F172A !important;
         }
         
-        /* Style des graphiques - éléments rouges */
+        /* Style des graphiques */
         .js-plotly-plot .plotly .main-svg {
             background: transparent !important;
         }
         
         .js-plotly-plot .plotly .g-xtitle text,
         .js-plotly-plot .plotly .g-ytitle text {
-            fill: #e63946 !important;
+            fill: #2563EB !important;
         }
 
         /* === DIVIDERS === */
         hr {
-            border-color: rgba(230, 57, 70, 0.3) !important;
+            border-color: #E2E8F0 !important;
         }
 
-        /* === SCROLLBAR SOMBRE === */
+        /* === SCROLLBAR CLAIR === */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: #0d0d1a;
+            background: #F8FAFC;
         }
         ::-webkit-scrollbar-thumb {
-            background: #e63946;
+            background: #CBD5E1;
             border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #c1121f;
+            background: #2563EB;
         }
         
         </style>
@@ -687,13 +693,18 @@ def generate_response(prompt, history=None):
         from groq import Groq
         from dotenv import load_dotenv
         import os
+        import httpx
         load_dotenv()
         
         api_key = os.environ.get("GROQ_API_KEY")
         if not api_key:
             return "⚠️ Clé API Groq non configurée. Veuillez ajouter GROQ_API_KEY dans le fichier .env"
         
-        client = Groq(api_key=api_key)
+        http_client = httpx.Client(
+            limits=httpx.Limits(max_connections=50, max_keepalive_connections=10),
+            timeout=httpx.Timeout(15.0, connect=5.0)
+        )
+        client = Groq(api_key=api_key, http_client=http_client, max_retries=3)
         
         system_prompt = """Tu es SHIFA AI, un assistant médical intelligent et professionnel.
 Tu réponds en français ou en arabe selon la langue de l'utilisateur.
@@ -1500,106 +1511,119 @@ def show_auth_interface(auth_manager):
         <style>
             /* === FOND GLOBAL AUTH === */
             .stApp, .main, section.main {
-                background-color: #0d0d1a !important;
-                color: #FFFFFF !important;
+                background-color: #F8FAFC !important;
+                color: #0F172A !important;
             }
 
             div.block-container {
-                background-color: #0a0a1a !important;
+                background-color: transparent !important;
+                max-width: 900px !important;
+                padding-left: 2rem !important;
+                padding-right: 2rem !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
             }
 
             /* Style des entêtes */
             .auth-header {
-                background: linear-gradient(135deg, #e63946 0%, #ef4444 100%);
+                background: linear-gradient(135deg, #2563EB 0%, #0EA5E9 100%);
                 padding: 2rem;
                 border-radius: 15px;
                 color: white;
                 text-align: center;
                 margin-bottom: 2rem;
-                box-shadow: 0 10px 25px rgba(230, 57, 70, 0.3);
+                box-shadow: 0 10px 25px rgba(37, 99, 235, 0.2);
+            }
+            .auth-header-logo {
+                height: 80px;
+                width: auto;
+                object-fit: contain;
+                margin-bottom: 0.75rem;
+                filter: brightness(0) invert(1) drop-shadow(0 2px 6px rgba(0,0,0,0.3));
             }
             
             /* Bouton principal (form_submit_button) */
             div.stFormSubmitButton > button {
-                background-color: #e63946 !important;
+                background-color: #2563EB !important;
                 color: white !important;
                 border: none !important;
                 border-radius: 8px !important;
                 padding: 0.75rem !important;
-                box-shadow: 0 4px 14px rgba(230, 57, 70, 0.45) !important;
+                box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25) !important;
                 font-weight: 600 !important;
                 transition: all 0.2s ease !important;
                 width: 100%;
             }
             
             div.stFormSubmitButton > button:hover {
-                background-color: #c1121f !important;
-                box-shadow: 0 6px 20px rgba(230, 57, 70, 0.6) !important;
+                background-color: #1D4ED8 !important;
+                box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35) !important;
                 transform: translateY(-2px) !important;
             }
             
             div.stFormSubmitButton > button:active {
                 transform: translateY(0px) !important;
-                box-shadow: 0 2px 8px rgba(230, 57, 70, 0.4) !important;
+                box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2) !important;
             }
             
             /* Style des tabs */
             .stTabs [data-baseweb="tab-list"] {
                 gap: 8px;
-                background-color: #1a1a2e !important;
-                padding: 0.5rem;
+                background-color: #F1F5F9 !important;
+                padding: 4px !important;
                 border-radius: 10px;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             }
             
             .stTabs [data-baseweb="tab"] {
                 border-radius: 8px;
                 padding: 0.5rem 1rem;
-                background-color: #1a1a2e !important;
-                color: #FFFFFF !important;
+                background-color: transparent !important;
+                color: #475569 !important;
             }
             
             .stTabs [aria-selected="true"] {
-                background-color: #e63946 !important;
-                color: white !important;
+                background-color: #FFFFFF !important;
+                color: #2563EB !important;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
             }
             
             /* Style des champs de saisie */
             input, textarea, select,
             .stTextInput > div > div > input {
-                background-color: #1a1a2e !important;
-                color: #FFFFFF !important;
-                border: 1px solid #e63946 !important;
+                background-color: #FFFFFF !important;
+                color: #0F172A !important;
+                border: 1px solid #E2E8F0 !important;
                 border-radius: 8px !important;
                 padding: 0.75rem;
-                caret-color: #e63946 !important;
+                caret-color: #2563EB !important;
             }
             
             .stTextInput > div > div > input:focus {
-                border-color: #e63946 !important;
-                box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.2) !important;
+                border-color: #2563EB !important;
+                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
             }
 
             ::placeholder {
-                color: #888888 !important;
+                color: #64748B !important;
             }
 
-            /* Labels & texte blancs */
+            /* Labels & texte */
             label, p, span, div, h1, h2, h3, h4, h5, h6 {
-                color: #FFFFFF !important;
+                color: #0F172A !important;
             }
             
             /* Style des selectbox */
             div[data-testid="stSelectbox"] > div > div {
                 border-radius: 8px;
-                background-color: #1a1a2e !important;
-                color: #FFFFFF !important;
+                background-color: #FFFFFF !important;
+                color: #0F172A !important;
             }
 
-            /* Formulaires sombres */
+            /* Formulaires */
             div[data-testid="stForm"] {
-                background-color: #1a1a2e !important;
-                border: 1px solid #e63946 !important;
+                background-color: #FFFFFF !important;
+                border: 1px solid #E2E8F0 !important;
                 border-radius: 10px;
                 padding: 1.5rem;
             }
@@ -1613,10 +1637,19 @@ def show_auth_interface(auth_manager):
         </style>
     """, unsafe_allow_html=True)
 
-    st.markdown("""
+    # Build logo HTML for header
+    _logo_b64 = _get_logo_b64()
+    _logo_html = (
+        f"<img src='data:image/png;base64,{_logo_b64}' class='auth-header-logo'>"
+        if _logo_b64 else
+        "<div style='font-size:3rem;margin-bottom:0.5rem;'>🏥</div>"
+    )
+
+    st.markdown(f"""
         <div class="auth-header">
-            <h1>🏥 AI Shifa Pro</h1>
-            <p>Plateforme médicale intelligente</p>
+            {_logo_html}
+            <h1 style='margin:0; font-size:2rem; color:white;'>AI Shifa Pro</h1>
+            <p style='margin:0.4rem 0 0 0; color:rgba(255,255,255,0.85);'>Plateforme médicale intelligente</p>
         </div>
     """, unsafe_allow_html=True)
     

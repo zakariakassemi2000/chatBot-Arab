@@ -136,23 +136,23 @@ def inject_nearby_care_page_styles() -> None:
             gap: 6px;
             padding: 6px 12px;
             border-radius: 999px;
-            background: rgba(59, 130, 246, 0.12);
-            border: 1px solid rgba(59, 130, 246, 0.22);
-            color: #BFDBFE;
+            background: rgba(8, 145, 178, 0.08);
+            border: 1px solid rgba(8, 145, 178, 0.15);
+            color: #0891B2;
             font-size: 0.8rem;
             font-weight: 700;
             margin-bottom: 10px;
           }
 
           .nearby-panel-title {
-            color: #F8FAFC;
+            color: #1e293b;
             font-size: 1.12rem;
             font-weight: 800;
             margin-bottom: 6px;
           }
 
           .nearby-panel-text {
-            color: #94A3B8;
+            color: #475569;
             font-size: 0.95rem;
             line-height: 1.8;
             max-width: 760px;
@@ -162,25 +162,25 @@ def inject_nearby_care_page_styles() -> None:
             flex: 0 1 300px;
             padding: 16px 18px;
             border-radius: 16px;
-            background: linear-gradient(180deg, rgba(15, 23, 42, 0.72), rgba(2, 6, 23, 0.62));
-            border: 1px solid rgba(148, 163, 184, 0.14);
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
           }
 
           .nearby-help-title {
-            color: #E2E8F0;
+            color: #1e293b;
             font-size: 0.92rem;
             font-weight: 700;
             margin-bottom: 8px;
           }
 
           .nearby-help-text {
-            color: #94A3B8;
+            color: #64748b;
             font-size: 0.84rem;
             line-height: 1.7;
           }
 
           .nearby-quick-title {
-            color: #CBD5E1;
+            color: #475569;
             font-size: 0.92rem;
             font-weight: 700;
             margin-top: 2px;
@@ -196,42 +196,42 @@ def inject_nearby_care_page_styles() -> None:
           .nearby-snapshot-card {
             padding: 14px 16px;
             border-radius: 16px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
           }
 
           .nearby-snapshot-label {
-            color: #94A3B8;
+            color: #64748b;
             font-size: 0.8rem;
             margin-bottom: 6px;
           }
 
           .nearby-snapshot-value {
-            color: #F8FAFC;
+            color: #1e293b;
             font-size: 0.96rem;
             font-weight: 700;
             line-height: 1.5;
           }
 
           .nearby-snapshot-sub {
-            color: #64748B;
+            color: #64748b;
             font-size: 0.78rem;
             margin-top: 4px;
             line-height: 1.5;
           }
 
           .nearby-cta-note {
-            color: #93C5FD;
+            color: #0891B2;
             font-size: 0.84rem;
             font-weight: 600;
             padding: 12px 14px;
             border-radius: 14px;
-            background: rgba(37, 99, 235, 0.08);
-            border: 1px dashed rgba(37, 99, 235, 0.24);
+            background: rgba(8, 145, 178, 0.08);
+            border: 1px dashed rgba(8, 145, 178, 0.24);
           }
 
           .nearby-result-anchor {
-            color: #E2E8F0;
+            color: #1e293b;
             font-size: 1.05rem;
             font-weight: 800;
             margin: 6px 0 12px;
@@ -310,21 +310,6 @@ def fetch_places_with_cache(lat: float, lon: float, radius_m: int) -> List[Dict]
 with st.sidebar:
     st.page_link("app.py", label="الرجوع للرئيسية", icon="🏠")
 
-    with st.expander("ℹ️ معلومات التطبيق", expanded=False):
-        st.info(
-            """
-            **المصادر:**
-            • خرائط OpenStreetMap المفتوحة
-            • تحديد الموقع عبر GPS أو IP
-            • تحديث البيانات كل ساعة
-
-            **الميزات:**
-            • بحث حتى 20 كم
-            • 5 أنواع من المنشآت الصحية
-            • تصدير النتائج بصيغة CSV أو Excel
-            """
-        )
-
 
 inject_theme()
 inject_nearby_care_page_styles()
@@ -353,13 +338,14 @@ st.markdown("""
     line-height: 1.6 !important;
 }
 
-.hero-banner { padding: 30px; border-radius: 16px; text-align: right; margin-bottom: 20px; }
+.hero-banner { padding: 30px; border-radius: 16px; text-align: center; margin-bottom: 20px; }
 .hero-title { font-size: 28px; font-weight: bold; }
 .hero-sub { opacity: 0.8; margin-top: 10px; }
 
 .stButton button {
-    background: linear-gradient(135deg, #2563EB, #10B981);
-    color: white;
+    background: linear-gradient(135deg, #0891B2, #10B981) !important;
+    color: white !important;
+    border: none !important;
     border-radius: 12px;
     height: 50px;
     font-size: 16px;
@@ -376,7 +362,6 @@ st.markdown(
             اكتشف أقرب المستشفيات والعيادات والصيدليات والأطباء إليك بسهولة، مع واجهة أوضح
             وترتيب أفضل للبحث والنتائج.
         </div>
-        <div class="hero-badge">⚡ مجاني 100% · بيانات مفتوحة · بدون مفتاح API</div>
     </div>
     """,
     unsafe_allow_html=True,

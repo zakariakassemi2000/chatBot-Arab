@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 ═══════════════════════════════════════════════════════════════════════
-  SHIFA AI — UI Scanner d'Ordonnance
-  Composants Streamlit : upload, webcam, cartes médicales, disclaimers
+  SHIFA AI — ماسح الوصفات الطبية المحسن (Prescription Scanner)
+  واجهة مستخدم احترافية بالكامل باللغة العربية مع دعم RTL والتبويب الفاتح
 ═══════════════════════════════════════════════════════════════════════
 """
 
@@ -14,10 +14,27 @@ logger = logging.getLogger("shifa.ordonnance_ui")
 
 
 def _inject_ordonnance_css():
-    """Injecte les styles CSS spécifiques au module ordonnance."""
+    """Injects premium CSS styles for the prescription module."""
     st.markdown("""
     <style>
-        /* ═══ Animation d'entrée ═══ */
+        @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
+
+        .material-symbols-rounded {
+            font-family: 'Material Symbols Rounded' !important;
+            font-weight: normal;
+            font-style: normal;
+            font-size: 20px;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ═══ Entrada Animation ═══ */
         @keyframes ordFadeIn {
             from { opacity: 0; transform: translateY(18px); }
             to   { opacity: 1; transform: translateY(0); }
@@ -26,26 +43,61 @@ def _inject_ordonnance_css():
             animation: ordFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
-        /* ═══ Carte Médicament ═══ */
-        .med-card {
-            background: linear-gradient(145deg, rgba(30, 41, 59, 0.85), rgba(15, 23, 42, 0.95));
-            border: 1px solid rgba(22, 163, 74, 0.2);
+        /* ═══ Medical Disclaimer Alert ═══ */
+        .ord-disclaimer {
+            background: #fffbeb;
+            border: 1px solid #fcd34d;
+            border-right: 4px solid #f59e0b;
             border-radius: 16px;
             padding: 1.5rem 1.8rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            animation: ordFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        .ord-disclaimer p {
+            color: #b45309;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            margin: 0;
+        }
+        .ord-disclaimer b {
+            color: #d97706;
+        }
+
+        /* ═══ File Uploader Light Container ═══ */
+        [data-testid="stFileUploader"] {
+            border: 2px dashed rgba(8, 145, 178, 0.25) !important;
+            background: var(--shifa-primary-light) !important;
+            border-radius: 16px !important;
+            padding: 2.5rem 1.5rem !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02) !important;
+        }
+        [data-testid="stFileUploader"]:hover {
+            border-color: var(--shifa-primary) !important;
+            background: rgba(8, 145, 178, 0.12) !important;
+        }
+
+        /* ═══ Medication Card styling ═══ */
+        .med-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 1.5rem;
             margin-bottom: 1.2rem;
             position: relative;
             overflow: hidden;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             animation: ordFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
         .med-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 12px 40px rgba(22, 163, 74, 0.2);
+            box-shadow: 0 12px 25px rgba(8, 145, 178, 0.15);
+            border-color: rgba(8, 145, 178, 0.3);
         }
 
-        /* Accent bar on the right */
+        /* Right status accent line (RTL) */
         .med-card::before {
             content: "";
             position: absolute;
@@ -53,174 +105,127 @@ def _inject_ordonnance_css():
             width: 5px; height: 100%;
             border-radius: 0 16px 16px 0;
         }
-        .med-card.high::before   { background: linear-gradient(to bottom, #16a34a, #22d3ee); }
-        .med-card.medium::before { background: linear-gradient(to bottom, #d4af37, #f97316); }
-        .med-card.low::before    { background: linear-gradient(to bottom, #dc2626, #f87171); }
+        .med-card.high::before   { background: linear-gradient(to bottom, #10b981, #34d399); }
+        .med-card.medium::before { background: linear-gradient(to bottom, #f59e0b, #fbbf24); }
+        .med-card.low::before    { background: linear-gradient(to bottom, #ef4444, #f87171); }
 
         /* Card header */
         .med-card-header {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
+            align-items: center;
             margin-bottom: 1rem;
+            direction: rtl;
         }
         .med-name {
             font-size: 1.35rem;
             font-weight: 800;
-            color: #f8fafc;
+            color: #1e293b;
             margin: 0;
             font-family: 'Cairo', sans-serif;
         }
-        .med-principe {
-            font-size: 0.9rem;
-            color: #94a3b8;
-            margin: 2px 0 0 0;
-            font-style: italic;
-        }
 
-        /* Badge */
+        /* Badges */
         .med-badge {
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            padding: 4px 12px;
+            gap: 4px;
+            padding: 5px 12px;
             border-radius: 20px;
-            font-size: 0.78rem;
+            font-size: 0.8rem;
             font-weight: 700;
             white-space: nowrap;
+            font-family: 'Cairo', sans-serif;
+            direction: rtl;
         }
         .med-badge.found {
-            background: rgba(22, 163, 74, 0.15);
-            color: #4ade80;
-            border: 1px solid rgba(22, 163, 74, 0.3);
+            background: rgba(16, 185, 129, 0.15);
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+        .med-badge.suspect {
+            background: rgba(245, 158, 11, 0.15);
+            color: #b45309;
+            border: 1px solid #fcd34d;
         }
         .med-badge.notfound {
-            background: rgba(220, 38, 38, 0.1);
-            color: #fca5a5;
-            border: 1px solid rgba(220, 38, 38, 0.2);
-        }
-
-        /* Info grid */
-        .med-info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 0.8rem;
-            margin: 1rem 0;
-        }
-        .med-info-item {
-            background: rgba(15, 23, 42, 0.5);
-            border-radius: 10px;
-            padding: 0.65rem 0.9rem;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-        }
-        .med-info-label {
-            font-size: 0.72rem;
-            color: #64748b;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 3px;
-        }
-        .med-info-value {
-            font-size: 0.95rem;
-            color: #e2e8f0;
-            font-weight: 600;
+            background: rgba(239, 68, 68, 0.15);
+            color: #991b1b;
+            border: 1px solid #fca5a5;
         }
 
         /* Confidence bar */
         .conf-bar-bg {
-            background: rgba(255, 255, 255, 0.06);
+            background: #f1f5f9;
             border-radius: 8px;
             height: 8px;
             overflow: hidden;
-            margin-top: 0.8rem;
+            margin-top: 1rem;
         }
         .conf-bar-fill {
             height: 100%;
             border-radius: 8px;
             transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .conf-bar-fill.high   { background: linear-gradient(90deg, #16a34a, #22d3ee); }
-        .conf-bar-fill.medium { background: linear-gradient(90deg, #d4af37, #f97316); }
-        .conf-bar-fill.low    { background: linear-gradient(90deg, #dc2626, #f87171); }
+        .conf-bar-fill.high   { background: linear-gradient(90deg, #10b981, #34d399); }
+        .conf-bar-fill.medium { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+        .conf-bar-fill.low    { background: linear-gradient(90deg, #ef4444, #f87171); }
 
         .conf-label {
             display: flex;
             justify-content: space-between;
-            font-size: 0.78rem;
-            color: #94a3b8;
-            margin-top: 4px;
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-top: 6px;
+            font-family: 'Cairo', sans-serif;
         }
 
-        /* Global score card */
+        /* Global score widget */
         .score-global {
-            background: linear-gradient(135deg, rgba(22, 163, 74, 0.1), rgba(34, 211, 238, 0.08));
-            border: 1px solid rgba(22, 163, 74, 0.25);
-            border-radius: 16px;
-            padding: 1.5rem 2rem;
+            background: linear-gradient(135deg, #f0fdfa, #ecfdf5);
+            border: 1px solid rgba(8, 145, 178, 0.15);
+            border-radius: 20px;
+            padding: 1.8rem;
             text-align: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(8, 145, 178, 0.05);
         }
         .score-number {
-            font-size: 3rem;
-            font-weight: 800;
+            font-size: 3.8rem;
+            font-weight: 900;
             margin: 0.5rem 0;
+            font-family: 'Cairo', sans-serif;
         }
-        .score-number.high   { color: #4ade80; }
-        .score-number.medium { color: #fbbf24; }
-        .score-number.low    { color: #f87171; }
-
-        /* Disclaimer */
-        .ord-disclaimer {
-            background: rgba(220, 38, 38, 0.06);
-            border-right: 4px solid #dc2626;
-            border-radius: 12px;
-            padding: 1.2rem 1.5rem;
-            margin-top: 2rem;
-        }
-        .ord-disclaimer p {
-            color: #fca5a5;
-            font-size: 0.85rem;
-            line-height: 1.7;
-            margin: 0;
-        }
-        .ord-disclaimer b {
-            color: #f87171;
-        }
-
-        /* OCR text display */
-        .ocr-text-box {
-            background: rgba(15, 23, 42, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 12px;
-            padding: 1.2rem;
-            font-family: 'Courier New', monospace;
-            font-size: 0.88rem;
-            color: #94a3b8;
-            white-space: pre-wrap;
-            line-height: 1.6;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        /* Formes pills */
-        .forme-pill {
-            display: inline-block;
-            background: rgba(212, 175, 55, 0.12);
-            color: #d4af37;
-            border: 1px solid rgba(212, 175, 55, 0.25);
-            border-radius: 20px;
-            padding: 2px 10px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin: 2px 3px;
-        }
+        .score-number.high   { color: #059669; }
+        .score-number.medium { color: #d97706; }
+        .score-number.low    { color: #dc2626; }
     </style>
+    <script>
+    const _shifaInitLocalOrdo = () => {
+        const doc = window.parent.document || document;
+        doc.querySelectorAll('button').forEach(btn => {
+            if (btn.textContent.trim() === 'Browse files') btn.textContent = 'تصفح الملفات';
+        });
+        doc.querySelectorAll('p, span, div, small, label').forEach(el => {
+            if (el.childElementCount === 0) {
+                let t = el.textContent.trim();
+                if (t === 'Drag and drop file here') el.textContent = 'اسحب وأفلت الملف هنا';
+                if (t.startsWith('Limit') || (t.includes('Limit') && t.includes('per file'))) {
+                    el.textContent = 'الحد الأقصى 10 ميغا • JPG, JPEG, PNG, WEBP';
+                }
+            }
+        });
+    };
+    const _obsLocalOrdo = new MutationObserver(_shifaInitLocalOrdo);
+    _obsLocalOrdo.observe(window.parent.document.body || document.body, {childList: true, subtree: true});
+    setTimeout(_shifaInitLocalOrdo, 500);
+    setTimeout(_shifaInitLocalOrdo, 2000);
+    </script>
     """, unsafe_allow_html=True)
 
 
 def _get_confidence_class(score: float) -> str:
-    """Retourne la classe CSS en fonction du score."""
+    """Returns the CSS confidence class based on score."""
     if score >= 75:
         return "high"
     elif score >= 50:
@@ -228,125 +233,39 @@ def _get_confidence_class(score: float) -> str:
     return "low"
 
 
-def _render_medication_card(med, index: int) -> str:
-    """Génère le HTML d'une carte médicale stylisée. Retourne le HTML (ne fait PAS de st.markdown)."""
-    conf_class = _get_confidence_class(med.score_match)
-
-    # Badge status
-    if med.est_reference:
-        badge = '<span class="med-badge found">✓ Base marocaine</span>'
-    else:
-        badge = '<span class="med-badge notfound">✗ Non référencé</span>'
-
-    # Formes disponibles pills
-    formes_html = ""
-    if med.formes_disponibles:
-        pills = "".join(f'<span class="forme-pill">{f}</span>' for f in med.formes_disponibles)
-        formes_html = f'<div style="margin-top:0.5rem;">{pills}</div>'
-
-    # Nom affiché
-    display_name = med.nom_match if med.nom_match else med.nom_brut
-    principe_html = f'<p class="med-principe">🧬 {med.principe_actif}</p>' if med.principe_actif else ""
-
-    # Info items
-    info_items = []
-    if med.dosage:
-        info_items.append(("💊 Dosage", med.dosage))
-    if med.forme:
-        info_items.append(("📦 Forme", med.forme.capitalize()))
-    if med.frequence:
-        info_items.append(("🔄 Fréquence", med.frequence))
-    if med.duree:
-        info_items.append(("📅 Durée", med.duree))
-
-    info_grid = ""
-    if info_items:
-        items_html = "".join(
-            f'<div class="med-info-item">'
-            f'<div class="med-info-label">{label}</div>'
-            f'<div class="med-info-value">{value}</div>'
-            f'</div>'
-            for label, value in info_items
-        )
-        info_grid = f'<div class="med-info-grid">{items_html}</div>'
-
-    # Confidence bar (compact — no line breaks)
-    score_pct = med.score_match if med.est_reference else 0
-    conf_bar = ""
-    if med.est_reference:
-        color = '#4ade80' if conf_class == 'high' else '#fbbf24' if conf_class == 'medium' else '#f87171'
-        conf_bar = (
-            f'<div class="conf-bar-bg">'
-            f'<div class="conf-bar-fill {conf_class}" style="width:{score_pct}%"></div>'
-            f'</div>'
-            f'<div class="conf-label">'
-            f'<span>Confiance du matching</span>'
-            f'<span style="color:{color};font-weight:700">{score_pct:.0f}%</span>'
-            f'</div>'
-        )
-
-    # Build card HTML — all on connected lines (no blank lines that break Streamlit HTML)
-    card_html = (
-        f'<div class="med-card {conf_class}" style="animation-delay:{index * 0.1}s">'
-        f'<div class="med-card-header">'
-        f'<div><h3 class="med-name">💊 {display_name}</h3>{principe_html}</div>'
-        f'{badge}'
-        f'</div>'
-        f'{info_grid}'
-        f'{formes_html}'
-        f'{conf_bar}'
-        f'</div>'
-    )
-    return card_html
-
-
 def render_ordonnance_page():
     """
-    Page Streamlit complète pour le scanner d'ordonnance.
-    Inclut : upload/webcam, analyse OCR, cartes médicales, disclaimers.
+    Renders the beautiful, fully-Arabic, responsive prescription scanner page.
     """
-
     _inject_ordonnance_css()
 
-    # ── Titre ──
+    # ── Page Header ──
     st.markdown(
-        '<div class="moroccan-title" style="font-size:2.8rem;">📋 ماسح الوصفات الطبية</div>',
+        '<div class="moroccan-title" style="font-size:2.8rem; font-family:\'Cairo\';">📋 ماسح الوصفات الطبية</div>',
         unsafe_allow_html=True
     )
     st.markdown(
-        '<div class="moroccan-subtitle">Scanner une ordonnance · استخراج الأدوية تلقائيا</div>',
+        '<div class="moroccan-subtitle" style="font-family:\'Cairo\';">تحليل وقراءة الوصفات الطبية بالذكاء الاصطناعي ومطابقتها مع الدليل الدوائي المغربي</div>',
         unsafe_allow_html=True
     )
 
-    # ── Disclaimer haut ──
-    st.markdown("""
-    <div class="ord-disclaimer" style="margin-bottom:1.5rem; border-right-color: #d4af37;">
-        <p>
-            <b>⚕️ Avertissement important :</b><br/>
-            Ce scanner utilise la reconnaissance optique de caractères (OCR) pour extraire les informations
-            d'une ordonnance. Les résultats sont <b>indicatifs</b> et ne remplacent en aucun cas
-            la lecture professionnelle par un pharmacien ou un médecin.
-            <b>Consultez toujours votre professionnel de santé.</b>
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
 
-    # ── Source d'image ──
+    # ── Prescription Image Source ──
     with st.container(border=True):
         st.markdown(
-            "<h4 style='color:#d4af37; margin-bottom:1rem;'>📷 Source de l'ordonnance</h4>",
+            "<h4 style='color:#1e293b; font-family:\"Cairo\"; display:flex; align-items:center; gap:8px;'><span class='material-symbols-rounded' style='color:#0891B2;'>photo_camera</span> تحميل أو التقاط صورة الوصفة</h4>",
             unsafe_allow_html=True
         )
 
-        tab_upload, tab_camera = st.tabs(["📁 Importer un fichier", "📸 Webcam"])
+        tab_upload, tab_camera = st.tabs(["📁 تحميل ملف الوصفة", "📸 التقاط صورة مباشرة"])
 
         image = None
 
         with tab_upload:
             uploaded_file = st.file_uploader(
-                "Glissez une photo d'ordonnance ici",
-                type=["jpg", "jpeg", "png", "bmp", "tiff"],
-                help="Formats acceptés : JPG, PNG, BMP, TIFF",
+                "اسحب وأفلت صورة الوصفة الطبية هنا",
+                type=["jpg", "jpeg", "png", "bmp", "tiff", "webp"],
+                help="الصيغ المدعومة: PNG, JPG, JPEG, BMP, TIFF, WEBP",
                 key="ord_upload"
             )
             if uploaded_file:
@@ -355,61 +274,68 @@ def render_ordonnance_page():
 
         with tab_camera:
             camera_photo = st.camera_input(
-                "Prenez une photo de l'ordonnance",
+                "التقط صورة واضحة للوصفة الطبية",
                 key="ord_camera"
             )
             if camera_photo:
                 from PIL import Image as PILImage
                 image = PILImage.open(camera_photo)
 
-    # ── Traitement ──
+    # ── Image Upload Preview & Analysis Actions ──
     if image is not None:
         with st.container(border=True):
             col_img, col_action = st.columns([1.2, 1])
 
             with col_img:
-                st.image(image, caption="Ordonnance chargée", width='stretch')
+                st.image(image, caption="صورة الوصفة الطبية المحملة", width="stretch")
 
             with col_action:
                 st.markdown("""
-                <div style="padding: 1rem 0;">
-                    <h4 style="color: #f8fafc; margin-bottom: 0.5rem;">🔍 Analyse OCR</h4>
-                    <p style="color: #94a3b8; font-size: 0.9rem; line-height: 1.6;">
-                        Le système va :<br/>
-                        ✓ Pré-traiter l'image (contraste, netteté)<br/>
-                        ✓ Extraire le texte de l'ordonnance<br/>
-                        ✓ Identifier les médicaments et posologies<br/>
-                        ✓ Matcher avec la base pharmaceutique marocaine<br/>
-                        ✓ Vérifier le prix sur medicament.ma et le remboursement CNOPS
+                <div style="padding: 1rem 0; text-align: right; direction: rtl;">
+                    <h4 style="color: #1e293b; margin-bottom: 0.8rem; font-family: 'Cairo'; display:flex; align-items:center; gap:6px;"><span class="material-symbols-rounded" style="color:#0891B2;">psychology</span> معالجة وقراءة الذكاء الاصطناعي</h4>
+                    <p style="color: #475569; font-size: 0.9rem; line-height: 1.8; font-family: 'Cairo';">
+                        سيقوم النظام بتنفيذ المهام التالية تلقائياً:<br/>
+                        ✓ تحسين جودة وتفتيح الصورة لتحسين التعرف<br/>
+                        ✓ قراءة واستخراج النصوص الطبية المكتوبة<br/>
+                        ✓ استخلاص أسماء الأدوية والجرعات والمدد الموصوفة<br/>
+                        ✓ مطابقة البيانات المستخرجة مع الدليل الدوائي الوطني المغربي<br/>
+                        ✓ جلب تفاصيل الأسعار ونسب تعويض التأمين الصحي (CNOPS)
                     </p>
                 </div>
                 """, unsafe_allow_html=True)
                 
                 analyze_btn = st.button(
-                    "🚀 Lancer l'analyse",
+                    "🚀 بدء التحليل والتشخيص الذكي",
                     type="primary",
-                    width='stretch',
+                    width="stretch",
                     key="ord_analyze"
                 )
 
         if analyze_btn:
-            with st.spinner("🔬 Analyse en cours..."):
+            with st.status("🔬 يجري الآن قراءة وتحليل الوصفة الطبية...", expanded=True) as status_box:
                 try:
                     from engine.vision_ocr.vlm_extraction import extract_from_image
                     
-                    # Convert PIL Image to bytes
+                    st.write("⏳ جاري تهيئة الصورة ومعالجتها رقمياً...")
                     img_byte_arr = io.BytesIO()
                     image.save(img_byte_arr, format=image.format or 'JPEG')
                     image_bytes = img_byte_arr.getvalue()
-
+                    
+                    st.write("🧠 جاري تشغيل نموذج الرؤية الاصطناعية (VLM) لاستخراج أسماء الأدوية والجرعات...")
                     extraction = extract_from_image(image_bytes)
+                    
+                    st.write("📚 جاري مطابقة النتائج مع الدليل الدوائي والتحقق من الأسعار والتعويض...")
                     st.session_state["ocr_extraction"] = extraction
+                    
+                    status_box.update(label="✅ اكتمل فحص الوصفة الطبية بنجاح!", state="complete", expanded=False)
+                    st.rerun()
                 except Exception as e:
-                    st.error(f"❌ Erreur lors de l'analyse : {e}")
+                    status_box.update(label="❌ فشل تحليل الوصفة الطبية", state="error", expanded=True)
+                    st.error(f"حدث خطأ أثناء الفحص الذكي: {e}")
                     logger.error(f"OCR error: {e}", exc_info=True)
                     return
 
-        # ── Affichage et Correction interactive ──
+        # ── Display Results & Interactive Adjustments ──
         if st.session_state.get("ocr_extraction") is not None:
             extraction = st.session_state["ocr_extraction"]
             import engine.vision_ocr.decision_engine as dec_engine
@@ -419,149 +345,207 @@ def render_ordonnance_page():
             n_meds = len(extraction.medicaments) if hasattr(extraction, 'medicaments') and extraction.medicaments else 0
 
             st.markdown(f"""
-            <div class="score-global ord-animate">
-                <div style="color: #94a3b8; font-size: 0.9rem; font-weight: 600;">
-                    INDICE DE CONFIANCE
+            <div class="score-global ord-animate" style="direction: rtl;">
+                <div style="color: #64748b; font-size: 1rem; font-weight: 700; font-family: 'Cairo';">
+                    🎯 مؤشر دقة المطابقة الإجمالي
                 </div>
                 <div class="score-number {score_class}">
                     {score_global:.0f}%
                 </div>
-                <div style="color: #64748b; font-size: 0.82rem;">
-                    {n_meds} médicament(s) détecté(s)
+                <div style="color: #475569; font-size: 0.9rem; font-family: 'Cairo'; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    <span class="material-symbols-rounded" style="font-size: 18px;">medication</span>
+                    <span>تم تحديد {n_meds} دواء/أدوية بنجاح</span>
                 </div>
             </div>
             """, unsafe_allow_html=True)
 
+            # ── Doctor & Patient Info Panel ──
+            medecin = getattr(extraction, "medecin", None)
+            patient = getattr(extraction, "patient", None)
+            
+            if (medecin and (medecin.nom or medecin.specialite)) or (patient and patient.nom):
+                st.markdown("<h3 style='color:#1e293b; margin: 1.5rem 0 1rem; font-family:\"Cairo\"; font-size:1.3rem; display: flex; align-items: center; gap: 8px;'><span class='material-symbols-rounded' style='color:#0891B2;'>contact_page</span> بيانات الطبيب والمريض المستخرجة</h3>", unsafe_allow_html=True)
+                col_doc, col_pat = st.columns(2)
+                with col_doc:
+                    if medecin and (medecin.nom or medecin.specialite):
+                        nom_med = medecin.nom or "غير محدد"
+                        spec_med = medecin.specialite or "غير محدد"
+                        st.markdown(f"""
+                        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.2rem; direction: rtl; text-align: right; margin-bottom: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                            <div style="display: flex; align-items: center; gap: 8px; color: #0891B2; font-weight: 700; margin-bottom: 6px; font-family: 'Cairo';">
+                                <span class="material-symbols-rounded">medical_services</span>
+                                <b>بيانات الطبيب المعالج:</b>
+                            </div>
+                            <div style="color: #1e293b; font-size: 0.95rem; margin-bottom: 4px; font-family: 'Cairo';">الاسم: {nom_med}</div>
+                            <div style="color: #475569; font-size: 0.85rem; font-family: 'Cairo';">التخصص: {spec_med}</div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                with col_pat:
+                    if patient and patient.nom:
+                        nom_pat = patient.nom or "غير محدد"
+                        st.markdown(f"""
+                        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.2rem; direction: rtl; text-align: right; margin-bottom: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                            <div style="display: flex; align-items: center; gap: 8px; color: #0891B2; font-weight: 700; margin-bottom: 6px; font-family: 'Cairo';">
+                                <span class="material-symbols-rounded">person</span>
+                                <b>بيانات المستفيد (المريض):</b>
+                            </div>
+                            <div style="color: #1e293b; font-size: 0.95rem; margin-bottom: 4px; font-family: 'Cairo';">الاسم: {nom_pat}</div>
+                            <div style="color: #475569; font-size: 0.85rem; font-family: 'Cairo';">الملف الشخصي: مريض مسجل</div>
+                        </div>
+                        """, unsafe_allow_html=True)
+
+            # ── Medications Grid Display ──
             if n_meds > 0:
-                st.markdown("<h3 style='color:#d4af37;margin:1.5rem 0 1rem'>💊 Médicaments détectés</h3>", unsafe_allow_html=True)
+                st.markdown("<h3 style='color:#1e293b; margin: 2rem 0 1rem; font-family:\"Cairo\"; font-size:1.4rem; display: flex; align-items: center; gap: 8px;'><span class='material-symbols-rounded' style='color:#0891B2;'>list_alt</span> الأدوية المكتشفة في الوصفة</h3>", unsafe_allow_html=True)
+                
+                cols = st.columns(2)
                 for i, med in enumerate(extraction.medicaments):
-                    analysis = dec_engine.analyze_medication(
-                        raw_name=med.nom,
-                        raw_dosage=med.dosage,
-                        vlm_confidence=extraction.confiance_globale,
-                        posologie=med.posologie,
-                        duree=med.duree,
-                    )
-                    
-                    status = analysis["status"]
-                    conf_pct = analysis["confidence"] * 100
-                    conf_class = _get_confidence_class(conf_pct)
-                    
-                    if status == "valid":
-                        badge = '<span class="med-badge found">✓ Validé</span>'
-                    elif status == "suspect":
-                        badge = '<span class="med-badge" style="background:rgba(234,179,8,0.15);color:#eab308;border:1px solid rgba(234,179,8,0.3)">⚠️ Suspect</span>'
-                    else:
-                        badge = '<span class="med-badge notfound">✗ Non trouvé</span>'
-
-                    display_name = analysis.get("corrected_name", med.nom)
-                    
-                    status_text = "Valid" if status == "valid" else "Suspect" if status == "suspect" else "Non trouvé"
-                    val_dosage = analysis.get('dosage') or "Non détecté"
-                    val_poso = analysis.get('posologie') or "Non détectée"
-                    val_duree = analysis.get('duree') or "Non détectée"
-                    val_prix = f"{analysis['price']} DH" if analysis.get('price') else "Non trouvé"
-                    val_cnops = "Oui ✅" if analysis.get("remboursable") else "Non 🚫"
-                    val_type = analysis.get("type") or "Unknown"
-
-                    list_html = f"""
-                    <div style="background: rgba(15, 23, 42, 0.4); border-radius: 8px; padding: 1rem; border: 1px solid rgba(255, 255, 255, 0.05); color: #cbd5e1; font-size: 0.95rem; line-height: 1.8; margin: 1rem 0; font-family: 'Inter', sans-serif;">
-                        <span style="color:#d4af37; margin-right:8px;">▪</span> <b>Statut:</b> <span style="color: {'#4ade80' if status=='valid' else '#facc15' if status=='suspect' else '#f87171'};">{status_text}</span><br/>
-                        <span style="color:#d4af37; margin-right:8px;">▪</span> <b>Dosage:</b> {val_dosage}<br/>
-                        <span style="color:#d4af37; margin-right:8px;">▪</span> <b>Posologie:</b> {val_poso}<br/>
-                        <span style="color:#d4af37; margin-right:8px;">▪</span> <b>Durée:</b> {val_duree}<br/>
-                        <span style="color:#d4af37; margin-right:8px;">▪</span> <b>Prix Public:</b> {val_prix}<br/>
-                        <span style="color:#d4af37; margin-right:8px;">▪</span> <b>Remboursable CNOPS:</b> {val_cnops}<br/>
-                        <span style="color:#d4af37; margin-right:8px;">▪</span> <b>Type:</b> {val_type}
-                    </div>
-                    """
-
-                    color = '#4ade80' if conf_class == 'high' else '#fbbf24' if conf_class == 'medium' else '#f87171'
-                    conf_bar = (
-                        f'<div class="conf-bar-bg">'
-                        f'<div class="conf-bar-fill {conf_class}" style="width:{conf_pct}%"></div>'
-                        f'</div>'
-                        f'<div class="conf-label">'
-                        f'<span>Confiance</span>'
-                        f'<span style="color:{color};font-weight:700">{conf_pct:.0f}%</span>'
-                        f'</div>'
-                    )
-
-                    card_html = (
-                        f'<div class="med-card {conf_class}" style="animation-delay:{i * 0.1}s">'
-                        f'<div class="med-card-header">'
-                        f'<div><h3 class="med-name">💊 {display_name}</h3></div>'
-                        f'{badge}'
-                        f'</div>'
-                        f'{list_html}'
-                        f'{conf_bar}'
-                        f'</div>'
-                    )
-                    st.markdown(card_html, unsafe_allow_html=True)
-                    
-                    # Section de correction manuelle interactive
-                    with st.expander(f"⚙️ Action : Corriger ou Supprimer"):
-                        c_edit1, c_edit2 = st.columns(2)
-                        with c_edit1:
-                            new_name = st.text_input("Nom du médicament", value=med.nom, key=f"edit_name_{i}")
-                        with c_edit2:
-                            new_dosage = st.text_input("Dosage", value=med.dosage or "", key=f"edit_dosage_{i}")
+                    col_idx = i % 2
+                    with cols[col_idx]:
+                        analysis = dec_engine.analyze_medication(
+                            raw_name=med.nom,
+                            raw_dosage=med.dosage,
+                            vlm_confidence=extraction.confiance_globale,
+                            posologie=med.posologie,
+                            duree=med.duree,
+                        )
                         
-                        col_btn1, col_btn2 = st.columns([1, 1])
-                        with col_btn1:
-                            if st.button("🔄 Vérifier", key=f"update_btn_{i}", use_container_width=True):
-                                st.session_state["ocr_extraction"].medicaments[i].nom = new_name
-                                st.session_state["ocr_extraction"].medicaments[i].dosage = new_dosage
-                                if hasattr(st, "rerun"):
+                        status = analysis["status"]
+                        conf_pct = analysis["confidence"] * 100
+                        conf_class = _get_confidence_class(conf_pct)
+                        
+                        if status == "valid":
+                            badge = '<span class="med-badge found"><span class="material-symbols-rounded" style="font-size: 14px; margin-left: 4px;">check_circle</span>مطابق وموثق</span>'
+                        elif status == "suspect":
+                            badge = '<span class="med-badge suspect"><span class="material-symbols-rounded" style="font-size: 14px; margin-left: 4px;">warning</span>غير مؤكد</span>'
+                        else:
+                            badge = '<span class="med-badge notfound"><span class="material-symbols-rounded" style="font-size: 14px; margin-left: 4px;">cancel</span>غير مسجل</span>'
+
+                        display_name = analysis.get("corrected_name", med.nom)
+                        
+                        val_dosage = analysis.get('dosage') or "غير محدد"
+                        val_poso = analysis.get('posologie') or "غير محدد"
+                        val_duree = analysis.get('duree') or "غير محدد"
+                        val_prix = f"{analysis['price']} درهم" if analysis.get('price') else "غير متوفر"
+                        val_cnops = "نعم (مسترجع CNOPS) ✅" if analysis.get("remboursable") else "لا (غير مسترجع CNOPS) 🚫"
+                        
+                        med_type = analysis.get("type") or "Unknown"
+                        if med_type.lower() == "princeps":
+                            val_type = "دواء أصيل (Princeps)"
+                        elif med_type.lower() in ["generique", "générique"]:
+                            val_type = "دواء جنيس (Générique)"
+                        else:
+                            val_type = "غير محدد"
+
+                        list_html = f"""
+                        <div class="med-info-list" style="background: #f8fafc; border-radius: 12px; padding: 1.2rem; border: 1px solid #e2e8f0; color: #334155; font-size: 0.9rem; line-height: 1.8; margin: 1rem 0; direction: rtl; text-align: right; font-family: 'Cairo', sans-serif;">
+                            <div style="display:flex; justify-content:space-between; margin-bottom: 6px;">
+                                <span><b>📌 حالة التطابق:</b></span>
+                                <span style="color: {'#059669' if status=='valid' else '#d97706' if status=='suspect' else '#dc2626'}; font-weight: 700;">
+                                    {'مطابق وموثق' if status=='valid' else 'غير مؤكد' if status=='suspect' else 'غير مسجل'}
+                                </span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; margin-bottom: 6px;">
+                                <span><b>💊 الجرعة المحددة:</b></span>
+                                <span style="color:#1e293b;">{val_dosage}</span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; margin-bottom: 6px;">
+                                <span><b>🔄 طريقة الاستعمال:</b></span>
+                                <span style="color:#1e293b;">{val_poso}</span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; margin-bottom: 6px;">
+                                <span><b>📅 مدة العلاج:</b></span>
+                                <span style="color:#1e293b;">{val_duree}</span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; margin-bottom: 6px;">
+                                <span><b>💰 السعر للعموم:</b></span>
+                                <span style="color:#1e293b; font-weight:700;">{val_prix}</span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; margin-bottom: 6px;">
+                                <span><b>🛡️ تغطية CNOPS:</b></span>
+                                <span style="color:#1e293b;">{val_cnops}</span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between;">
+                                <span><b>📦 نوع الدواء:</b></span>
+                                <span style="color:#1e293b;">{val_type}</span>
+                            </div>
+                        </div>
+                        """
+
+                        color = '#10b981' if conf_class == 'high' else '#f59e0b' if conf_class == 'medium' else '#ef4444'
+                        conf_bar = (
+                            f'<div class="conf-bar-bg">'
+                            f'<div class="conf-bar-fill {conf_class}" style="width:{conf_pct}%"></div>'
+                            f'</div>'
+                            f'<div class="conf-label" style="direction: rtl; text-align: right;">'
+                            f'<span>نسبة مطابقة المادة الفعالة</span>'
+                            f'<span style="color:{color};font-weight:700">{conf_pct:.0f}%</span>'
+                            f'</div>'
+                        )
+
+                        card_html = (
+                            f'<div class="med-card {conf_class}" style="animation-delay:{i * 0.1}s; direction: rtl; text-align: right;">'
+                            f'<div class="med-card-header" style="direction: rtl;">'
+                            f'<div><h3 class="med-name" style="font-family: \'Cairo\'; display:flex; align-items:center; gap:6px;"><span class="material-symbols-rounded" style="color:#0891B2;">healing</span> {display_name}</h3></div>'
+                            f'{badge}'
+                            f'</div>'
+                            f'{list_html}'
+                            f'{conf_bar}'
+                            f'</div>'
+                        )
+                        st.markdown(card_html, unsafe_allow_html=True)
+                        
+                        # Interactive form for correction or deletion
+                        with st.expander(f"⚙️ خيارات : تصحيح أو حذف الدواء"):
+                            st.markdown("<p style='font-size:0.85rem; color:#475569; margin-bottom:8px; font-family: \"Cairo\";'>تعديل يدوي لبيانات الدواء المستخرج:</p>", unsafe_allow_html=True)
+                            new_name = st.text_input("اسم الدواء", value=med.nom, key=f"edit_name_{i}")
+                            new_dosage = st.text_input("الجرعة (مثال: 1000mg)", value=med.dosage or "", key=f"edit_dosage_{i}")
+                            
+                            col_btn1, col_btn2 = st.columns(2)
+                            with col_btn1:
+                                if st.button("🔄 تحديث البيانات", key=f"update_btn_{i}", width="stretch"):
+                                    st.session_state["ocr_extraction"].medicaments[i].nom = new_name
+                                    st.session_state["ocr_extraction"].medicaments[i].dosage = new_dosage
                                     st.rerun()
-                                else:
-                                    st.experimental_rerun()
-                        with col_btn2:
-                            if st.button("🗑️ Supprimer", key=f"del_btn_{i}", use_container_width=True):
-                                st.session_state["ocr_extraction"].medicaments.pop(i)
-                                if hasattr(st, "rerun"):
+                            with col_btn2:
+                                if st.button("🗑️ حذف الدواء", key=f"del_btn_{i}", width="stretch"):
+                                    st.session_state["ocr_extraction"].medicaments.pop(i)
                                     st.rerun()
-                                else:
-                                    st.experimental_rerun()
 
             else:
                 st.warning(
-                    "Aucun médicament n'a pu être identifié. "
-                    "Vous pouvez le(s) saisir manuellement ci-dessous."
+                    "لم يتم التعرف على أي أدوية بالوصفة. "
+                    "يرجى مراجعة جودة الصورة وإضاءتها، أو إضافة الأدوية يدوياً بالأسفل."
                 )
 
-            # ── Section d'ajout manuel ──
-            st.markdown("<hr style='border:1px solid rgba(255,255,255,0.1); margin: 2rem 0;'/>", unsafe_allow_html=True)
-            st.markdown("<h4 style='color:#f8fafc;'>➕ Ajouter un médicament manuellement</h4>", unsafe_allow_html=True)
+            # ── Manual Add Section ──
+            st.markdown("<hr style='border:1px solid #e2e8f0; margin: 2.5rem 0;'/>", unsafe_allow_html=True)
+            st.markdown("<h4 style='color:#1e293b; font-family:\"Cairo\"; display:flex; align-items:center; gap:8px;'><span class='material-symbols-rounded' style='color:#0891B2;'>add_circle</span> إضافة دواء يدوياً للقائمة</h4>", unsafe_allow_html=True)
+            
             with st.form("add_med_form", clear_on_submit=True):
                 col_ad1, col_ad2 = st.columns(2)
                 with col_ad1:
-                    add_name = st.text_input("Nom du médicament (ex: Doliprane)")
+                    add_name = st.text_input("اسم الدواء (مثال: Doliprane)", placeholder="أدخل اسم الدواء هنا...")
                 with col_ad2:
-                    add_dosage = st.text_input("Dosage (optionnel, ex: 1000mg)")
-                add_submit = st.form_submit_button("Ajouter à la liste")
+                    add_dosage = st.text_input("الجرعة / التركيز (مثال: 1000mg)", placeholder="مثال: 1g, 500mg...")
+                
+                add_submit = st.form_submit_button("➕ إضافة الدواء للقائمة", width="stretch")
                 if add_submit and add_name:
                     from engine.vision_ocr.vlm_extraction import Medicament
                     new_med = Medicament(nom=add_name, dosage=add_dosage, posologie=None, duree=None)
                     st.session_state["ocr_extraction"].medicaments.append(new_med)
-                    if hasattr(st, "rerun"):
-                        st.rerun()
-                    else:
-                        st.experimental_rerun()
+                    st.rerun()
 
-            # ── Disclaimer final ──
+            # ── Final Legal Disclaimer ──
             st.markdown("""
-            <div class="ord-disclaimer">
-                <p>
-                    <b>⚠️ AVERTISSEMENT LÉGAL — MENTIONS OBLIGATOIRES :</b><br/><br/>
-                    ① Les résultats de ce scanner sont générés par un système automatisé de reconnaissance
-                    optique de caractères. Ils sont fournis <b>à titre informatif uniquement</b>.<br/>
-                    ② Ce système <b>ne constitue pas un avis médical ni pharmaceutique</b>.<br/>
-                    ③ <b>Consultez systématiquement votre médecin ou votre pharmacien</b>
-                    pour la validation de toute ordonnance.<br/>
-                    <span style="color:#64748b; font-size:0.78rem;">
-                        Conformément à la réglementation marocaine, seul un professionnel de santé habilité peut prescrire
-                        et délivrer des médicaments.
+            <div class="ord-disclaimer" style="border: 1px solid #fee2e2; border-right: 4px solid #ef4444; margin-top: 3rem; background: #fef2f2;">
+                <p style="font-family: 'Cairo', sans-serif; line-height: 1.8; color: #991b1b;">
+                    <b>⚠️ إخلاء مسؤولية قانوني — مقتضيات تنظيمية هامة:</b><br/><br/>
+                    ١. النتائج المستخرجة عبر نظام قراءة الصور والتعرف الضوئي بالذكاء الاصطناعي هي نتائج آلية استرشادية، وتُقدم <b>بصفة إعلامية وتثقيفية فقط</b>.<br/>
+                    ٢. لا يُشكل هذا النظام ولا تقاريره أي <b>بديل عن الاستشارة الطبية أو الصيدلانية الرسمية</b> ولا يُعتمد عليه بمفرده لتناول أي أدوية.<br/>
+                    ٣. <b>يجب عليك مراجعة الطبيب المعالج أو الصيدلاني المؤهل بشكل مباشر</b> لتأكيد ملاءمة الوصفة وصرف الدواء بشكل صحيح وآمن.<br/>
+                    <span style="color:#475569; font-size:0.8rem;">
+                        تماشياً مع المقتضيات القانونية المعمول بها بالمملكة المغربية، فإن كتابة ووصف الأدوية وتوجيه الجرعات هي من الصلاحيات والمسؤوليات الحصرية للأطباء والصيادلة المؤهلين الحاملين للتراخيص المهنية المطلوبة.
                     </span>
                 </p>
             </div>

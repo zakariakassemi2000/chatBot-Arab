@@ -4,25 +4,25 @@ SHIFA-Mental · Configuration & Constantes
 Centralise : CSS, system prompts, exercices, ressources, versets.
 """
 
-# ─── CSS RTL Dark Premium ─────────────────────────────────────────────────────
+# ─── CSS RTL Light Premium ─────────────────────────────────────────────────────
 MENTAL_CSS = """
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&family=Cairo:wght@300;400;600;700&display=swap');
 
 :root {
-    --bg-deep:      #0a0e1a;
-    --bg-card:      #111827;
-    --bg-surface:   #1a2235;
-    --accent-teal:  #06b6d4;
-    --accent-violet:#8b5cf6;
-    --accent-rose:  #f43f5e;
-    --accent-amber: #f59e0b;
-    --accent-green: #10b981;
-    --text-primary: #f0f4ff;
-    --text-muted:   #94a3b8;
-    --border:       rgba(6,182,212,0.15);
-    --glow-teal:    0 0 30px rgba(6,182,212,0.2);
-    --glow-violet:  0 0 30px rgba(139,92,246,0.2);
+    --bg-deep:      #f8fafc;
+    --bg-card:      #ffffff;
+    --bg-surface:   #f1f5f9;
+    --accent-teal:  #0284c7;
+    --accent-violet:#7c3aed;
+    --accent-rose:  #e11d48;
+    --accent-amber: #d97706;
+    --accent-green: #059669;
+    --text-primary: #1e293b;
+    --text-muted:   #475569;
+    --border:       #e2e8f0;
+    --glow-teal:    0 4px 20px rgba(2, 132, 199, 0.08);
+    --glow-violet:  0 4px 20px rgba(124, 58, 237, 0.08);
 }
 
 /* ── Global ── */
@@ -31,26 +31,27 @@ MENTAL_CSS = """
 
 /* ── Header principal ── */
 .mental-header {
-    background: linear-gradient(135deg, #0f172a 0%, #1a1040 50%, #0a1628 100%);
+    background: linear-gradient(135deg, #eff6ff 0%, #f5f3ff 50%, #f0fdf4 100%);
     border: 1px solid var(--border);
     border-radius: 20px;
     padding: 2rem 2.5rem;
     margin-bottom: 1.5rem;
     position: relative;
     overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 .mental-header::before {
     content: '';
     position: absolute;
     top: -50%; right: -20%;
     width: 400px; height: 400px;
-    background: radial-gradient(circle, rgba(139,92,246,0.1) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(139,92,246,0.06) 0%, transparent 70%);
     pointer-events: none;
 }
 .mental-header h1 {
     font-size: 2.2rem !important;
     font-weight: 700;
-    background: linear-gradient(135deg, #06b6d4, #8b5cf6);
+    background: linear-gradient(135deg, #0284c7, #7c3aed);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     margin: 0 !important;
@@ -72,15 +73,15 @@ MENTAL_CSS = """
     padding: 0.4rem 1rem;
     border-radius: 20px;
     border: 1px solid var(--border);
-    background: transparent;
+    background: #ffffff;
     color: var(--text-muted);
     font-size: 0.85rem;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 .dialect-btn.active {
-    background: linear-gradient(135deg, rgba(6,182,212,0.2), rgba(139,92,246,0.2));
-    border-color: var(--accent-teal);
+    background: linear-gradient(135deg, rgba(2, 132, 199, 0.08), rgba(124, 58, 237, 0.08));
+    border-color: var(--accent-violet);
     color: var(--text-primary);
 }
 
@@ -92,10 +93,11 @@ MENTAL_CSS = """
     padding: 1.5rem;
     margin: 1rem 0;
     transition: all 0.3s ease;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
 }
 .mental-card:hover {
-    border-color: rgba(6,182,212,0.35);
-    box-shadow: var(--glow-teal);
+    border-color: rgba(124, 58, 237, 0.25);
+    box-shadow: var(--glow-violet);
 }
 
 /* ── Distress Gauge ── */
@@ -109,13 +111,13 @@ MENTAL_CSS = """
     flex: 1;
     height: 8px;
     border-radius: 4px;
-    background: rgba(255,255,255,0.1);
+    background: #e2e8f0;
     transition: background 0.5s ease;
 }
-.gauge-bar.active-green  { background: #10b981; box-shadow: 0 0 8px #10b981; }
-.gauge-bar.active-yellow { background: #f59e0b; box-shadow: 0 0 8px #f59e0b; }
-.gauge-bar.active-orange { background: #f97316; box-shadow: 0 0 8px #f97316; }
-.gauge-bar.active-red    { background: #f43f5e; box-shadow: 0 0 8px #f43f5e; }
+.gauge-bar.active-green  { background: #10b981; box-shadow: 0 0 8px rgba(16, 185, 129, 0.5); }
+.gauge-bar.active-yellow { background: #f59e0b; box-shadow: 0 0 8px rgba(245, 158, 11, 0.5); }
+.gauge-bar.active-orange { background: #f97316; box-shadow: 0 0 8px rgba(249, 115, 22, 0.5); }
+.gauge-bar.active-red    { background: #f43f5e; box-shadow: 0 0 8px rgba(244, 63, 94, 0.5); }
 
 /* ── Severity Badge ── */
 .severity-badge {
@@ -126,10 +128,10 @@ MENTAL_CSS = """
     font-weight: 600;
     margin: 0.5rem 0;
 }
-.sev-0 { background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
-.sev-1 { background: rgba(245,158,11,0.15); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); }
-.sev-2 { background: rgba(249,115,22,0.15); color: #f97316; border: 1px solid rgba(249,115,22,0.3); }
-.sev-3 { background: rgba(244,63,94,0.15);  color: #f43f5e; border: 1px solid rgba(244,63,94,0.3); }
+.sev-0 { background: rgba(16,185,129,0.08); color: #059669; border: 1px solid rgba(16,185,129,0.2); }
+.sev-1 { background: rgba(245,158,11,0.08); color: #d97706; border: 1px solid rgba(245,158,11,0.2); }
+.sev-2 { background: rgba(249,115,22,0.08); color: #ea580c; border: 1px solid rgba(249,115,22,0.2); }
+.sev-3 { background: rgba(244,63,94,0.08);  color: #e11d48; border: 1px solid rgba(244,63,94,0.2); }
 
 /* ── Chat Bubbles ── */
 .chat-container {
@@ -140,7 +142,7 @@ MENTAL_CSS = """
     flex-direction: column;
     gap: 12px;
     scrollbar-width: thin;
-    scrollbar-color: var(--accent-teal) transparent;
+    scrollbar-color: var(--accent-violet) transparent;
 }
 .bubble {
     max-width: 78%;
@@ -151,26 +153,27 @@ MENTAL_CSS = """
     animation: fadeUp 0.3s ease;
 }
 .bubble-ai {
-    background: var(--bg-surface);
-    border: 1px solid rgba(139,92,246,0.2);
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
     align-self: flex-start;
     border-radius: 16px 16px 16px 4px;
     color: var(--text-primary);
 }
 .bubble-user {
-    background: linear-gradient(135deg, rgba(6,182,212,0.15), rgba(139,92,246,0.15));
-    border: 1px solid rgba(6,182,212,0.2);
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
     align-self: flex-end;
     border-radius: 16px 16px 4px 16px;
     color: var(--text-primary);
     direction: rtl;
 }
 .bubble-crisis {
-    background: rgba(244,63,94,0.1);
-    border: 1px solid rgba(244,63,94,0.35);
+    background: rgba(244,63,94,0.06);
+    border: 1px solid rgba(244,63,94,0.25);
     border-radius: 12px;
     padding: 1rem 1.2rem;
     align-self: stretch;
+    color: #e11d48;
 }
 @keyframes fadeUp {
     from { opacity: 0; transform: translateY(10px); }
@@ -179,16 +182,16 @@ MENTAL_CSS = """
 
 /* ── Crisis Full-Screen ── */
 .crisis-screen {
-    background: linear-gradient(135deg, rgba(244,63,94,0.08), rgba(220,38,38,0.12));
-    border: 2px solid rgba(244,63,94,0.4);
+    background: linear-gradient(135deg, rgba(244,63,94,0.05), rgba(220,38,38,0.08));
+    border: 2px solid rgba(244,63,94,0.25);
     border-radius: 20px;
     padding: 2.5rem;
     text-align: center;
     animation: pulseGlow 2s ease-in-out infinite;
 }
 @keyframes pulseGlow {
-    0%,100% { box-shadow: 0 0 20px rgba(244,63,94,0.1); }
-    50%     { box-shadow: 0 0 50px rgba(244,63,94,0.25); }
+    0%,100% { box-shadow: 0 0 15px rgba(244,63,94,0.05); }
+    50%     { box-shadow: 0 0 35px rgba(244,63,94,0.15); }
 }
 
 /* ── Breathing Circle ── */
@@ -202,16 +205,16 @@ MENTAL_CSS = """
 .breath-circle {
     width: 150px; height: 150px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(6,182,212,0.3), rgba(139,92,246,0.1));
-    border: 3px solid rgba(6,182,212,0.4);
+    background: radial-gradient(circle, rgba(2, 132, 199, 0.15), rgba(124, 58, 237, 0.05));
+    border: 3px solid rgba(124, 58, 237, 0.25);
     display: flex; align-items: center; justify-content: center;
     font-size: 1.1rem; color: var(--text-primary); font-weight: 600;
     animation: breathe 8s ease-in-out infinite;
-    box-shadow: 0 0 40px rgba(6,182,212,0.2);
+    box-shadow: 0 0 30px rgba(124, 58, 237, 0.1);
 }
 @keyframes breathe {
-    0%,100% { transform: scale(1); box-shadow: 0 0 20px rgba(6,182,212,0.15); }
-    50%      { transform: scale(1.35); box-shadow: 0 0 60px rgba(139,92,246,0.3); }
+    0%,100% { transform: scale(1); box-shadow: 0 0 15px rgba(124, 58, 237, 0.1); }
+    50%      { transform: scale(1.35); box-shadow: 0 0 45px rgba(124, 58, 237, 0.2); }
 }
 
 /* ── PHQ-9 / GAD-7 Question ── */
@@ -236,8 +239,8 @@ MENTAL_CSS = """
 
 /* ── Resource Card ── */
 .resource-card {
-    background: var(--bg-surface);
-    border: 1px solid rgba(139,92,246,0.2);
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
     border-radius: 12px;
     padding: 1rem 1.2rem;
     margin: 0.5rem 0;
@@ -245,8 +248,8 @@ MENTAL_CSS = """
     transition: all 0.2s ease;
 }
 .resource-card:hover {
-    border-color: rgba(139,92,246,0.5);
-    background: rgba(139,92,246,0.05);
+    border-color: rgba(124, 58, 237, 0.25);
+    background: rgba(124, 58, 237, 0.02);
 }
 .resource-icon {
     width: 42px; height: 42px;
@@ -258,7 +261,7 @@ MENTAL_CSS = """
 
 /* ── Tabs Custom ── */
 .stTabs [data-baseweb="tab-list"] {
-    background: var(--bg-card) !important;
+    background: #f1f5f9 !important;
     border-radius: 12px !important;
     gap: 4px !important;
     padding: 4px !important;
@@ -271,38 +274,51 @@ MENTAL_CSS = """
     font-family: 'Tajawal', sans-serif !important;
 }
 .stTabs [aria-selected="true"] {
-    background: linear-gradient(135deg, rgba(6,182,212,0.2), rgba(139,92,246,0.2)) !important;
-    color: var(--text-primary) !important;
+    background: #ffffff !important;
+    color: var(--accent-violet) !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04) !important;
 }
 
 /* ── Buttons ── */
 .stButton>button {
-    background: linear-gradient(135deg, rgba(6,182,212,0.15), rgba(139,92,246,0.15)) !important;
-    border: 1px solid rgba(6,182,212,0.35) !important;
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
     color: var(--text-primary) !important;
     border-radius: 10px !important;
     font-family: 'Tajawal', sans-serif !important;
     font-weight: 600 !important;
     transition: all 0.2s ease !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02) !important;
 }
 .stButton>button:hover {
-    border-color: var(--accent-teal) !important;
-    box-shadow: var(--glow-teal) !important;
+    border-color: var(--accent-violet) !important;
+    color: var(--accent-violet) !important;
+    box-shadow: var(--glow-violet) !important;
     transform: translateY(-1px) !important;
+}
+.stButton>button[kind="primary"] {
+    background: linear-gradient(135deg, #7c3aed, #6d28d9) !important;
+    color: white !important;
+    border: none !important;
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2) !important;
+}
+.stButton>button[kind="primary"]:hover {
+    box-shadow: 0 6px 18px rgba(124, 58, 237, 0.3) !important;
+    color: white !important;
 }
 
 /* ── Inputs ── */
 .stTextArea textarea, .stTextInput input {
-    background: var(--bg-surface) !important;
-    border: 1px solid var(--border) !important;
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
     color: var(--text-primary) !important;
     border-radius: 10px !important;
     direction: rtl !important;
     font-family: 'Tajawal', sans-serif !important;
 }
 .stTextArea textarea:focus, .stTextInput input:focus {
-    border-color: var(--accent-teal) !important;
-    box-shadow: 0 0 0 2px rgba(6,182,212,0.15) !important;
+    border-color: var(--accent-violet) !important;
+    box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.1) !important;
 }
 
 /* ── Slider ── */
@@ -316,8 +332,8 @@ MENTAL_CSS = """
 
 /* ── Privacy Banner ── */
 .privacy-banner {
-    background: rgba(139,92,246,0.06);
-    border: 1px solid rgba(139,92,246,0.2);
+    background: rgba(124, 58, 237, 0.05);
+    border: 1px solid rgba(124, 58, 237, 0.15);
     border-radius: 10px;
     padding: 0.6rem 1rem;
     margin: 0.5rem 0;
@@ -383,7 +399,7 @@ MENTAL_RESOURCES = [
         "contact": "0800 005 100",
         "type": "phone",
         "icon": "📞",
-        "color": "#10b981",
+        "color": "#059669",
         "urgent": True
     },
     {
@@ -392,7 +408,7 @@ MENTAL_RESOURCES = [
         "contact": "0801 003 100",
         "type": "phone",
         "icon": "🚨",
-        "color": "#f43f5e",
+        "color": "#e11d48",
         "urgent": True
     },
     {
@@ -401,7 +417,7 @@ MENTAL_RESOURCES = [
         "contact": "www.umpc.ma",
         "type": "web",
         "icon": "🏥",
-        "color": "#8b5cf6",
+        "color": "#7c3aed",
         "urgent": False
     },
     {
@@ -410,7 +426,7 @@ MENTAL_RESOURCES = [
         "contact": "sehetnafsiya.com",
         "type": "web",
         "icon": "💬",
-        "color": "#06b6d4",
+        "color": "#0284c7",
         "urgent": False
     },
     {
@@ -419,7 +435,7 @@ MENTAL_RESOURCES = [
         "contact": "0537 688 680",
         "type": "phone",
         "icon": "🏨",
-        "color": "#f59e0b",
+        "color": "#d97706",
         "urgent": False
     }
 ]
@@ -430,25 +446,25 @@ ISLAMIC_SUPPORTS = [
         "verse": "فَإِنَّ مَعَ الْعُسْرِ يُسْرًا • إِنَّ مَعَ الْعُسْرِ يُسْرًا",
         "source": "سورة الإنشراح: ٥-٦",
         "meaning": "مع كل صعوبة يأتي الفرج — بل مرتين في آيتين متتاليتين.",
-        "color": "#10b981"
+        "color": "#059669"
     },
     {
         "verse": "لَا يُكَلِّفُ اللَّهُ نَفْسًا إِلَّا وُسْعَهَا",
         "source": "سورة البقرة: ٢٨٦",
         "meaning": "ما تحمله الآن ضمن طاقتك — أنت أقوى مما تظن.",
-        "color": "#8b5cf6"
+        "color": "#7c3aed"
     },
     {
         "verse": "وَلَا تَيْأَسُوا مِن رَّوْحِ اللَّهِ ۚ إِنَّهُ لَا يَيْأَسُ مِن رَّوْحِ اللَّهِ إِلَّا الْقَوْمُ الْكَافِرُونَ",
         "source": "سورة يوسف: ٨٧",
         "meaning": "لا تفقد الأمل أبداً — رحمة الله واسعة لا حدود لها.",
-        "color": "#06b6d4"
+        "color": "#0284c7"
     },
     {
         "verse": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
         "source": "سورة الرعد: ٢٨",
         "meaning": "الطمأنينة الحقيقية في ذكر الله — تنفس واذكر اسمه.",
-        "color": "#f59e0b"
+        "color": "#d97706"
     },
 ]
 

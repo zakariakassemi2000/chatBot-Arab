@@ -62,43 +62,51 @@ class TestBreastDensityDetector:
         assert style in ("success", "info", "warning", "danger", "error")
 
 
-# ═══════════ Brain Tumor (Swin) ═══════════
+# ═══════════ Brain Tumor (Keras Multi-Output) ═══════════
 
 class TestBrainTumorDetector:
     @pytest.fixture(scope="class")
     def detector(self):
         if not RUN_HEAVY:
             pytest.skip("Heavy imaging tests disabled. Set RUN_HEAVY_TESTS=1 to enable.")
-        from engine.brain_tumor_detector import BrainTumorDetector
-        d = BrainTumorDetector()
+        from engine.brain_mri import BrainTumorKerasDetector
+        d = BrainTumorKerasDetector()
         if d.model is None:
-            pytest.skip("Brain tumor model not available")
+            pytest.skip("Brain tumor Keras model not available")
         return d
 
     def test_model_loaded(self, detector):
         assert detector.model is not None
 
     def test_predict_format(self, detector):
-        img = create_dummy_image()
-        result = detector.predict_image(img)
+        img = create_dummy_image(size=(260, 260))
+        result = detector.predict(img)
         assert result is not None
-        assert "class_name" in result
+        assert "class" in result
         assert "confidence" in result
-        assert result["class_name"] in [
-            "glioma_tumor", "meningioma_tumor", "no_tumor", "pituitary_tumor"
+        assert "tumor_detected" in result
+        assert "detection_confidence" in result
+
+    def test_class_names_valid(self, detector):
+        img = create_dummy_image(size=(260, 260))
+        result = detector.predict(img)
+        valid_classes = [
+            "Gliome (Glioma)", "Méningiome (Meningioma)",
+            "Aucune tumeur (No Tumor)", "Tumeur pituitaire (Pituitary)"
         ]
+        assert result["class"] in valid_classes
 
     def test_probabilities_valid(self, detector):
-        img = create_dummy_image()
-        result = detector.predict_image(img)
-        for key in ["prob_glioma", "prob_meningioma", "prob_no_tumor", "prob_pituitary"]:
-            assert 0.0 <= result[key] <= 1.0
+        img = create_dummy_image(size=(260, 260))
+        result = detector.predict(img)
+        for prob in result["all_probs"].values():
+            assert 0.0 <= prob <= 1.0
 
-    def test_interpret_result(self, detector):
-        img = create_dummy_image()
-        prediction = detector.predict_image(img)
-        label, explanation, risk, style = detector.interpret_result(prediction)
-        assert risk in ("normal", "moderate", "high", "unknown")
+    def test_detection_confidence_range(self, detector):
+        img = create_dummy_image(size=(260, 260))
+        result = detector.predict(img)
+        assert 0.0 <= result["detection_confidence"] <= 1.0
+        assert isinstance(result["tumor_detected"], bool)
 
 
 # ═══════════ Chest X-Ray (ViT) ═══════════

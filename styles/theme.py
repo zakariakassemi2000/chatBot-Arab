@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 """
 ═══════════════════════════════════════════════════════════════════════
-  SHIFA AI · Dark Medical SaaS Theme v2
+  SHIFA AI · Light Medical SaaS Theme v2
   ─────────────────────────────────────────────────────────────────────
   Centralized CSS for the entire app.
   Import `inject_theme()` once per page to apply consistent styling.
 
   Design System:
-    Primary   : #2563EB (soft blue)
-    Secondary : #10B981 (teal/green)
-    Danger    : #EF4444 (soft red)
-    Warning   : #F59E0B (amber)
-    Surface   : glassmorphism dark cards
+    Primary   : #2563EB (Medical Blue)
+    Secondary : #10B981 (Teal/Green)
+    Danger    : #EF4444 (Soft Red)
+    Warning   : #F59E0B (Amber)
+    Surface   : Light, clean medical cards
 ═══════════════════════════════════════════════════════════════════════
 """
 
@@ -19,26 +19,26 @@ import streamlit as st
 
 # ── Color Tokens ──────────────────────────────────────────────────────────────
 COLORS = {
-    "bg_primary":    "#0B0E14",
-    "bg_secondary":  "#0F172A",
-    "bg_card":       "rgba(15, 23, 42, 0.66)",
-    "bg_glass":      "rgba(30, 41, 59, 0.5)",
-    "accent":        "#E53935",
-    "accent_blue":   "#2563EB",
-    "accent_green":  "#10B981",
-    "accent_purple": "#8B5CF6",
-    "accent_amber":  "#F59E0B",
-    "accent_red":    "#EF4444",
-    "text_primary":  "#E2E8F0",
-    "text_secondary":"#94A3B8",
-    "text_muted":    "#64748B",
-    "border_subtle": "rgba(255,255,255,0.08)",
+    "bg_primary":    "#F0FDFA",         # Teal-tinted background
+    "bg_secondary":  "#F1F5F9",         # Slate 100
+    "bg_card":       "#FFFFFF",         # Surface
+    "bg_glass":      "#FFFFFF",         # Surface
+    "accent":        "#0891B2",         # Primary Color (Medical Teal)
+    "accent_blue":   "#2563EB",         # Secondary Color (Trust Blue)
+    "accent_teal":   "#14B8A6",         # Accent Color
+    "accent_green":  "#10B981",         # Success Color
+    "accent_amber":  "#F59E0B",         # Warning Color
+    "accent_red":    "#EF4444",         # Danger Color
+    "text_primary":  "#134E4A",         # Primary Text (Deep Teal)
+    "text_secondary":"#475569",         # Secondary Text
+    "text_muted":    "#64748B",         # Muted Text
+    "border_subtle": "#E2E8F0",         # Border Color
 }
 
 
 def inject_theme(*, page_font: str = "Cairo") -> None:
     """
-    Inject the full SHIFA dark theme CSS into the current Streamlit page.
+    Inject the full SHIFA light theme CSS into the current Streamlit page.
 
     Call once at the top of each page, after `st.set_page_config()`.
     """
@@ -91,7 +91,7 @@ def inject_theme(*, page_font: str = "Cairo") -> None:
   }}
 
   .stApp {{
-    background: linear-gradient(160deg, {COLORS['bg_primary']} 0%, {COLORS['bg_secondary']} 60%, #0B1628 100%) !important;
+    background: linear-gradient(160deg, {COLORS['bg_primary']} 0%, {COLORS['bg_secondary']} 60%, #e2e8f0 100%) !important;
     color: {COLORS['text_primary']} !important;
   }}
 
@@ -100,7 +100,7 @@ def inject_theme(*, page_font: str = "Cairo") -> None:
   }}
 
   /* ════════════════════════════════════════════════════════
-     HERO BANNER — Premium medical gradient with shimmer
+     HERO BANNER — Premium medical gradient with shimmer (Light Theme)
      ════════════════════════════════════════════════════════ */
   @keyframes shimmer {{
     0% {{ background-position: -200% 0; }}
@@ -108,14 +108,15 @@ def inject_theme(*, page_font: str = "Cairo") -> None:
   }}
 
   .hero-banner {{
-    background: linear-gradient(135deg, #0F172A 0%, #1E293B 40%, #0F3460 70%, #0F172A 100%);
-    border: 1px solid rgba(37, 99, 235, 0.2);
+    background: linear-gradient(135deg, #f0fdfa 0%, #e0f2fe 50%, #f5f3ff 100%);
+    border: 1px solid rgba(8, 145, 178, 0.15);
     border-radius: 20px;
     padding: 44px 40px 36px;
     margin-bottom: 28px;
     text-align: center;
     position: relative;
     overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(8, 145, 178, 0.05);
   }}
   .hero-banner::before {{
     content: '';
@@ -123,9 +124,9 @@ def inject_theme(*, page_font: str = "Cairo") -> None:
     inset: 0;
     background: linear-gradient(90deg,
       transparent 0%,
-      rgba(37, 99, 235, 0.06) 25%,
-      rgba(16, 185, 129, 0.08) 50%,
-      rgba(37, 99, 235, 0.06) 75%,
+      rgba(8, 145, 178, 0.03) 25%,
+      rgba(16, 185, 129, 0.04) 50%,
+      rgba(8, 145, 178, 0.03) 75%,
       transparent 100%);
     background-size: 200% 100%;
     animation: shimmer 6s linear infinite;
@@ -135,13 +136,13 @@ def inject_theme(*, page_font: str = "Cairo") -> None:
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse at 50% 0%, rgba(37, 99, 235, 0.12) 0%, transparent 65%);
+    background: radial-gradient(ellipse at 50% 0%, rgba(8, 145, 178, 0.08) 0%, transparent 65%);
     pointer-events: none;
   }}
   .hero-title {{
     font-size: 2.4rem;
     font-weight: 900;
-    color: #F1F5F9;
+    color: #1e293b;
     margin: 0 0 10px;
     position: relative;
     z-index: 1;
@@ -158,9 +159,9 @@ def inject_theme(*, page_font: str = "Cairo") -> None:
   }}
   .hero-badge {{
     display: inline-block;
-    background: rgba(16, 185, 129, 0.12);
-    border: 1px solid rgba(16, 185, 129, 0.25);
-    color: {COLORS['accent_green']};
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    color: #059669;
     padding: 6px 18px;
     border-radius: 999px;
     font-size: 0.82rem;
@@ -171,21 +172,20 @@ def inject_theme(*, page_font: str = "Cairo") -> None:
   }}
 
   /* ════════════════════════════════════════════════════════
-     SEARCH PANEL — Glassmorphism card
+     SEARCH PANEL — Light theme card
      ════════════════════════════════════════════════════════ */
   .search-panel {{
-    background: rgba(15, 23, 42, 0.75);
-    border: 1px solid rgba(37, 99, 235, 0.15);
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
     border-radius: 18px;
     padding: 28px 30px;
     margin-bottom: 24px;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
   }}
   .search-title {{
     font-size: 1.05rem;
     font-weight: 700;
-    color: #93C5FD;
+    color: {COLORS['accent']};
     margin-bottom: 18px;
     display: flex;
     align-items: center;
@@ -203,9 +203,9 @@ def inject_theme(*, page_font: str = "Cairo") -> None:
     justify-content: center;
   }}
   .city-pill {{
-    background: rgba(37, 99, 235, 0.08);
-    border: 1px solid rgba(37, 99, 235, 0.2);
-    color: #93C5FD;
+    background: rgba(8, 145, 178, 0.05);
+    border: 1px solid rgba(8, 145, 178, 0.15);
+    color: {COLORS['accent']};
     padding: 8px 18px;
     border-radius: 999px;
     font-size: 0.88rem;
@@ -218,14 +218,14 @@ def inject_theme(*, page_font: str = "Cairo") -> None:
     gap: 6px;
   }}
   .city-pill:hover {{
-    background: rgba(37, 99, 235, 0.18);
-    border-color: rgba(37, 99, 235, 0.4);
+    background: rgba(8, 145, 178, 0.1);
+    border-color: rgba(8, 145, 178, 0.3);
     transform: translateY(-2px);
-    color: #BFDBFE;
+    color: #0e7490;
   }}
 
   /* ════════════════════════════════════════════════════════
-     FACILITY / DATA CARDS — Flexbox with micro-animation
+     FACILITY / DATA CARDS — Light Theme Card
      ════════════════════════════════════════════════════════ */
   .shifa-card {{
     direction: rtl;
@@ -234,13 +234,13 @@ def inject_theme(*, page_font: str = "Cairo") -> None:
     border-radius: 16px;
     padding: 20px 22px;
     margin: 10px 0;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
     transition: transform 0.25s ease, border-color 0.3s ease, box-shadow 0.3s ease;
   }}
   .shifa-card:hover {{
     transform: translateY(-3px);
-    border-color: rgba(37, 99, 235, 0.25);
-    box-shadow: 0 8px 32px rgba(37, 99, 235, 0.12);
+    border-color: rgba(8, 145, 178, 0.25);
+    box-shadow: 0 10px 20px rgba(8, 145, 178, 0.1);
   }}
 
   .shifa-card-row {{
@@ -252,8 +252,8 @@ def inject_theme(*, page_font: str = "Cairo") -> None:
   }}
   .shifa-card-info {{
     flex: 1 1 280px;
-    min-width: 0;        /* ← prevents flex child blowout */
-    overflow: hidden;    /* ← clips any overflow */
+    min-width: 0;
+    overflow: hidden;
   }}
   .shifa-card-info span,
   .shifa-card-info div {{
@@ -279,19 +279,20 @@ def inject_theme(*, page_font: str = "Cairo") -> None:
     height: 32px;
     padding: 0 8px;
     border-radius: 999px;
-    background: rgba(37, 99, 235, 0.15);
-    color: #93C5FD;
+    background: rgba(8, 145, 178, 0.05);
+    color: {COLORS['accent']};
     font-weight: 700;
     font-size: 0.85rem;
+    border: 1px solid rgba(8, 145, 178, 0.15);
   }}
 
   /* ── Type Badge ── */
   .type-badge {{
     display: inline-block;
     max-width: 100%;
-    background: rgba(165, 180, 252, 0.08);
-    border: 1px solid rgba(165, 180, 252, 0.18);
-    color: #A5B4FC;
+    background: #f5f3ff;
+    border: 1px solid #ddd6fe;
+    color: #6d28d9;
     padding: 4px 14px;
     border-radius: 999px;
     font-size: 0.82rem;
@@ -302,7 +303,7 @@ def inject_theme(*, page_font: str = "Cairo") -> None:
     text-overflow: ellipsis;
   }}
 
-  /* ── Action Buttons (link-styled) ── */
+  /* ── Action Buttons ── */
   .shifa-btn {{
     display: flex;
     align-items: center;
@@ -324,20 +325,20 @@ def inject_theme(*, page_font: str = "Cairo") -> None:
     transform: translateY(-1px);
   }}
   .shifa-btn-green {{
-    border: 1px solid rgba(16, 185, 129, 0.3);
-    background: rgba(16, 185, 129, 0.1);
-    color: #34D399;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    background: rgba(16, 185, 129, 0.06);
+    color: #059669;
   }}
   .shifa-btn-green:hover {{
-    background: rgba(16, 185, 129, 0.22);
+    background: rgba(16, 185, 129, 0.15);
   }}
   .shifa-btn-blue {{
-    border: 1px solid rgba(37, 99, 235, 0.3);
-    background: rgba(37, 99, 235, 0.1);
-    color: #93C5FD;
+    border: 1px solid rgba(8, 145, 178, 0.25);
+    background: rgba(8, 145, 178, 0.06);
+    color: {COLORS['accent']};
   }}
   .shifa-btn-blue:hover {{
-    background: rgba(37, 99, 235, 0.22);
+    background: rgba(8, 145, 178, 0.15);
   }}
 
   /* ════════════════════════════════════════════════════════
@@ -352,18 +353,19 @@ def inject_theme(*, page_font: str = "Cairo") -> None:
   .stat-card {{
     flex: 1 1 130px;
     min-width: 130px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
     border-radius: 14px;
     padding: 18px 16px;
     text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     transition: transform 0.25s ease, border-color 0.25s ease;
   }}
   .stat-card:hover {{
     transform: translateY(-3px);
-    border-color: rgba(37, 99, 235, 0.25);
+    border-color: rgba(8, 145, 178, 0.25);
   }}
-  .stat-number {{ font-size: 1.8rem; font-weight: 800; color: #60A5FA; }}
+  .stat-number {{ font-size: 1.8rem; font-weight: 800; color: {COLORS['accent']}; }}
   .stat-label  {{ font-size: 0.8rem; color: {COLORS['text_muted']}; margin-top: 4px; font-weight: 500; }}
 
   /* ════════════════════════════════════════════════════════
@@ -373,7 +375,7 @@ def inject_theme(*, page_font: str = "Cairo") -> None:
     display: block;
     width: 100%;
     padding: 16px 32px;
-    background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 60%, #1E40AF 100%);
+    background: linear-gradient(135deg, #0891B2 0%, #0e7490 60%, #155E75 100%);
     color: #FFFFFF;
     font-size: 1.15rem;
     font-weight: 800;
@@ -383,15 +385,12 @@ def inject_theme(*, page_font: str = "Cairo") -> None:
     cursor: pointer;
     text-align: center;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 4px 16px rgba(8, 145, 178, 0.25);
     letter-spacing: 0.02em;
   }}
   .cta-search:hover {{
     transform: translateY(-2px);
-    box-shadow: 0 8px 28px rgba(37, 99, 235, 0.45);
-  }}
-  .cta-search:active {{
-    transform: translateY(0);
+    box-shadow: 0 8px 28px rgba(8, 145, 178, 0.4);
   }}
 
   /* ════════════════════════════════════════════════════════
@@ -400,8 +399,8 @@ def inject_theme(*, page_font: str = "Cairo") -> None:
   .empty-state {{
     text-align: center;
     padding: 48px 24px;
-    background: rgba(15, 23, 42, 0.5);
-    border: 1px dashed rgba(148, 163, 184, 0.2);
+    background: #ffffff;
+    border: 1px dashed #cbd5e1;
     border-radius: 20px;
     margin: 24px 0;
   }}
@@ -413,7 +412,7 @@ def inject_theme(*, page_font: str = "Cairo") -> None:
   .empty-state-title {{
     font-size: 1.3rem;
     font-weight: 700;
-    color: #94A3B8;
+    color: #64748b;
     margin-bottom: 8px;
   }}
   .empty-state-text {{
@@ -425,7 +424,7 @@ def inject_theme(*, page_font: str = "Cairo") -> None:
   }}
 
   /* ════════════════════════════════════════════════════════
-     SUCCESS STATE — Search complete banner
+     SUCCESS STATE ──
      ════════════════════════════════════════════════════════ */
   @keyframes fadeInUp {{
     from {{ opacity: 0; transform: translateY(10px); }}
@@ -436,10 +435,10 @@ def inject_theme(*, page_font: str = "Cairo") -> None:
     align-items: center;
     gap: 12px;
     padding: 14px 20px;
-    background: rgba(16, 185, 129, 0.08);
-    border: 1px solid rgba(16, 185, 129, 0.2);
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
     border-radius: 14px;
-    color: #34D399;
+    color: #047857;
     font-weight: 600;
     font-size: 0.95rem;
     margin-bottom: 20px;
@@ -454,17 +453,15 @@ def inject_theme(*, page_font: str = "Cairo") -> None:
     align-items: center;
     gap: 12px;
     padding: 14px 20px;
-    background: rgba(239, 68, 68, 0.08);
-    border: 1px solid rgba(239, 68, 68, 0.2);
+    background: #fef2f2;
+    border: 1px solid #fca5a5;
     border-radius: 14px;
-    color: #FCA5A5;
+    color: #b91c1c;
     font-weight: 600;
     font-size: 0.92rem;
     margin-top: 16px;
     direction: rtl;
   }}
-
-  /* ── Search Panel (duplicate override removed) ── */
 
   /* ── Legend ── */
   .legend-row {{
@@ -473,21 +470,21 @@ def inject_theme(*, page_font: str = "Cairo") -> None:
     flex-wrap: wrap;
     margin: 14px 0;
     padding: 12px 16px;
-    background: rgba(255, 255, 255, 0.02);
+    background: #ffffff;
     border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid #e2e8f0;
     font-size: 0.84rem;
     color: {COLORS['text_secondary']};
   }}
 
   /* ════════════════════════════════════════════════════════
-     STREAMLIT OVERRIDES
+     STREAMLIT OVERRIDES (Light Theme)
      ════════════════════════════════════════════════════════ */
 
-  /* Primary Buttons — full-width, no overflow */
+  /* Primary Buttons */
   .stButton > button[kind="primary"],
   .stButton > button {{
-    background: linear-gradient(135deg, #2563EB, #1D4ED8) !important;
+    background: linear-gradient(135deg, #0891B2, #0e7490) !important;
     color: white !important;
     border: none !important;
     border-radius: 12px !important;
@@ -496,7 +493,7 @@ def inject_theme(*, page_font: str = "Cairo") -> None:
     font-weight: 700 !important;
     font-size: 0.95rem !important;
     transition: all 0.25s ease !important;
-    box-shadow: 0 2px 10px rgba(37, 99, 235, 0.2) !important;
+    box-shadow: 0 4px 15px rgba(8, 145, 178, 0.25) !important;
     width: 100% !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
@@ -504,17 +501,17 @@ def inject_theme(*, page_font: str = "Cairo") -> None:
   }}
   .stButton > button:hover {{
     transform: translateY(-1px) !important;
-    box-shadow: 0 6px 22px rgba(37, 99, 235, 0.35) !important;
+    box-shadow: 0 8px 25px rgba(8, 145, 178, 0.4) !important;
   }}
 
-  /* Input Labels — truncate long Arabic text */
+  /* Input Labels */
   div[data-testid="stNumberInput"] label,
   div[data-testid="stSlider"] label,
   div[data-testid="stSelectSlider"] label,
   div[data-testid="stMultiSelect"] label,
   div[data-testid="stTextInput"] label,
   div[data-testid="stSelectbox"] label {{
-    color: #CBD5E1 !important;
+    color: #475569 !important;
     font-family: '{page_font}', 'Tajawal', sans-serif !important;
     font-weight: 600 !important;
     overflow: hidden !important;
@@ -524,54 +521,38 @@ def inject_theme(*, page_font: str = "Cairo") -> None:
     max-width: 100% !important;
   }}
 
-  /* All Streamlit inputs — full-width, rounded, no bleed */
-  div[data-testid="stNumberInput"],
-  div[data-testid="stTextInput"],
-  div[data-testid="stSelectbox"],
-  div[data-testid="stMultiSelect"],
-  div[data-testid="stSelectSlider"],
-  div[data-testid="stSlider"] {{
-    width: 100% !important;
-    max-width: 100% !important;
-  }}
-
+  /* Inputs */
   div[data-testid="stNumberInput"] input,
   div[data-testid="stTextInput"] input,
   .stSelectbox select {{
     width: 100% !important;
     border-radius: 10px !important;
-    border-color: rgba(37, 99, 235, 0.15) !important;
-    background: rgba(15, 23, 42, 0.6) !important;
-    color: #E2E8F0 !important;
+    border: 1px solid #e2e8f0 !important;
+    background: #ffffff !important;
+    color: #1e293b !important;
     padding: 10px 14px !important;
   }}
   div[data-testid="stNumberInput"] input:focus,
   div[data-testid="stTextInput"] input:focus {{
-    border-color: rgba(37, 99, 235, 0.5) !important;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+    border-color: #0891B2 !important;
+    box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.15) !important;
   }}
 
   /* Markdown */
   .stMarkdown p {{
-    color: #CBD5E1 !important;
+    color: #334155 !important;
     line-height: 1.7 !important;
   }}
 
   /* Expander */
   [data-testid="stExpander"] {{
-    background: rgba(30, 41, 59, 0.4) !important;
-    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
     border-radius: 16px !important;
   }}
   [data-testid="stExpander"] summary {{
     color: {COLORS['text_primary']} !important;
     font-weight: 600 !important;
-  }}
-  [data-testid="stExpander"] summary p,
-  [data-testid="stExpander"] summary span {{
-    overflow: visible !important;
-    white-space: normal !important;
-    text-overflow: initial !important;
   }}
 
   /* Tabs */
@@ -580,23 +561,23 @@ def inject_theme(*, page_font: str = "Cairo") -> None:
     gap: 8px !important;
   }}
   .stTabs [data-baseweb="tab"] {{
-    background: rgba(30, 41, 59, 0.4) !important;
-    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
     border-radius: 12px 12px 0 0 !important;
     font-weight: 600 !important;
     color: {COLORS['text_secondary']} !important;
     padding: 10px 20px !important;
   }}
   .stTabs [aria-selected="true"] {{
-    background: rgba(37, 99, 235, 0.1) !important;
-    color: {COLORS['accent_blue']} !important;
-    border-top: 2px solid {COLORS['accent_blue']} !important;
+    background: rgba(8, 145, 178, 0.08) !important;
+    color: {COLORS['accent']} !important;
+    border-top: 2px solid {COLORS['accent']} !important;
   }}
 
   /* Metrics */
   div[data-testid="stMetric"] {{
-    background: rgba(255, 255, 255, 0.02) !important;
-    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
     border-radius: 14px !important;
     padding: 16px !important;
   }}
@@ -604,12 +585,12 @@ def inject_theme(*, page_font: str = "Cairo") -> None:
     color: {COLORS['text_muted']} !important;
   }}
   div[data-testid="stMetric"] [data-testid="stMetricValue"] {{
-    color: #60A5FA !important;
+    color: #0891B2 !important;
   }}
 
   /* Divider */
   hr {{
-    border-color: rgba(255, 255, 255, 0.06) !important;
+    border-color: #e2e8f0 !important;
     margin: 20px 0 !important;
   }}
 
@@ -619,51 +600,12 @@ def inject_theme(*, page_font: str = "Cairo") -> None:
     justify-content: space-around;
     align-items: center;
     padding: 12px 20px;
-    background: rgba(15, 23, 42, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
     border-radius: 14px;
     margin-top: 24px;
     flex-wrap: wrap;
     gap: 12px;
-  }}
-  .footer-item {{
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    color: {COLORS['text_muted']};
-    font-size: 0.82rem;
-    font-weight: 500;
-  }}
-
-  /* ── Streamlit Column containers — prevent overflow ── */
-  [data-testid="column"] {{
-    overflow: hidden !important;
-    min-width: 0 !important;
-  }}
-
-  /* ── Block container max-width ── */
-  .block-container {{
-    max-width: 1000px !important;
-    margin: 0 auto !important;
-    padding: 1rem 2rem !important;
-  }}
-
-  /* Mobile Responsiveness */
-  @media (max-width: 768px) {{
-    .hero-title {{ font-size: 1.6rem !important; }}
-    .hero-sub {{ font-size: 0.9rem !important; }}
-    .hero-banner {{ padding: 28px 20px 24px !important; }}
-    .search-panel {{ padding: 20px 16px !important; }}
-    .stats-row {{ gap: 8px; }}
-    .stat-card {{ min-width: 90px; padding: 12px 8px; }}
-    .stat-number {{ font-size: 1.3rem; }}
-    .city-pills {{ gap: 6px; }}
-    .city-pill {{ padding: 6px 12px; font-size: 0.8rem; }}
-    .shifa-card {{ padding: 14px 16px !important; }}
-    .shifa-card-actions {{ min-width: 120px; }}
-    .shifa-btn {{ padding: 10px 12px !important; font-size: 0.8rem !important; }}
-    .block-container {{ padding: 0.5rem 1rem !important; }}
-    .footer-bar {{ flex-direction: column; gap: 8px; text-align: center; }}
   }}
 </style>
 """, unsafe_allow_html=True)

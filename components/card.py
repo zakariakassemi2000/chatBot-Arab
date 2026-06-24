@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 ═══════════════════════════════════════════════════════════════════════
-  SHIFA AI · Reusable Card Components v2
+  SHIFA AI · Reusable Card Components v3
   ─────────────────────────────────────────────────────────────────────
   Clean, self-contained HTML card renderers for Streamlit.
   Each card uses CSS classes from `styles.theme` — no inline HTML soup.
@@ -18,14 +18,15 @@ from typing import Dict
 
 def render_facility_card(rank: int, place: Dict) -> None:
     """
-    Render a single medical facility as a premium flexbox card.
+    Render a single medical facility as a premium card.
 
     Layout:
       ┌──────────────────────────────────────────────────┐
-      │  #rank  Name                    [Google Maps]    │
-      │  Type Badge                     [OpenStreetMap]  │
-      │  📏 Distance                                     │
+      │  #rank  Name                                      │
+      │  [Type Badge]                                     │
+      │  📏 Distance                                      │
       │  📍 Address  ⚕️ Specialty  📞 Phone  🕐 Hours    │
+      │  [🗺️ Google Maps]   [🌍 OpenStreetMap]           │
       └──────────────────────────────────────────────────┘
     """
     # ── Escape all user-facing strings ────────────────────────────────────
@@ -41,60 +42,232 @@ def render_facility_card(rank: int, place: Dict) -> None:
 
     # ── Conditional detail rows ───────────────────────────────────────────
     address_row = (
-        f'<div style="color:#94A3B8;font-size:0.84rem;margin-top:4px;'
-        f'display:flex;align-items:center;gap:6px;">'
-        f'<span style="opacity:0.7;">📍</span> {address}</div>'
+        f'<div class="shifa-meta-row"><span class="shifa-meta-icon">📍</span>'
+        f'<span class="shifa-meta-text">{address}</span></div>'
         if address else ""
     )
     specialty_row = (
-        f'<div style="color:#A78BFA;font-size:0.84rem;margin-top:4px;'
-        f'display:flex;align-items:center;gap:6px;">'
-        f'<span style="opacity:0.7;">⚕️</span> {specialty}</div>'
+        f'<div class="shifa-meta-row" style="color:#6d28d9;"><span class="shifa-meta-icon">⚕️</span>'
+        f'<span class="shifa-meta-text">{specialty}</span></div>'
         if specialty else ""
     )
     phone_row = (
-        f'<div style="margin-top:6px;">'
-        f'<a href="tel:{phone}" style="color:#34D399;text-decoration:none;'
-        f'font-size:0.84rem;display:flex;align-items:center;gap:6px;">'
-        f'<span style="opacity:0.7;">📞</span> {phone}</a></div>'
+        f'<div class="shifa-meta-row"><a href="tel:{phone}" class="shifa-phone-link">'
+        f'<span class="shifa-meta-icon">📞</span>'
+        f'<span class="shifa-meta-text">{phone}</span></a></div>'
         if phone else ""
     )
     opening_row = (
-        f'<div style="color:#64748B;font-size:0.8rem;margin-top:4px;'
-        f'display:flex;align-items:center;gap:6px;">'
-        f'<span style="opacity:0.7;">🕐</span> {opening}</div>'
+        f'<div class="shifa-meta-row" style="color:#64748b;"><span class="shifa-meta-icon">🕐</span>'
+        f'<span class="shifa-meta-text">{opening}</span></div>'
         if opening else ""
     )
 
     st.markdown(f"""
     <div class="shifa-card">
-      <div class="shifa-card-row">
-        <!-- Info column -->
-        <div class="shifa-card-info">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
-            <span class="rank-badge">#{rank}</span>
-            <span style="color:#E2E8F0;font-weight:700;font-size:1.08rem;">{name}</span>
-          </div>
-          <div class="type-badge">{type_label}</div>
-          <div style="color:#60A5FA;font-weight:700;font-size:0.95rem;margin:6px 0;
-                      display:flex;align-items:center;gap:6px;">
-            <span>📏</span> {distance}
-          </div>
-          {address_row}
-          {specialty_row}
-          {phone_row}
-          {opening_row}
-        </div>
+      <!-- Header: rank + name -->
+      <div class="shifa-card-header">
+        <span class="rank-badge">#{rank}</span>
+        <span class="shifa-card-name">{name}</span>
+      </div>
 
-        <!-- Actions column -->
-        <div class="shifa-card-actions">
-          <a href="{gmaps_url}" target="_blank" rel="noopener noreferrer"
-             class="shifa-btn shifa-btn-green">🗺️ خرائط جوجل</a>
-          <a href="{osm_url}" target="_blank" rel="noopener noreferrer"
-             class="shifa-btn shifa-btn-blue">🌍 خريطة مفتوحة</a>
-        </div>
+      <!-- Type badge + distance -->
+      <div class="shifa-card-meta-top">
+        <span class="type-badge">{type_label}</span>
+        <span class="shifa-distance-badge">
+          <span>📏</span> {distance}
+        </span>
+      </div>
+
+      <!-- Detail rows: address / specialty / phone / hours -->
+      <div class="shifa-card-details">
+        {address_row}
+        {specialty_row}
+        {phone_row}
+        {opening_row}
+      </div>
+
+      <!-- Action buttons always at bottom -->
+      <div class="shifa-card-btns">
+        <a href="{gmaps_url}" target="_blank" rel="noopener noreferrer"
+           class="shifa-btn shifa-btn-green">🗺️ خرائط جوجل</a>
+        <a href="{osm_url}" target="_blank" rel="noopener noreferrer"
+           class="shifa-btn shifa-btn-blue">🌍 خريطة مفتوحة</a>
       </div>
     </div>
+
+    <style>
+      /* ── Card v3 overrides (scoped, won't break other pages) ── */
+      .shifa-card {{
+        direction: rtl;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 20px 22px;
+        margin: 8px 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        transition: transform 0.25s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+      }}
+      .shifa-card:hover {{
+        transform: translateY(-3px);
+        border-color: rgba(37, 99, 235, 0.3);
+        box-shadow: 0 10px 24px rgba(37, 99, 235, 0.1);
+      }}
+
+      /* Header row: rank badge + name */
+      .shifa-card-header {{
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+      }}
+      .shifa-card-name {{
+        color: #1e293b;
+        font-weight: 700;
+        font-size: 1.05rem;
+        flex: 1 1 0;
+        min-width: 0;
+        word-break: break-word;
+      }}
+
+      /* Type + distance row */
+      .shifa-card-meta-top {{
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+      }}
+      .shifa-distance-badge {{
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        color: #2563eb;
+        font-weight: 700;
+        font-size: 0.9rem;
+        background: rgba(37,99,235,0.07);
+        padding: 3px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(37,99,235,0.15);
+      }}
+
+      /* Detail rows */
+      .shifa-card-details {{
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        margin-bottom: 14px;
+      }}
+      .shifa-meta-row {{
+        display: flex;
+        align-items: flex-start;
+        gap: 6px;
+        font-size: 0.84rem;
+        color: #475569;
+        word-break: break-word;
+      }}
+      .shifa-meta-icon {{
+        flex-shrink: 0;
+        opacity: 0.75;
+        margin-top: 1px;
+      }}
+      .shifa-meta-text {{
+        flex: 1;
+        min-width: 0;
+        word-break: break-word;
+      }}
+      .shifa-phone-link {{
+        color: #059669;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }}
+      .shifa-phone-link:hover {{ text-decoration: underline; }}
+
+      /* Action buttons row — always at bottom */
+      .shifa-card-btns {{
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 4px;
+      }}
+      .shifa-card-btns .shifa-btn {{
+        flex: 1 1 140px;
+        min-width: 0;
+      }}
+
+      /* Rank Badge */
+      .rank-badge {{
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 32px;
+        height: 32px;
+        padding: 0 8px;
+        border-radius: 999px;
+        background: #eff6ff;
+        color: #2563eb;
+        font-weight: 700;
+        font-size: 0.85rem;
+        border: 1px solid #bfdbfe;
+        flex-shrink: 0;
+      }}
+
+      /* Type Badge */
+      .type-badge {{
+        display: inline-block;
+        background: #f5f3ff;
+        border: 1px solid #ddd6fe;
+        color: #6d28d9;
+        padding: 4px 14px;
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        white-space: nowrap;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }}
+
+      /* Action Buttons */
+      .shifa-btn {{
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        text-align: center;
+        padding: 10px 14px;
+        border-radius: 12px;
+        font-size: 0.84rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }}
+      .shifa-btn:hover {{ transform: translateY(-1px); }}
+      .shifa-btn-green {{
+        border: 1px solid rgba(16, 185, 129, 0.25);
+        background: rgba(16, 185, 129, 0.07);
+        color: #059669;
+      }}
+      .shifa-btn-green:hover {{ background: rgba(16, 185, 129, 0.15); }}
+      .shifa-btn-blue {{
+        border: 1px solid rgba(37, 99, 235, 0.25);
+        background: rgba(37, 99, 235, 0.07);
+        color: #2563eb;
+      }}
+      .shifa-btn-blue:hover {{ background: rgba(37, 99, 235, 0.15); }}
+
+      /* Mobile */
+      @media (max-width: 600px) {{
+        .shifa-card-btns {{ flex-direction: column; }}
+        .shifa-card-btns .shifa-btn {{ flex: 1 1 100%; }}
+      }}
+    </style>
     """, unsafe_allow_html=True)
 
 

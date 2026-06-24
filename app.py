@@ -5,7 +5,24 @@
 ═══════════════════════════════════════════════════════════════════════
 """
 
+# ── Kill transformers verbose logging BEFORE any import ──
 import os
+os.environ["TRANSFORMERS_VERBOSITY"] = "error"
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
+
+# ── Suppress noisy deprecation warnings from transformers lazy-loading ──
+import warnings
+# Catch ALL warning categories (UserWarning, FutureWarning, DeprecationWarning)
+warnings.filterwarnings("ignore", message=r".*Accessing.*__path__.*")
+warnings.filterwarnings("ignore", message=r".*Returning `__path__` instead.*")
+warnings.filterwarnings("ignore", message=r".*Trying to unpickle estimator.*")
+warnings.filterwarnings("ignore", message=r".*is deprecated.*", category=FutureWarning)
+warnings.filterwarnings("ignore", message=r".*is deprecated.*", category=DeprecationWarning)
+warnings.filterwarnings("ignore", category=FutureWarning, module=r"transformers.*")
+warnings.filterwarnings("ignore", category=DeprecationWarning, module=r"transformers.*")
+
 import sys
 import io
 import base64
@@ -22,10 +39,6 @@ try:
 except Exception as _auth_err:
     logging.warning(f"[Auth] Module user_auth non chargé: {_auth_err}")
     register_user = login_user = guest_session = None
-
-# ── Suppress TensorFlow info/warning messages ──
-os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 import streamlit as st
 import pandas as pd
@@ -75,7 +88,10 @@ except ImportError as e:
 # CONSTANTS & UTILS
 # ─────────────────────────────────────────────────────────────
 BASE_DIR = Path(__file__).parent
+# Use transparent logo (no background) for white page
 LOGO_PATH = BASE_DIR / "Stylized_Heart_and_Cross_Logo_for_SHIFA_AI__1_-removebg-preview.png"
+if not LOGO_PATH.exists():
+    LOGO_PATH = BASE_DIR / "logo.png"
 PATTERN_PATH = BASE_DIR / "pattern.png"
 HISTORY_FILE = BASE_DIR / "consultation_history.json"
 
@@ -127,41 +143,89 @@ def save_history(messages):
 def inject_custom_css():
     st.markdown("""
     <style>
-        /* Base SaaS Typography */
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+        /* ═══════════════════════════════════════════════════════
+           SHIFA AI — Premium Medical Design System v3
+           Medical Teal + Trust Blue · Cairo Typography · RTL
+           ═══════════════════════════════════════════════════════ */
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap');
 
-        /* Theme Variables - Dark Medical SaaS */
         :root {
-            --z-green: #0d9488;          /* Primary Teal 600 */
-            --z-green-hover: #0f766e;    /* Hover Teal 700 */
-            --z-green-light: rgba(13, 148, 136, 0.15);
-            --z-red: #ef4444;            /* Soft Red */
-            --z-gold: #3b82f6;           /* Blue 500 (swapped gold for Medical Blue) */
-            --z-beige: #e2e8f0;          /* Slate 200 */
-            --z-bg: #0f172a;             /* Slate 900 background */
-            --z-card: rgba(30, 41, 59, 0.55); /* Slate 800 semi-transparent */
-            --z-text: #f8fafc;           /* Slate 50 */
-            --z-muted: #94a3b8;          /* Slate 400 */
-            
-            /* Spacing Scale */
+            /* ── Primary Medical Palette ── */
+            --shifa-primary: #0891B2;
+            --shifa-primary-hover: #0E7490;
+            --shifa-primary-deep: #155E75;
+            --shifa-primary-light: rgba(8, 145, 178, 0.08);
+            --shifa-primary-glow: rgba(8, 145, 178, 0.15);
+            --shifa-secondary: #2563EB;
+            --shifa-secondary-hover: #1D4ED8;
+            --shifa-accent: #10B981;
+            --shifa-danger: #EF4444;
+            --shifa-warning: #F59E0B;
+
+            /* ── Surfaces ── */
+            --shifa-bg: #F0FDFA;
+            --shifa-bg-secondary: #F1F5F9;
+            --shifa-card: #FFFFFF;
+
+            /* ── Typography ── */
+            --shifa-text: #134E4A;
+            --shifa-text-secondary: #475569;
+            --shifa-text-muted: #64748B;
+            --shifa-text-on-primary: #FFFFFF;
+
+            /* ── Borders & Shadows ── */
+            --shifa-border: #E2E8F0;
+            --shifa-border-hover: rgba(8, 145, 178, 0.3);
+            --shifa-shadow-xs: 0 1px 2px rgba(0,0,0,0.03);
+            --shifa-shadow-sm: 0 2px 6px rgba(8, 145, 178, 0.06);
+            --shifa-shadow-md: 0 4px 14px rgba(8, 145, 178, 0.10);
+            --shifa-shadow-lg: 0 10px 28px rgba(8, 145, 178, 0.14);
+            --shifa-shadow-glow: 0 4px 20px rgba(8, 145, 178, 0.25);
+
+            /* ── Spacing Scale (8px base) ── */
             --space-1: 8px;
             --space-2: 16px;
             --space-3: 24px;
             --space-4: 32px;
-            --space-5: 40px;
+            --space-5: 48px;
+            --space-6: 64px;
+
+            /* ── Radii ── */
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-pill: 9999px;
+
+            /* ── Transitions ── */
+            --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+            --transition-fast: 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+            --transition-normal: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+            /* ── Legacy aliases (backward compat) ── */
+            --z-green: var(--shifa-primary);
+            --z-green-hover: var(--shifa-primary-hover);
+            --z-green-light: var(--shifa-primary-light);
+            --z-red: var(--shifa-danger);
+            --z-gold: var(--shifa-primary);
+            --z-beige: var(--shifa-text-secondary);
+            --z-bg: var(--shifa-bg);
+            --z-card: var(--shifa-card);
+            --z-text: var(--shifa-text);
+            --z-muted: var(--shifa-text-muted);
         }
 
-        /* RTL & Font Initialization */
+        /* ── RTL & Font Foundation ── */
         html, body {
             direction: rtl;
             text-align: right;
-            background-color: var(--z-bg);
-            color: var(--z-text);
+            background-color: var(--shifa-bg);
+            color: var(--shifa-text);
         }
         
         p, h1, h2, h3, h4, h5, h6, li, a, span, div {
             font-family: 'Cairo', 'Inter', sans-serif;
-            letter-spacing: 0.15px;
+            letter-spacing: 0.01em;
         }
         
         /* Protect Streamlit internal Material Icons */
@@ -170,124 +234,220 @@ def inject_custom_css():
         [data-testid="stIconMaterial"] {
             font-family: 'Material Symbols Rounded' !important;
             font-weight: normal;
+            direction: ltr !important;
         }
         
         /* Hide Default Sidebar Nav for controlled routing */
         [data-testid="stSidebarNav"] { display: none !important; }
 
-        /* The App Background (Mesh Gradient SaaS look) */
+        /* ── App Background (Medical Mesh Gradient) ── */
         .stApp {
-            background-color: var(--z-bg);
+            background-color: var(--shifa-bg);
             background-image: 
-                radial-gradient(circle at 10% 20%, rgba(13, 148, 136, 0.08), transparent 45%),
-                radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.08), transparent 45%);
+                radial-gradient(ellipse at 15% 20%, rgba(8, 145, 178, 0.06), transparent 50%),
+                radial-gradient(ellipse at 85% 75%, rgba(16, 185, 129, 0.05), transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(37, 99, 235, 0.02), transparent 60%);
             background-attachment: fixed;
-            color: var(--z-text);
+            color: var(--shifa-text);
+        }
+
+        /* ── Page Width Constraint ── */
+        .block-container {
+            max-width: 1100px !important;
+            padding-left: 2rem !important;
+            padding-right: 2rem !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
         }
         [data-testid="stHeader"] { background: transparent !important; }
 
-        /* Sidebar Glassmorphism */
+        /* ═══════════════════════════════════════════════════════
+           SIDEBAR — Clean Medical Panel
+           ═══════════════════════════════════════════════════════ */
         [data-testid="stSidebar"] {
-            background: rgba(15, 23, 42, 0.75) !important;
-            border-left: 1px solid rgba(255, 255, 255, 0.05) !important;
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            background: var(--shifa-card) !important;
+            border-left: 1px solid var(--shifa-border) !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+        }
+        [data-testid="stSidebar"] div[data-testid="stButton"] > button {
+            border-radius: var(--radius-md) !important;
+            margin: 5px 0 !important;
+            padding: 10px 16px !important;
+            min-height: 46px !important;
+            font-size: 0.92rem !important;
+            font-family: 'Cairo', sans-serif !important;
+            transition: all var(--transition-normal) !important;
+            cursor: pointer !important;
+        }
+        [data-testid="stSidebar"] div[data-testid="stButton"] > button[kind="secondary"] {
+            background-color: transparent !important;
+            border: 1px solid var(--shifa-border) !important;
+            color: var(--shifa-text-secondary) !important;
+            box-shadow: none !important;
+            width: 100% !important;
+        }
+        [data-testid="stSidebar"] div[data-testid="stButton"] > button[kind="secondary"]:hover {
+            background-color: var(--shifa-primary-light) !important;
+            color: var(--shifa-primary) !important;
+            border-color: var(--shifa-border-hover) !important;
+            transform: translateX(3px) !important;
+        }
+        [data-testid="stSidebar"] div[data-testid="stButton"] > button:active {
+            transform: scale(0.97) !important;
         }
 
-        /* Native Streamlit Container -> Glassmorphism Card Styling */
+        /* ═══════════════════════════════════════════════════════
+           CARDS — Unified Medical Card System
+           ═══════════════════════════════════════════════════════ */
         [data-testid="stVerticalBlockBorderWrapper"] {
-            border: 1px solid rgba(255, 255, 255, 0.08) !important;
-            background-color: var(--z-card);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-radius: 16px;
-            padding: var(--space-3);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s;
+            border: 1px solid var(--shifa-border) !important;
+            background-color: var(--shifa-card) !important;
+            border-radius: var(--radius-lg) !important;
+            padding: var(--space-3) !important;
+            box-shadow: var(--shifa-shadow-xs) !important;
+            transition: transform var(--transition-normal),
+                        box-shadow var(--transition-normal),
+                        border-color var(--transition-normal);
         }
 
-        /* 
-           Native Streamlit Buttons upgraded to Interactive Glass Cards 
-           We target secondary buttons to act as dynamic grid cards!
-        */
+        /* ═══════════════════════════════════════════════════════
+           SECONDARY BUTTONS — Interactive Service Cards
+           ═══════════════════════════════════════════════════════ */
         div[data-testid="stButton"] > button[kind="secondary"] {
-            background-color: rgba(30, 41, 59, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 12px;
-            color: var(--z-text);
-            min-height: 80px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(8px);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            padding: var(--space-2);
+            background-color: var(--shifa-card) !important;
+            border: 1px solid var(--shifa-border) !important;
+            border-radius: var(--radius-lg) !important;
+            color: var(--shifa-text) !important;
+            min-height: 88px !important;
+            font-size: 0.93rem !important;
+            font-weight: 600 !important;
+            transition: all var(--transition-normal) !important;
+            box-shadow: var(--shifa-shadow-xs) !important;
+            padding: 20px 24px !important;
+            width: 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: center !important;
+            text-align: center !important;
+            line-height: 1.6 !important;
+            cursor: pointer !important;
         }
         div[data-testid="stButton"] > button[kind="secondary"]:hover {
-            border-color: var(--z-green);
-            background-color: rgba(13, 148, 136, 0.1);
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px -8px rgba(13, 148, 136, 0.3);
-            color: #ffffff;
+            border-color: var(--shifa-border-hover) !important;
+            background-color: var(--shifa-primary-light) !important;
+            transform: translateY(-3px) !important;
+            box-shadow: var(--shifa-shadow-md) !important;
+            color: var(--shifa-primary-deep) !important;
+        }
+        div[data-testid="stButton"] > button[kind="secondary"]:active {
+            transform: translateY(0) scale(0.98) !important;
         }
         div[data-testid="stButton"] > button[kind="secondary"] p {
-            font-size: 1.05rem;
-            margin: 0;
+            font-size: 0.93rem !important;
+            font-weight: 600 !important;
+            margin: 0 !important;
+            line-height: 1.6 !important;
             white-space: pre-wrap;
         }
 
-        /* Primary CTA Buttons */
+        /* ═══════════════════════════════════════════════════════
+           PRIMARY CTA — Medical Teal Gradient
+           ═══════════════════════════════════════════════════════ */
         div[data-testid="stButton"] > button[kind="primary"] {
-            background: linear-gradient(135deg, var(--z-green), var(--z-green-hover));
-            color: #ffffff !important;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            min-height: 56px;
-            font-weight: 700;
-            font-size: 1.15rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(13, 148, 136, 0.3);
+            background: linear-gradient(135deg, var(--shifa-primary), var(--shifa-primary-hover)) !important;
+            color: var(--shifa-text-on-primary) !important;
+            border: none !important;
+            border-radius: var(--radius-md) !important;
+            min-height: 54px !important;
+            font-weight: 700 !important;
+            font-size: 1.05rem !important;
+            transition: all var(--transition-normal) !important;
+            box-shadow: var(--shifa-shadow-glow) !important;
+            cursor: pointer !important;
         }
         div[data-testid="stButton"] > button[kind="primary"]:hover {
-            background: linear-gradient(135deg, var(--z-green-hover), #0f766e);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(13, 148, 136, 0.5);
+            background: linear-gradient(135deg, var(--shifa-primary-hover), var(--shifa-primary-deep)) !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 28px rgba(8, 145, 178, 0.35) !important;
+        }
+        div[data-testid="stButton"] > button[kind="primary"]:active {
+            transform: translateY(0) !important;
         }
 
-        /* Chat Input Field Focus Glow */
+        /* ── Hero Secondary CTA (tagged via JS) ── */
+        button.hero-secondary-btn {
+            background: transparent !important;
+            color: var(--shifa-primary) !important;
+            border: 2px solid var(--shifa-primary) !important;
+            border-radius: var(--radius-md) !important;
+            min-height: 54px !important;
+            font-weight: 700 !important;
+            font-size: 1.05rem !important;
+            transition: all var(--transition-normal) !important;
+            box-shadow: none !important;
+            width: 100% !important;
+            cursor: pointer !important;
+        }
+        button.hero-secondary-btn:hover {
+            background: var(--shifa-primary-light) !important;
+            border-color: var(--shifa-primary-hover) !important;
+            color: var(--shifa-primary-hover) !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 4px 14px rgba(8, 145, 178, 0.12) !important;
+        }
+        button.hero-secondary-btn:active {
+            transform: translateY(0) !important;
+            scale: 0.98 !important;
+        }
+
+        /* ═══════════════════════════════════════════════════════
+           CHAT INPUT — Teal Focus Ring
+           ═══════════════════════════════════════════════════════ */
         [data-testid="stChatInput"] {
-            border-radius: 16px;
-            background: rgba(30, 41, 59, 0.8) !important;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.2) !important;
-            backdrop-filter: blur(12px);
+            border-radius: var(--radius-lg);
+            background: var(--shifa-card) !important;
+            border: 1px solid var(--shifa-border) !important;
+            box-shadow: var(--shifa-shadow-sm) !important;
         }
         [data-testid="stChatInput"]:focus-within {
-            border-color: var(--z-green) !important;
-            box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.25) !important;
+            border-color: var(--shifa-primary) !important;
+            box-shadow: 0 0 0 3px var(--shifa-primary-glow) !important;
         }
         [data-testid="stChatInput"] textarea {
-            color: var(--z-text) !important;
+            color: var(--shifa-text) !important;
         }
 
-        /* Chat Messages */
+        /* ── Chat Messages ── */
         [data-testid="stChatMessage"] {
-            background: rgba(30, 41, 59, 0.4) !important;
-            border-radius: 16px;
+            background: var(--shifa-card) !important;
+            border-radius: var(--radius-lg);
             padding: var(--space-3) !important;
             margin-bottom: var(--space-2);
-            border: 1px solid rgba(255,255,255,0.04);
-            backdrop-filter: blur(8px);
+            border: 1px solid var(--shifa-border) !important;
+            box-shadow: var(--shifa-shadow-xs) !important;
         }
 
-        /* Auth Screen Native Style */
+        /* ── Auth Card ── */
         .auth-card {
-            background-color: var(--z-card);
-            border-top: 4px solid var(--z-green);
-            border-radius: 16px;
+            background-color: var(--shifa-card);
+            border-top: 4px solid var(--shifa-primary);
+            border-radius: var(--radius-lg);
             padding: var(--space-4);
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            box-shadow: var(--shifa-shadow-md);
             text-align: center;
+        }
+
+        /* ═══════════════════════════════════════════════════════
+           ACCESSIBILITY — Reduced Motion
+           ═══════════════════════════════════════════════════════ */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
         }
         
     </style>
@@ -297,58 +457,135 @@ def inject_custom_css():
     
     st.markdown("""
     <style>
-        /* App Titles */
+        /* ═══════════════════════════════════════════════════════
+           TYPOGRAPHY — Medical Visual Hierarchy
+           ═══════════════════════════════════════════════════════ */
         .moroccan-title {
-            font-size: 3.5rem;
-            font-weight: 800;
-            background: linear-gradient(90deg, #5eead4, #ffffff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-align: center;
-            margin-bottom: 0px;
-            padding-bottom: 5px;
-            letter-spacing: -0.5px;
+            font-size: 3.5rem !important;
+            font-weight: 900 !important;
+            background: linear-gradient(135deg, #0891B2 0%, #2563EB 50%, #0E7490 100%) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+            background-clip: text !important;
+            text-align: center !important;
+            margin-bottom: 0px !important;
+            padding-bottom: 8px !important;
+            letter-spacing: -1px !important;
+            font-family: 'Cairo', 'Inter', sans-serif !important;
+            line-height: 1.2 !important;
         }
         .moroccan-subtitle {
-            text-align: center;
-            color: var(--z-muted);
-            font-size: 1.15rem;
-            font-weight: 500;
-            margin-bottom: var(--space-4);
+            text-align: center !important;
+            color: var(--shifa-text-muted) !important;
+            font-size: 1.05rem !important;
+            font-weight: 400 !important;
+            margin-bottom: var(--space-6) !important;
+            line-height: 1.7 !important;
+            font-family: 'Cairo', sans-serif !important;
+            max-width: 600px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+        }
+        .home-section-title {
+            margin-top: var(--space-6) !important;
+            margin-bottom: var(--space-3) !important;
+            font-size: 1.15rem !important;
+            font-weight: 700 !important;
+            text-align: center !important;
+            color: var(--shifa-text) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 8px !important;
+            font-family: 'Cairo', sans-serif !important;
+        }
+        .home-section-title span {
+            color: var(--shifa-primary) !important;
+            font-size: 1.3rem !important;
         }
 
+        /* ═══════════════════════════════════════════════════════
+           EMERGENCY BANNER — Compact Professional Alert
+           ═══════════════════════════════════════════════════════ */
         @keyframes pulseAlert {
-            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.2); }
-            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+            0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.15); }
+            70% { box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
         }
-        /* Modern Soft UI Emergency Alert */
         .zellige-alert {
-            background: rgba(239, 68, 68, 0.05);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            border-right: 4px solid var(--z-red);
-            border-radius: 12px;
-            padding: 1.2rem 1.5rem;
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            border: 1px solid #fcd34d;
+            border-right: 4px solid #f59e0b;
+            border-radius: var(--radius-lg);
+            padding: 1rem 1.25rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: var(--space-4);
-            animation: pulseAlert 2.5s infinite;
+            animation: pulseAlert 3s infinite;
+            flex-wrap: wrap;
+            gap: 12px;
         }
-        .zellige-alert-title { color: #f8fafc; font-weight: 700; font-size: 1.1rem; display: flex; align-items: center; gap: 0.8rem; }
-        .zellige-alert-text { color: var(--z-muted); font-size: 0.9rem; margin-top: 0.2rem; font-weight: 500; }
-        .zellige-alert-numbers { display:flex; gap: 10px; }
+        .zellige-alert-title { color: #92400e; font-weight: 700; font-size: 1rem; display: flex; align-items: center; gap: 0.6rem; }
+        .zellige-alert-text { color: #b45309; font-size: 0.85rem; margin-top: 0.15rem; font-weight: 500; line-height: 1.4; }
+        .zellige-alert-numbers { display: flex; gap: 8px; flex-wrap: wrap; }
         .zellige-alert-numbers span {
-            background: rgba(239, 68, 68, 0.1);
-            color: #fca5a5;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            border: 1px solid rgba(239, 68, 68, 0.15);
+            background: rgba(245,158,11,0.08) !important;
+            color: #92400e !important;
+            padding: 6px 14px !important;
+            border-radius: var(--radius-sm) !important;
+            font-weight: 700 !important;
+            font-size: 0.95rem !important;
+            border: 1px solid rgba(245,158,11,0.2) !important;
+            white-space: nowrap !important;
         }
         
     </style>
+    
+    <!-- ترجمة النصوص المضمنة في Streamlit إلى العربية وإدارة الموافقة -->
+    <script>
+    const _shifaInit = () => {
+        const doc = window.parent.document || document;
+        
+        // 1. Translations & Tagging Hero Secondary Button
+        doc.querySelectorAll('button').forEach(btn => {
+            if (btn.textContent.trim() === 'Browse files') btn.textContent = 'تصفح الملفات';
+            if (btn.textContent.includes('📸')) {
+                btn.classList.add('hero-secondary-btn');
+            }
+        });
+        doc.querySelectorAll('p, span, div, small, label').forEach(el => {
+            if (el.childElementCount === 0) {
+                let t = el.textContent.trim();
+                if (t === 'Drag and drop file here') el.textContent = 'اسحب وأفلت الملف هنا';
+                if (t.startsWith('Limit') || (t.includes('Limit') && t.includes('per file'))) {
+                    el.textContent = 'الحد الأقصى 10 ميغا • JPG, JPEG, PNG';
+                }
+            }
+        });
+
+        // 2. Auto-accept Consent if stored in localStorage
+        if (localStorage.getItem('shifa_consent_accepted') === 'true') {
+            doc.querySelectorAll('button').forEach(btn => {
+                if (btn.textContent.trim().includes("أوافق وأفهم")) {
+                    btn.click();
+                }
+            });
+        }
+    };
+
+    const doc = window.parent.document || document;
+    doc.addEventListener('click', (e) => {
+        if (e.target && e.target.textContent && e.target.textContent.includes("أوافق وأفهم")) {
+            localStorage.setItem('shifa_consent_accepted', 'true');
+        }
+    });
+
+    const _obs = new MutationObserver(_shifaInit);
+    _obs.observe(window.parent.document.body || document.body, {childList: true, subtree: true});
+    setTimeout(_shifaInit, 500);
+    setTimeout(_shifaInit, 2000);
+    </script>
     """, unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────────────────────
@@ -361,80 +598,283 @@ def _check_auth() -> bool:
 
     inject_custom_css()
 
-    # ── Extra CSS for animated auth card ──
+    # ── Extra CSS for premium auth card ──
     st.markdown("""
     <style>
     @keyframes fadeSlideUp {
         from { opacity: 0; transform: translateY(24px); }
         to   { opacity: 1; transform: translateY(0); }
     }
+    
     .auth-wrapper {
-        animation: fadeSlideUp 0.5s cubic-bezier(0.16,1,0.3,1) both;
+        animation: fadeSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
-    /* Tab styling override */
-    [data-baseweb="tab-list"] {
-        background: rgba(15,23,42,0.6) !important;
-        border-radius: 12px !important;
-        padding: 4px !important;
-        gap: 4px !important;
-        border: 1px solid rgba(255,255,255,0.05) !important;
+
+    /* Card styling: soft medical, no heavy shadows */
+    .auth-wrapper [data-testid="stVerticalBlockBorderWrapper"] {
+        border-radius: 20px !important;
+        padding: 32px !important;
+        border: 1px solid var(--shifa-border) !important;
+        background-color: var(--shifa-card) !important;
+        box-shadow: var(--shifa-shadow-lg) !important;
     }
-    [data-baseweb="tab"] {
-        border-radius: 8px !important;
+
+    /* Typography & Hierarchy */
+    .brand-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        margin-bottom: 32px;
+        gap: 12px;
+    }
+    .brand-logo {
+        height: 100px;
+        width: auto;
+        object-fit: contain;
+        transition: transform 0.3s ease;
+        filter: drop-shadow(0 2px 8px rgba(8, 145, 178, 0.15));
+    }
+    .brand-logo:hover {
+        transform: scale(1.03);
+    }
+    .brand-title {
+        font-size: 2.25rem;
+        font-weight: 700;
+        margin: 0;
+        background: linear-gradient(135deg, #0891B2, #2563EB);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .brand-tagline {
+        font-size: 0.95rem;
+        color: var(--shifa-text-muted);
+        margin: 0;
+        font-weight: 400;
+        line-height: 1.5;
+    }
+
+    /* Segmented equal-width tabs */
+    div[data-baseweb="tab-list"] {
+        display: flex !important;
+        width: 100% !important;
+        background-color: var(--shifa-bg-secondary) !important;
+        border-radius: 14px !important;
+        padding: 6px !important;
+        gap: 6px !important;
+        border: 1px solid var(--shifa-border) !important;
+        margin-bottom: 24px !important;
+    }
+    div[data-baseweb="tab-list"] button[data-baseweb="tab"] {
+        flex: 1 1 0% !important;
+        text-align: center !important;
+        justify-content: center !important;
+        border-radius: 10px !important;
         font-weight: 600 !important;
         font-size: 0.95rem !important;
-        padding: 0.5rem 1rem !important;
-        color: #94a3b8 !important;
+        padding: 12px 16px !important;
+        color: var(--shifa-text-secondary) !important;
+        background-color: transparent !important;
+        transition: all 0.2s ease !important;
+        border: none !important;
     }
-    [aria-selected="true"][data-baseweb="tab"] {
-        background: linear-gradient(135deg, var(--z-green), var(--z-green-hover)) !important;
-        color: #fff !important;
-        box-shadow: 0 4px 12px rgba(13,148,136,0.3) !important;
+    div[data-baseweb="tab-list"] button[data-baseweb="tab"]:hover {
+        color: var(--shifa-text) !important;
+        background-color: rgba(255, 255, 255, 0.4) !important;
     }
-    /* Guest banner */
-    .guest-banner {
-        background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(59,130,246,0.05));
-        border: 1px solid rgba(59,130,246,0.2);
-        border-radius: 12px;
-        padding: 1rem 1.25rem;
-        margin-top: 0.75rem;
+    div[data-baseweb="tab-list"] button[data-baseweb="tab"][aria-selected="true"] {
+        background-color: #ffffff !important;
+        color: var(--shifa-primary) !important;
+        box-shadow: 0 4px 10px rgba(8, 145, 178, 0.05) !important;
+        font-weight: 700 !important;
+    }
+
+    /* Form input styling */
+    .auth-wrapper [data-testid="stTextInput"] label, 
+    .auth-wrapper [data-testid="stPasswordInput"] label {
+        font-size: 0.9rem !important;
+        font-weight: 600 !important;
+        color: var(--shifa-text-secondary) !important;
+        margin-bottom: 8px !important;
+    }
+    .auth-wrapper input {
+        border-radius: 10px !important;
+        border: 1px solid var(--shifa-border) !important;
+        background-color: #ffffff !important;
+        color: var(--shifa-text) !important;
+        padding: 12px 16px !important;
+        font-size: 0.95rem !important;
+        transition: all 0.2s ease !important;
+    }
+    .auth-wrapper input:focus {
+        border-color: var(--shifa-primary) !important;
+        box-shadow: 0 0 0 3px var(--shifa-primary-glow) !important;
+    }
+
+    /* Form Primary CTA styling */
+    .auth-cta-container {
+        margin-top: 24px;
+    }
+    .auth-cta-container div[data-testid="stButton"] button {
+        height: 52px !important;
+        border-radius: 12px !important;
+        background-color: var(--shifa-primary) !important;
+        color: #ffffff !important;
+        font-size: 1rem !important;
+        font-weight: 700 !important;
+        border: none !important;
+        transition: all 0.2s ease-in-out !important;
+        width: 100% !important;
+    }
+    .auth-cta-container div[data-testid="stButton"] button:hover {
+        background-color: var(--shifa-primary-hover) !important;
+        box-shadow: 0 4px 12px rgba(8, 145, 178, 0.2) !important;
+        transform: translateY(-1px);
+    }
+    .auth-cta-container div[data-testid="stButton"] button:active {
+        transform: translateY(0);
+    }
+
+    /* Guest Card Layout */
+    .guest-feature-card {
+        background: #ffffff;
+        border: 1px solid var(--shifa-border);
+        border-radius: 16px;
+        padding: 20px;
+        margin: 8px 0 24px 0;
+    }
+    .guest-card-header {
         text-align: center;
+        margin-bottom: 20px;
     }
-    .guest-pill {
+    .guest-badge {
         display: inline-block;
-        background: rgba(59,130,246,0.2);
-        color: #60a5fa;
-        border-radius: 20px;
-        padding: 4px 12px;
+        background-color: var(--shifa-primary-light);
+        color: var(--shifa-primary);
         font-size: 0.8rem;
         font-weight: 700;
-        margin-bottom: 0.4rem;
+        padding: 6px 14px;
+        border-radius: 9999px;
+        margin-bottom: 12px;
     }
+    .guest-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--shifa-text);
+        margin: 0 0 6px 0;
+    }
+    .guest-subtitle {
+        font-size: 0.88rem;
+        color: var(--shifa-text-muted);
+        margin: 0;
+        font-weight: 400;
+        line-height: 1.5;
+    }
+    .guest-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-top: 16px;
+        text-align: right;
+    }
+    @media (max-width: 768px) {
+        .guest-grid {
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+    }
+    .guest-col {
+        background: var(--shifa-bg-secondary);
+        border-radius: 12px;
+        padding: 14px;
+        border: 1px solid var(--shifa-border);
+    }
+    .guest-col-available {
+        border-top: 3px solid var(--shifa-accent);
+    }
+    .guest-col-unavailable {
+        border-top: 3px solid var(--shifa-danger);
+    }
+    .guest-col-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin: 0 0 12px 0;
+    }
+    .guest-col-available .guest-col-title {
+        color: #065f46;
+    }
+    .guest-col-unavailable .guest-col-title {
+        color: #991b1b;
+    }
+    .guest-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .guest-list li {
+        font-size: 0.85rem;
+        color: var(--shifa-text-secondary);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        line-height: 1.4;
+    }
+    .icon-check {
+        color: var(--shifa-accent);
+        font-weight: bold;
+    }
+    .icon-cross {
+        color: var(--shifa-danger);
+        font-weight: bold;
+    }
+
+    /* Guest CTA Button (Strongest Element) */
+    .guest-cta-container {
+        margin-top: 16px;
+    }
+    .guest-cta-container div[data-testid="stButton"] button {
+        height: 54px !important;
+        border-radius: 12px !important;
+        background: linear-gradient(135deg, var(--shifa-primary), var(--shifa-primary-hover)) !important;
+        color: #ffffff !important;
+        font-size: 1.05rem !important;
+        font-weight: 700 !important;
+        border: none !important;
+        box-shadow: 0 4px 14px rgba(8, 145, 178, 0.25) !important;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        width: 100% !important;
+    }
+    .guest-cta-container div[data-testid="stButton"] button:hover {
+        background: linear-gradient(135deg, var(--shifa-primary-hover), var(--shifa-primary-deep)) !important;
+        box-shadow: 0 8px 22px rgba(8, 145, 178, 0.35) !important;
+        transform: translateY(-2px) !important;
+    }
+    .guest-cta-container div[data-testid="stButton"] button:active {
+        transform: translateY(0) !important;
     </style>
     """, unsafe_allow_html=True)
 
-    col1, col2, col3 = st.columns([1, 1.3, 1])
+    col1, col2, col3 = st.columns([0.5, 2.0, 0.5])
     with col2:
-        st.markdown("<div style='margin-bottom: 8vh;'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='margin-bottom: 4vh;'></div>", unsafe_allow_html=True)
         st.markdown("<div class='auth-wrapper'>", unsafe_allow_html=True)
 
         with st.container(border=True):
             # ── Logo + header ──
             logo_html = (
-                f"<img src='{LOGO_SRC}' style='height:80px; margin-bottom:10px;'>"
+                f"<img src='{LOGO_SRC}' class='brand-logo'>"
                 if LOGO_SRC else
-                "<div style='font-size:3rem;'>⚜️</div>"
+                "<div style='font-size:3.5rem;'>⚜️</div>"
             )
             st.markdown(f"""
-            <div style='text-align:center; padding-bottom: 0.25rem;'>
+            <div class="brand-section">
                 {logo_html}
-                <h2 style='margin:4px 0 2px; font-size:1.9rem; font-weight:800;
-                           background:linear-gradient(90deg,#d4af37,#fff);
-                           -webkit-background-clip:text; -webkit-text-fill-color:transparent;'>
-                    SHIFA AI
-                </h2>
-                <p style='color:#94a3b8; font-size:0.9rem; margin:0 0 1.25rem;'>
-                    المنصة الطبية الذكية &nbsp;·&nbsp; Plateforme Médicale IA
+                <h1 class="brand-title">SHIFA AI</h1>
+                <p class="brand-tagline">
+                    المنصة الطبية الذكية للمحترفين &nbsp;·&nbsp; Plateforme Médicale IA Premium
                 </p>
             </div>
             """, unsafe_allow_html=True)
@@ -443,7 +883,7 @@ def _check_auth() -> bool:
             tab_login, tab_register, tab_guest = st.tabs([
                 "🔑 تسجيل الدخول",
                 "📝 إنشاء حساب",
-                "👤 كزائر / Invité"
+                "👤 وضع الزائر / Invité"
             ])
 
             # ════════════════════════════════════
@@ -462,6 +902,7 @@ def _check_auth() -> bool:
                     placeholder="••••••••",
                     key="login_password"
                 )
+                st.markdown("<div class='auth-cta-container'>", unsafe_allow_html=True)
                 if st.button("🔑 دخول / Se connecter", type="primary", key="btn_login", width="stretch"):
                     if not login_username or not login_password:
                         st.error("⚠️ Veuillez remplir tous les champs.")
@@ -477,9 +918,10 @@ def _check_auth() -> bool:
                             st.rerun()
                         else:
                             st.error(f"❌ {result['message']}")
+                st.markdown("</div>", unsafe_allow_html=True)
                 st.markdown(
-                    "<div style='text-align:center; margin-top:0.75rem;'>"
-                    "<span style='color:#64748b; font-size:0.8rem;'>للمحترفين الطبيين فقط</span></div>",
+                    "<div style='text-align:center; margin-top:1.25rem;'>"
+                    "<span style='color:#64748b; font-size:0.85rem; font-weight: 500;'>للمحترفين الطبيين فقط / Réservé aux professionnels de santé</span></div>",
                     unsafe_allow_html=True
                 )
 
@@ -515,6 +957,7 @@ def _check_auth() -> bool:
                     placeholder="••••••••",
                     key="reg_password2"
                 )
+                st.markdown("<div class='auth-cta-container'>", unsafe_allow_html=True)
                 if st.button("📝 إنشاء الحساب / Créer", type="primary", key="btn_register", width="stretch"):
                     if not reg_username or not reg_password:
                         st.error("⚠️ Les champs marqués * sont obligatoires.")
@@ -534,36 +977,41 @@ def _check_auth() -> bool:
                             st.info("👆 Cliquez maintenant sur l'onglet \"تسجيل الدخول\" pour vous connecter.")
                         else:
                             st.error(f"❌ {result['message']}")
+                st.markdown("</div>", unsafe_allow_html=True)
 
             # ════════════════════════════════════
             # TAB 3 – GUEST
             # ════════════════════════════════════
             with tab_guest:
-                st.markdown("<div style='height:0.75rem;'></div>", unsafe_allow_html=True)
-                st.markdown("""
-                <div class='guest-banner'>
-                    <div class='guest-pill'>⚡ وضع الزائر</div>
-                    <p style='color:#f8fafc; font-size:0.95rem; margin:0.5rem 0 0.25rem; font-weight:600;'>
-                        استخدم المنصة بدون حساب
-                    </p>
-                    <p style='color:#94a3b8; font-size:0.82rem; margin:0;'>
-                        لن يتم حفظ محادثاتك &nbsp;·&nbsp; وصول محدود لبعض الميزات
-                    </p>
-                </div>
-                """, unsafe_allow_html=True)
-                st.markdown("<div style='height:0.5rem;'></div>", unsafe_allow_html=True)
+                st.markdown("""<div class="guest-feature-card">
+<div class="guest-card-header">
+<span class="guest-badge">وضع الزائر · Mode Invité</span>
+<h3 class="guest-title">استخدام SHIFA AI بدون إنشاء حساب</h3>
+<p class="guest-subtitle">استكشف القدرات الأساسية للذكاء الاصطناعي الطبي فوراً وبسرعة.</p>
+</div>
+<div class="guest-grid">
+<div class="guest-col guest-col-available">
+<h4 class="guest-col-title">✓ ce que vous pouvez utiliser</h4>
+<ul class="guest-list">
+<li><span class="icon-check">✓</span> المحادثة الطبية الذكية</li>
+<li><span class="icon-check">✓</span> فحص الأعراض الفوري</li>
+<li><span class="icon-check">✓</span> تحليل الصور والتقارير</li>
+<li><span class="icon-check">✓</span> الحاسبات الطبية الحيوية</li>
+</ul>
+</div>
+<div class="guest-col guest-col-unavailable">
+<h4 class="guest-col-title">✕ nécessite un compte</h4>
+<ul class="guest-list">
+<li><span class="icon-cross">✕</span> حفظ تاريخ الاستشارات</li>
+<li><span class="icon-cross">✕</span> التقارير الطبية المفصلة</li>
+<li><span class="icon-cross">✕</span> المفضلة والمستندات</li>
+<li><span class="icon-cross">✕</span> مزامنة البيانات السحابية</li>
+</ul>
+</div>
+</div>
+</div>""", unsafe_allow_html=True)
 
-                # Features comparison
-                st.markdown("""
-                <div style='font-size:0.85rem; color:#94a3b8; margin-bottom:0.75rem;'>
-                    <b style='color:#f8fafc;'>✅ وضع الزائر يتيح:</b><br>
-                    ✔ المحادثة الطبية &nbsp;·&nbsp; ✔ فحص الأعراض<br>
-                    ✔ تحليل الصور &nbsp;·&nbsp; ✔ الحاسبات الطبية<br><br>
-                    <b style='color:#f8fafc;'>🔒 يتطلب حساباً:</b><br>
-                    ✗ حفظ التاريخ الطبي &nbsp;·&nbsp; ✗ المفضلة والتقارير
-                </div>
-                """, unsafe_allow_html=True)
-
+                st.markdown("<div class='guest-cta-container'>", unsafe_allow_html=True)
                 if st.button("👤 المتابعة كزائر / Continuer en invité", key="btn_guest", width="stretch"):
                     st.session_state["_authenticated"] = True
                     st.session_state["_user"] = guest_session() if guest_session else {
@@ -571,6 +1019,7 @@ def _check_auth() -> bool:
                     }
                     st.session_state["_is_guest"] = True
                     st.rerun()
+                st.markdown("</div>", unsafe_allow_html=True)
 
         st.markdown("</div>", unsafe_allow_html=True)
     return False
@@ -579,6 +1028,68 @@ if not _check_auth():
     st.stop()
 
 inject_custom_css()
+
+# ─────────────────────────────────────────────────────────────
+# موافقة إخلاء المسؤولية الطبية (تظهر مرة واحدة فقط)
+# يتم تخزين الموافقة في localStorage + session_state
+# ─────────────────────────────────────────────────────────────
+def _check_consent():
+    """التحقق من موافقة المستخدم على إخلاء المسؤولية الطبية."""
+    if "consent_accepted" not in st.session_state:
+        st.session_state["consent_accepted"] = False
+
+    if not st.session_state["consent_accepted"]:
+        st.markdown("""
+        <style>
+        .consent-wrapper [data-testid="stVerticalBlockBorderWrapper"] {
+            border-radius: 20px !important;
+            padding: 32px !important;
+            border: 1px solid #e2e8f0 !important;
+            border-top: 5px solid #ef4444 !important;
+            background-color: #ffffff !important;
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02) !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            st.markdown("<div style='margin-top: 10vh;'></div>", unsafe_allow_html=True)
+            st.markdown("<div class='consent-wrapper'>", unsafe_allow_html=True)
+            with st.container(border=True):
+                st.markdown(f"""<div style='text-align:center; padding: 0.5rem;'>
+{'<img src=\"' + LOGO_SRC + '\" style=\"height:64px; margin-bottom:12px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));\">' if LOGO_SRC else '<div style=\"font-size:3rem;\">⚜️</div>'}
+<h2 style='color:#0f172a; margin:4px 0 8px 0; font-size:1.75rem; font-weight:800; font-family:\"Cairo\", sans-serif;'>SHIFA AI</h2>
+<div style='background:rgba(239,68,68,0.04); border:1px solid rgba(239,68,68,0.15); border-radius:14px; padding:1.5rem; margin:1.5rem 0; text-align:right;'>
+<h3 style='color:#dc2626; font-size:1.15rem; font-weight:700; margin:0 0 1rem 0; font-family:\"Cairo\", sans-serif; display:flex; align-items:center; gap:8px;'>
+<span>⚕️ إخلاء المسؤولية الطبية / Clause de Non-responsabilité</span>
+</h3>
+<p style='color:#334155; font-size:0.92rem; line-height:1.75; margin:0; font-family:\"Cairo\", sans-serif;'>
+هذه المنصة توفر <b style='color:#dc2626; font-weight:700;'>دعماً معلوماتياً فقط</b> ولا تُعتبر بديلاً عن الاستشارة الطبية المهنية أو التشخيص أو العلاج.
+<br/><br/>
+⚠️ لا تستخدم هذا التطبيق في حالات الطوارئ الطبية. في حالة الطوارئ، اتصل بالإسعاف فوراً على الرقم <b style='color:#dc2626; font-weight:700;'>15</b>.
+<br/><br/>
+🔒 جميع البيانات المدخلة تُعالج محلياً ولا يتم مشاركتها مع أي طرف ثالث.
+<br/><br/>
+النتائج والتحليلات مخصصة للأغراض <b style='color:#2563eb; font-weight:700;'>التعليمية والأكاديمية</b> فقط.
+</p>
+</div>
+</div>""", unsafe_allow_html=True)
+
+                if st.button("✅ أوافق وأفهم", type="primary", key="consent_btn", width="stretch"):
+                    st.session_state["consent_accepted"] = True
+                    st.rerun()
+
+                st.markdown("""<p style='color:#64748b; font-size:0.8rem; text-align:center; margin-top:0.75rem; font-family:"Cairo", sans-serif; line-height:1.4;'>
+بالنقر على "أوافق وأفهم"، أنت تقر بقراءة وفهم إخلاء المسؤولية أعلاه.
+</p>""", unsafe_allow_html=True)
+            st.markdown("</div>", unsafe_allow_html=True)
+        return False
+    return True
+
+if not _check_consent():
+    st.stop()
+
 
 # ─────────────────────────────────────────────────────────────
 # LOAD SYSTEM (Agent-based orchestrator)
@@ -629,28 +1140,7 @@ if "rate_limiter" not in st.session_state:
 DB_STATUS = orch.db_ready if orch else False
 AI_STATUS = orch.llm_ready if orch else False
 
-# ─────────────────────────────────────────────────────────────
-# TOP QUICK ACTIONS BAR (Visible when NOT on home)
-# ─────────────────────────────────────────────────────────────
-if st.session_state.page != "home":
-    # Layout with columns for clean navigation
-    cols_nav = st.columns([1.5, 1.5, 1.5, 1.5, 4]) # spacing
-    nav_actions = [
-        ("🏠 الرئيسية", "home", True),
-        ("🔍 فحص مبدئي", "scanner", True),
-        ("🎤 مساعد صوتي", "voice", True),
-        ("📍 الرعاية", "pages/10_🏥_الرعاية_القريبة.py", False)
-    ]
-    
-    for idx, (label, target, is_internal) in enumerate(nav_actions):
-        with cols_nav[idx]:
-            if st.button(label, key=f"top_nav_{idx}", width="stretch"):
-                if is_internal:
-                    st.session_state.page = target
-                    st.rerun()
-                else:
-                    st.switch_page(target)
-    st.markdown("<hr style='border:0; height:1px; background:linear-gradient(to right, transparent, #16a34a, transparent); opacity:0.3; margin-top:5px;'/>", unsafe_allow_html=True)
+
 
 # ─────────────────────────────────────────────────────────────
 # SIDEBAR
@@ -660,16 +1150,16 @@ with st.sidebar:
         st.markdown(f"""
             <div style="text-align:center; padding: 1rem 0;">
                 <img src="{LOGO_SRC}" style="height:90px; margin-bottom:10px;">
-                <h2 style="color:#d4af37; margin:8px 0 4px; font-family:'Cairo'; font-weight:800; font-size:1.6rem;">SHIFA AI</h2>
-                <p style="color:#94a3b8; font-size:0.9rem; margin:0;">الذكاء الاصطناعي الطبي</p>
+                <h2 style="color:var(--shifa-primary); margin:8px 0 4px; font-family:'Cairo'; font-weight:800; font-size:1.6rem;">SHIFA AI</h2>
+                <p style="color:var(--shifa-text-secondary); font-size:0.9rem; margin:0; font-family:'Cairo'; font-weight:500;">الذكاء الاصطناعي الطبي</p>
             </div>
         """, unsafe_allow_html=True)
     else:
         st.markdown("""
             <div style="text-align:center; padding: 1rem 0;">
-                <div style="font-size:3.5rem; color:#16a34a;">⚜️</div>
-                <h2 style="color:#d4af37; margin:8px 0 4px; font-family:'Cairo'; font-weight:800; font-size:1.6rem;">SHIFA AI</h2>
-                <p style="color:#94a3b8; font-size:0.9rem; margin:0;">الذكاء الاصطناعي الطبي</p>
+                <div style="font-size:3.5rem; color:var(--shifa-primary);">⚜️</div>
+                <h2 style="color:var(--shifa-primary); margin:8px 0 4px; font-family:'Cairo'; font-weight:800; font-size:1.6rem;">SHIFA AI</h2>
+                <p style="color:var(--shifa-text-secondary); font-size:0.9rem; margin:0; font-family:'Cairo'; font-weight:500;">الذكاء الاصطناعي الطبي</p>
             </div>
         """, unsafe_allow_html=True)
     
@@ -683,27 +1173,27 @@ with st.sidebar:
 
     if _is_guest:
         st.markdown("""
-        <div style="background:rgba(212,175,55,0.08); border:1px solid rgba(212,175,55,0.25);
+        <div style="background:#fffbeb; border:1px solid #fcd34d;
                     border-radius:10px; padding:0.6rem 1rem; text-align:center; margin-bottom:0.5rem;">
-            <span style="color:#d4af37; font-weight:700; font-size:0.85rem;">👤 زائر / حساب مؤقت</span><br>
-            <span style="color:#64748b; font-size:0.75rem;">الميزات محدودة. أنشئ حساباً للحفظ.</span>
+            <span style="color:#b45309; font-weight:700; font-size:0.85rem; font-family:'Cairo';">👤 زائر / حساب مؤقت</span><br>
+            <span style="color:#64748b; font-size:0.75rem; font-family:'Cairo';">الميزات محدودة. أنشئ حساباً للحفظ.</span>
         </div>
         """, unsafe_allow_html=True)
     else:
         st.markdown(f"""
-        <div style="background:rgba(22,163,74,0.08); border:1px solid rgba(22,163,74,0.2);
+        <div style="background:#ecfdf5; border:1px solid #a7f3d0;
                     border-radius:10px; padding:0.6rem 1rem; text-align:center; margin-bottom:0.5rem;">
-            <span style="color:#a7f3d0; font-weight:700; font-size:0.85rem;">✅ {_ufull}</span><br>
-            <span style="color:#64748b; font-size:0.75rem;">@{_uname}</span>
+            <span style="color:#065f46; font-weight:700; font-size:0.85rem; font-family:'Cairo';">✅ {_ufull}</span><br>
+            <span style="color:#64748b; font-size:0.75rem; font-family:'Cairo';">@{_uname}</span>
         </div>
         """, unsafe_allow_html=True)
 
-    if st.button("🚪 تسجيل الخروج / Déconnexion", width="stretch", key="sidebar_logout"):
+    if st.button("🚪 تسجيل الخروج", width="stretch", key="sidebar_logout"):
         for k in ["_authenticated", "_user", "_is_guest", "messages", "local_history"]:
             st.session_state.pop(k, None)
         st.rerun()
 
-    st.markdown("<hr style='border-color: rgba(22, 163, 74, 0.1);'/>", unsafe_allow_html=True)
+    st.markdown("<hr style='border-color: rgba(8, 145, 178, 0.1);'/>", unsafe_allow_html=True)
     
     if st.session_state.page != "home":
         if st.button("⬅️ العودة للرئيسية", width="stretch", type="primary"):
@@ -712,7 +1202,7 @@ with st.sidebar:
     else:
         st.info("✓ أنت في الصفحة الرئيسية")
         
-    st.markdown("<hr style='border-color: rgba(22, 163, 74, 0.2);'/>", unsafe_allow_html=True)
+    st.markdown("<hr style='border-color: rgba(8, 145, 178, 0.2);'/>", unsafe_allow_html=True)
     
     if st.session_state.messages:
         st.caption(f"💬 المحادثة الحالية: {len(st.session_state.messages)} رسالة")
@@ -725,8 +1215,8 @@ with st.sidebar:
 
 
     st.markdown("""
-    <div style="background:rgba(22, 163, 74, 0.05); border-right:3px solid #16a34a; padding:12px; margin-top:2rem; border-radius:8px 0 0 8px;">
-        <p style="color:#a7f3d0; font-size:0.8rem; margin:0; line-height:1.5;">
+    <div style="background: var(--shifa-primary-light); border-right: 3px solid var(--shifa-primary); padding: 12px; margin-top: 2rem; border-radius: 8px 0 0 8px;">
+        <p style="color: var(--shifa-text); font-size: 0.8rem; margin: 0; line-height: 1.5; font-family: 'Cairo'; font-weight: 500;">
             <b>تنبيه إخلاء المسؤولية:</b><br/>
             المنصة توفر دعماً معلوماتياً. لا تغني أبدًا عن استشارة الطبيب المختص أو زيارة العيادة.
         </p>
@@ -737,16 +1227,16 @@ with st.sidebar:
 # PAGE: HOME (LANDING DASHBOARD)
 # ─────────────────────────────────────────────────────────────
 if st.session_state.page == "home":
-    st.markdown('<div class="moroccan-title">شفاء AI</div>', unsafe_allow_html=True)
+    st.markdown('<div class="moroccan-title">SHIFA AI</div>', unsafe_allow_html=True)
     st.markdown('<div class="moroccan-subtitle">مساعدك الطبي الذكي لتقييم الأعراض والتوجيه الصحي</div>', unsafe_allow_html=True)
         
     # ── Emergency Banner (Zellige Style) ──
     st.markdown("""
         <div class="zellige-alert">
             <div class="zellige-alert-title">
-                <span style="font-size:1.8rem;">🚨</span>
+                <span class="material-symbols-rounded" style="font-size:1.8rem; color:#d97706; display:flex; align-items:center; justify-content:center;">emergency</span>
                 <div>
-                    <div>تنبيه طوارئ طبية فعلية؟</div>
+                    <div style="font-weight: 700; font-size: 1rem;">تنبيه طوارئ طبية فعلية؟</div>
                     <div class="zellige-alert-text">تواصل فورا مع خدمات الطوارئ لإنقاذ الحياة. لا تنتظر التطبيق.</div>
                 </div>
             </div>
@@ -758,49 +1248,26 @@ if st.session_state.page == "home":
     """, unsafe_allow_html=True)
     
     # ── Main CTA (Onboarding / 2 Actions) ──
-    st.markdown("<p style='text-align:center; color:#94a3b8; font-size:1.15rem; margin-bottom:1.5rem;'>👋 مرحباً بك! يرجى اختيار الخدمة المناسبة لحالتك للبدء.</p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center; color:#64748b; font-size:1.15rem; margin-bottom:1.5rem;'>👋 مرحباً بك! يرجى اختيار الخدمة المناسبة لحالتك للبدء.</p>", unsafe_allow_html=True)
     col_cta1, col_cta2, col_cta3, col_cta4 = st.columns([0.5, 2, 2, 0.5])
     with col_cta2:
         if st.button("💬 صف أعراضك للطبيب الذكي", width="stretch", type="primary"):
             st.session_state.page = "chat"
             st.rerun()
     with col_cta3:
-        if st.button("📸 رفع ومسح صورة طبية / وصفة", width="stretch", type="primary"):
+        # User hierarchy recommendation: Make second button a secondary/outline CTA
+        if st.button("📸 رفع ومسح صورة طبية / وصفة", width="stretch", type="secondary"):
             st.session_state.page = "vision"
             st.rerun()
             
-    st.markdown("<br><br>", unsafe_allow_html=True)
-    
-    # ── System Metrics Panel (Hidden by default / Dev Only) ──
-    with st.expander("⚙️ تفاصيل حالة النظام والمحرك (للمشرفين)"):
-        st.caption("مراقبة أداء محرك الاستدلال وقاعدة المعرفة")
-        cols_metrics = st.columns(4)
-        
-        with cols_metrics[0]:
-            with st.container(border=True):
-                st.markdown(f"<div style='text-align:center;'><h3>🧠</h3><p style='color:#94a3b8; margin:0;'>محرك التحليل</p><h4 style='color:{'#16a34a' if AI_STATUS else '#dc2626'}; margin:0;'>{'نشط ✔' if AI_STATUS else 'غير متصل ❌'}</h4></div>", unsafe_allow_html=True)
-            
-        with cols_metrics[1]:
-            with st.container(border=True):
-                st.markdown(f"<div style='text-align:center;'><h3>📚</h3><p style='color:#94a3b8; margin:0;'>قاعدة المعرفة</p><h4 style='color:{'#16a34a' if DB_STATUS else '#fbbf24'}; margin:0;'>{'محدثة ✔' if DB_STATUS else 'جاري التحديث⏳'}</h4></div>", unsafe_allow_html=True)
 
-        with cols_metrics[2]:
-            msg_count = len(st.session_state.get("local_history", []))
-            with st.container(border=True):
-                st.markdown(f"<div style='text-align:center;'><h3>👥</h3><p style='color:#94a3b8; margin:0;'>الجلسة المحلية</p><h4 style='color:#38bdf8; margin:0;'>{msg_count} عنصر محفوظ</h4></div>", unsafe_allow_html=True)
-            
-        with cols_metrics[3]:
-            with st.container(border=True):
-                st.markdown("<div style='text-align:center;'><h3>⚡</h3><p style='color:#94a3b8; margin:0;'>السرعة</p><h4 style='color:#d4af37; margin:0;'>الزمن مستقر</h4></div>", unsafe_allow_html=True)
 
-    st.markdown("<hr/>", unsafe_allow_html=True)
     
     # ── Interactive Services Menu (Categorized with Distinct UI Layout) ──
-    
-    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<div style='margin-top: var(--space-6);'></div>", unsafe_allow_html=True)
 
     # 1) Category: Medical AI Tools (Diagnostics)
-    st.markdown("<h3 style='color:var(--z-green); margin-top:var(--space-2); margin-bottom:var(--space-2); font-size:1.4rem; text-align: center;'><span class='material-symbols-rounded'>smart_toy</span> الذكاء الاصطناعي التشخيصي</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 class='home-section-title'><span class='material-symbols-rounded'>smart_toy</span> الذكاء الاصطناعي التشخيصي</h3>", unsafe_allow_html=True)
     col_ai1, col_ai2 = st.columns(2)
     with col_ai1:
         if st.button("💬 المحادثة الطبية\nتفاصيل الأعراض والتقييم المباشر", key="srv_chat", width="stretch"):
@@ -812,7 +1279,7 @@ if st.session_state.page == "home":
             st.rerun()
 
     # 2) Category: Advanced Diagnostics Tools
-    st.markdown("<h3 style='color:#3b82f6; margin-top:var(--space-4); margin-bottom:var(--space-2); font-size:1.4rem; text-align: center;'><span class='material-symbols-rounded'>science</span> أدوات الفحص المتقدمة</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 class='home-section-title'><span class='material-symbols-rounded'>science</span> أدوات الفحص المتقدمة</h3>", unsafe_allow_html=True)
     col_adv1, col_adv2, col_adv3 = st.columns(3)
     with col_adv1:
         if st.button("🔬 مختبر الصور (Vision)\nحلل الرنين المغناطيسي والأشعة", key="srv_vision", width="stretch"):
@@ -828,7 +1295,7 @@ if st.session_state.page == "home":
             st.rerun()
 
     # 3) Category: Specialized Services & Modules
-    st.markdown("<h3 style='color:#8b5cf6; margin-top:var(--space-4); margin-bottom:var(--space-2); font-size:1.4rem; text-align: center;'><span class='material-symbols-rounded'>health_and_safety</span> خدمات وموديولات متخصصة</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 class='home-section-title'><span class='material-symbols-rounded'>health_and_safety</span> خدمات وموديولات متخصصة</h3>", unsafe_allow_html=True)
     col_gen1, col_gen2, col_gen3 = st.columns(3)
     with col_gen1:
         if st.button("🧠 وحدة الصحة النفسية\nدعم نفسي ومعرفي مخصص", key="srv_mental", width="stretch"):
@@ -843,7 +1310,7 @@ if st.session_state.page == "home":
             st.rerun()
 
     # 4) Secondary Tools
-    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<div style='margin-top: var(--space-6);'></div>", unsafe_allow_html=True)
     col_sec1, col_sec2, col_sec3 = st.columns(3)
     with col_sec1:
         if st.button("🎙️ المساعد الصوتي السريع\nتحدث مباشرة ليتم فهمك فوراً", key="srv_voice", width="stretch"):
@@ -857,23 +1324,462 @@ if st.session_state.page == "home":
             st.session_state.page = "history"
             st.rerun()
     
-    # Optional direct link to doctor space on main dashboard
-    st.markdown("<hr style='opacity:0.2; margin-top:3rem;'/>", unsafe_allow_html=True)
+    # ── Doctor Space launcher — robust engineering solution ──────────────────
+    st.markdown("<hr style='opacity:0.1; margin-top: var(--space-6); margin-bottom: var(--space-4);'/>", unsafe_allow_html=True)
     st.markdown("<div style='text-align:center;'>", unsafe_allow_html=True)
-    if st.button("👨‍⚕️ فضاء الطبيب والإدارة الطبية الخاصة", key="srv_doc", help="الانتقال إلى تطبيق إدارة المستشفى والمرضى"):
+    if st.button("👨‍⚕️ فضاء الطبيب والإدارة الطبية الخاصة", key="srv_doc",
+                 help="الانتقال إلى تطبيق إدارة المستشفى والمرضى"):
+
+        import socket as _socket
         import subprocess as _sp
-        doctor_app = str(BASE_DIR / "partie Docteur+User" / "main.py")
-        _sp.Popen(
-            [sys.executable, "-m", "streamlit", "run", doctor_app, "--server.port", "8503"],
-            cwd=str(BASE_DIR / "partie Docteur+User")
+        import time as _time
+
+        _DOCTOR_PORT = 8503
+        _DOCTOR_APP  = str(BASE_DIR / "partie Docteur+User" / "main.py")
+        _DOCTOR_CWD  = str(BASE_DIR / "partie Docteur+User")
+
+        def _port_responds(port: int, timeout: float = 1.5) -> bool:
+            """Return True if something is already listening on *port*."""
+            try:
+                with _socket.create_connection(("127.0.0.1", port), timeout=timeout):
+                    return True
+            except OSError:
+                return False
+
+        def _kill_port(port: int) -> None:
+            """Kill any process occupying *port* (Windows + Unix safe)."""
+            try:
+                if sys.platform == "win32":
+                    # netstat → find PID → kill
+                    out = _sp.check_output(
+                        ["netstat", "-ano"],
+                        stderr=_sp.DEVNULL, text=True
+                    )
+                    for line in out.splitlines():
+                        if f":{port}" in line and "LISTENING" in line:
+                            pid = line.strip().split()[-1]
+                            _sp.call(
+                                ["taskkill", "/F", "/PID", pid],
+                                stdout=_sp.DEVNULL, stderr=_sp.DEVNULL
+                            )
+                else:
+                    _sp.call(
+                        ["fuser", "-k", f"{port}/tcp"],
+                        stdout=_sp.DEVNULL, stderr=_sp.DEVNULL
+                    )
+            except Exception:
+                pass  # silent — best-effort
+
+        import webbrowser as _wb
+        import streamlit.components.v1 as _stcomp
+
+        _DOCTOR_URL = f"http://localhost:{_DOCTOR_PORT}"
+
+        # Step 1: ensure the server is running
+        if not _port_responds(_DOCTOR_PORT):
+            _kill_port(_DOCTOR_PORT)
+            _time.sleep(0.4)
+
+            _sp.Popen(
+                [sys.executable, '-m', 'streamlit', 'run', _DOCTOR_APP,
+                 '--server.port', str(_DOCTOR_PORT),
+                 '--server.headless', 'true'],
+                cwd=_DOCTOR_CWD,
+                stdout=_sp.DEVNULL,
+                stderr=_sp.DEVNULL,
+            )
+            for _ in range(20):
+                _time.sleep(0.5)
+                if _port_responds(_DOCTOR_PORT):
+                    break
+
+        # Step 2a: Python-native tab open (server on user machine)
+        _wb.open_new_tab(_DOCTOR_URL)
+
+        # Step 2b: JS window.open as secondary insurance
+        _stcomp.html(
+            f'<script>window.open("{_DOCTOR_URL}", "_blank");</script>',
+            height=0,
         )
-        st.success("✅ جاري فتح فضاء الطبيب على منفذ 8503.. افتح المتصفح على localhost:8503")
+
     st.markdown("</div>", unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────────────────────
 # PAGE: CHAT (MAIN)
 # ─────────────────────────────────────────────────────────────
 elif st.session_state.page == "chat":
+    import re
+
+    # ── Medical Report Formatting Helpers ──
+    def md_to_html(text: str) -> str:
+        # Convert bold **text** to <strong>text</strong>
+        text = re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', text)
+        # Convert bold *text* to <em>text</em>
+        text = re.sub(r'\*(.*?)\*', r'<em>\1</em>', text)
+        return text
+
+    def format_medical_report(text: str) -> str:
+        # 1. Detect Risk Level
+        risk_level = "low"
+        risk_badge_text = "🟢 خطورة منخفضة / Risque Faible"
+        text_lower = text.lower()
+        
+        if any(k in text_lower for k in ["طوارئ", "urgence", "critical", "خطير جدا"]):
+            risk_level = "emergency"
+            risk_badge_text = "🚨 طوارئ فورية / Urgence Médicale"
+        elif any(k in text_lower for k in ["مرتفع", "عالية", "grave", "high risk", "خطورة عالية"]):
+            risk_level = "high"
+            risk_badge_text = "🔴 خطورة عالية / Risque Élevé"
+        elif any(k in text_lower for k in ["متوسط", "modéré", "medium risk", "خطورة متوسطة"]):
+            risk_level = "medium"
+            risk_badge_text = "🟡 خطورة متوسطة / Risque Modéré"
+        elif any(k in text_lower for k in ["منخفض", "faible", "low risk", "خطورة منخفضة"]):
+            risk_level = "low"
+            risk_badge_text = "🟢 خطورة منخفضة / Risque Faible"
+
+        # Define section matchers
+        lines = text.split("\n")
+        
+        sections = {
+            "diagnosis": {"title": "🔍 التشخيص المحتمل / Diagnostic Probable", "lines": [], "icon": "🔍"},
+            "recommendations": {"title": "📋 التوصيات والإرشادات / Recommandations", "lines": [], "icon": "📋"},
+            "warning_doctor": {"title": "⚠️ علامات الخطر ومراجعة الطبيب / Signes d'Alerte", "lines": [], "icon": "⚠️"},
+            "risk_level": {"title": "🏥 مستوى الخطورة / Niveau de Risque", "lines": [], "icon": "🏥"},
+            "medical_notice": {"title": "📌 تنبيه طبي هام / Note Médicale", "lines": [], "icon": "📌"},
+            "general": {"title": "ℹ️ تفاصيل إضافية / Informations", "lines": [], "icon": "ℹ️"}
+        }
+        
+        current_section = "general"
+        
+        for line in lines:
+            line_strip = line.strip()
+            if not line_strip:
+                continue
+                
+            lower_line = line_strip.lower()
+            is_header = False
+            
+            # Diagnosis header detection
+            if any(k in lower_line for k in ["تشخيص", "diagnosis", "diagnostic", "الحالة المتوقعة"]):
+                current_section = "diagnosis"
+                is_header = True
+            # Recommendations header detection
+            elif any(k in lower_line for k in ["توصيات", "recommendation", "العلاج", "conseil", "الإجراءات"]):
+                current_section = "recommendations"
+                is_header = True
+            # Warning doctor / emergency detection
+            elif any(k in lower_line for k in ["مراجعة الطبيب", "علامات الخطر", "استشارة الطبيب", "consulter"]):
+                current_section = "warning_doctor"
+                is_header = True
+            # Risk level detection
+            elif any(k in lower_line for k in ["الخطورة", "gravité", "niveau de risque", "risk level"]):
+                current_section = "risk_level"
+                is_header = True
+            # Medical notice detection
+            elif any(k in lower_line for k in ["تنبيه", "ملاحظة", "note médicale", "avertissement"]):
+                current_section = "medical_notice"
+                is_header = True
+                
+            if is_header:
+                continue
+                
+            # Clean markdown symbols for display
+            cleaned = line_strip.lstrip("#* -•").strip()
+            if cleaned:
+                cleaned = md_to_html(cleaned)
+                if line_strip.startswith(("-", "*", "•")):
+                    sections[current_section]["lines"].append(f"<li>{cleaned}</li>")
+                else:
+                    sections[current_section]["lines"].append(f"<p>{cleaned}</p>")
+
+        # Build the HTML output
+        has_medical_sections = any(len(sections[k]["lines"]) > 0 for k in ["diagnosis", "recommendations", "warning_doctor", "risk_level", "medical_notice"])
+        
+        if not has_medical_sections:
+            return f"<div class='conversational-chat-bubble'>{md_to_html(text.replace(chr(10), '<br>'))}</div>"
+
+        html = []
+        html.append(f"<div class='medical-report-card border-{risk_level}'>")
+        html.append("<div class='report-card-header'>")
+        html.append("<span class='report-card-badge'>📋 تقرير طبي / Rapport Médical</span>")
+        html.append(f"<span class='risk-badge badge-{risk_level}'>{risk_badge_text}</span>")
+        html.append("</div>")
+        html.append("<div class='report-card-divider'></div>")
+        
+        order = ["risk_level", "diagnosis", "recommendations", "warning_doctor", "medical_notice", "general"]
+        
+        for key in order:
+            sec = sections[key]
+            if not sec["lines"]:
+                continue
+                
+            html.append(f"<div class='report-section section-{key}'>")
+            html.append(f"<h4 class='report-section-title'>{sec['title']}</h4>")
+            html.append("<div class='report-section-divider'></div>")
+            html.append("<div class='report-section-content'>")
+            
+            in_list = False
+            for item in sec["lines"]:
+                if item.startswith("<li>"):
+                    if not in_list:
+                        html.append("<ul class='report-list'>")
+                        in_list = True
+                    html.append(item)
+                else:
+                    if in_list:
+                        html.append("</ul>")
+                        in_list = False
+                    html.append(item)
+                    
+            if in_list:
+                html.append("</ul>")
+                
+            html.append("</div>")
+            html.append("</div>")
+            
+        html.append("</div>")
+        return "\n".join(html)
+
+    # ── Local CSS Injections for enhanced Chat UX ──
+    st.markdown("""
+    <style>
+    /* Chat Container Styles */
+    .chat-container {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-top: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .msg-container {
+        display: flex;
+        margin-bottom: 20px;
+        gap: 12px;
+        width: 100%;
+        align-items: flex-start;
+    }
+
+    /* User Message: Right Aligned, Soft Teal Background */
+    .msg-user {
+        flex-direction: row-reverse; /* Avatar on the far right in RTL/LTR */
+        text-align: right;
+    }
+    .msg-user .msg-bubble {
+        background-color: var(--shifa-primary-light); /* Soft Light Teal */
+        color: var(--shifa-text) !important; /* Deep Teal Text */
+        border: 1px solid rgba(8, 145, 178, 0.15);
+        border-radius: 16px 4px 16px 16px; /* Chat bubble corner on top-right */
+        padding: 14px 18px;
+        max-width: 75%;
+        font-size: 0.95rem;
+        font-weight: 500;
+        line-height: 1.6;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+    }
+    .msg-user .msg-avatar {
+        width: 38px;
+        height: 38px;
+        background-color: var(--shifa-primary-glow);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        color: var(--shifa-primary);
+        flex-shrink: 0;
+    }
+
+    /* Assistant Message: Left Aligned, Premium White Card */
+    .msg-assistant {
+        flex-direction: row; /* Avatar on the left */
+        text-align: right;
+    }
+    .msg-assistant .msg-bubble {
+        background-color: #ffffff;
+        color: var(--shifa-text) !important;
+        border: 1px solid var(--shifa-border);
+        border-right: 4px solid var(--shifa-primary); /* Right accent border for assistant */
+        border-radius: 4px 16px 16px 16px; /* Chat bubble corner on top-left */
+        padding: 24px;
+        width: 100%;
+        max-width: 85%;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        box-shadow: 0 4px 12px rgba(8, 145, 178, 0.05);
+    }
+    .msg-assistant .msg-avatar {
+        width: 38px;
+        height: 38px;
+        background-color: #f1f5f9;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        border: 1px solid var(--shifa-border);
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+    .assistant-avatar-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* Premium Medical Report Card inside Assistant Bubble */
+    .medical-report-card {
+        background-color: #ffffff;
+        border-radius: 12px;
+        padding: 20px;
+        text-align: right;
+        border: 1px solid var(--shifa-border);
+        border-top: 4px solid transparent;
+        position: relative;
+        box-shadow: var(--shifa-shadow-sm);
+        margin-top: 12px;
+    }
+    .medical-report-card::before {
+        content: '';
+        position: absolute;
+        top: -4px;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--shifa-primary), var(--shifa-secondary));
+        border-radius: 12px 12px 0 0;
+    }
+
+    .report-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 12px;
+        margin-bottom: 16px;
+        gap: 12px;
+    }
+
+    .report-card-badge {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--shifa-text);
+        font-family: 'Cairo', sans-serif;
+    }
+
+    /* Compact Risk Badges */
+    .risk-badge {
+        font-size: 0.8rem;
+        font-weight: 700;
+        padding: 5px 12px;
+        border-radius: 9999px;
+        display: inline-block;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .badge-low {
+        background-color: rgba(16, 185, 129, 0.08);
+        color: #10b981;
+    }
+
+    .badge-medium {
+        background-color: rgba(245, 158, 11, 0.08);
+        color: #d97706;
+    }
+
+    .badge-high {
+        background-color: rgba(249, 115, 22, 0.08);
+        color: #ea580c;
+    }
+
+    .badge-emergency {
+        background-color: rgba(239, 68, 68, 0.08);
+        color: #ef4444;
+    }
+
+    /* Section design: title, divider, content */
+    .report-section {
+        margin-bottom: 20px;
+    }
+    .report-section:last-child {
+        margin-bottom: 0;
+    }
+
+    .report-section-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--shifa-text);
+        margin: 0 0 6px 0;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .report-section-divider {
+        height: 1px;
+        background-color: var(--shifa-border);
+        margin-bottom: 10px;
+    }
+
+    .report-section-content {
+        color: var(--shifa-text-secondary);
+        font-size: 0.92rem;
+        line-height: 1.7;
+    }
+
+    .report-section-content p {
+        margin: 0 0 8px 0;
+    }
+
+    .report-list {
+        margin: 0;
+        padding-right: 20px; /* Arabic RTL indent */
+        list-style-type: disc;
+    }
+
+    .report-list li {
+        margin-bottom: 6px;
+        color: var(--shifa-text-secondary);
+    }
+
+    /* Accent borders on the container card depending on risk level */
+    .border-low {
+        border-right: 4px solid #10b981 !important;
+    }
+    .border-medium {
+        border-right: 4px solid #f59e0b !important;
+    }
+    .border-high {
+        border-right: 4px solid #f97316 !important;
+    }
+    .border-emergency {
+        border-right: 4px solid #ef4444 !important;
+    }
+    
+    .conversational-chat-bubble {
+        font-size: 0.95rem;
+        line-height: 1.6;
+        color: var(--shifa-text-secondary);
+    }
+
+    /* Typing Pulse Indicator Animation */
+    .shifa-pulse-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: var(--shifa-primary);
+        animation: shifaPulse 1.4s infinite ease-in-out both;
+        margin: 0 2px;
+    }
+    .shifa-pulse-dot:nth-child(1) { animation-delay: -0.32s; }
+    .shifa-pulse-dot:nth-child(2) { animation-delay: -0.16s; }
+
+    @keyframes shifaPulse {
+        0%, 80%, 100% { transform: scale(0); opacity: 0.4; }
+        40% { transform: scale(1); opacity: 1; }
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
     st.markdown('<div class="moroccan-title" style="font-size:2.8rem;">المساعد الطبي الذكي</div>', unsafe_allow_html=True)
     st.markdown("<div class='moroccan-subtitle'>اطرح أسئلتك وثق بمحرك SHIFA للإجابة الدقيقة والآمنة</div>", unsafe_allow_html=True)
     
@@ -908,10 +1814,34 @@ elif st.session_state.page == "chat":
                         st.rerun()
     
     # ── Chat Display ──
+    st.markdown("<div class='chat-container'>", unsafe_allow_html=True)
     for msg in st.session_state.messages:
-        avatar_icon = "👤" if msg["role"] == "user" else ("⚜️" if not LOGO_SRC else "🩺")
-        with st.chat_message(msg["role"], avatar=avatar_icon):
-            st.markdown(msg["content"])
+        role = msg["role"]
+        if role == "user":
+            st.markdown(f"""
+            <div class="msg-container msg-user">
+                <div class="msg-avatar">👤</div>
+                <div class="msg-bubble">
+                    {msg["content"]}
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            formatted_report = format_medical_report(msg["content"])
+            avatar_html = (
+                f'<img src="{LOGO_SRC}" class="assistant-avatar-img">'
+                if LOGO_SRC else
+                '🩺'
+            )
+            st.markdown(f"""
+            <div class="msg-container msg-assistant">
+                <div class="msg-avatar">{avatar_html}</div>
+                <div class="msg-bubble">
+                    {formatted_report}
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
     
     # ── Chat Input ──
     user_input = st.chat_input("اكتب استفسارك الطبي هنا...")
@@ -927,24 +1857,37 @@ elif st.session_state.page == "chat":
         st.session_state.last_request_time = time.time()
         
         st.session_state.messages.append({"role": "user", "content": user_input})
-        with st.chat_message("user", avatar="👤"):
-            st.markdown(user_input)
         
-        with st.chat_message("assistant", avatar=("⚜️" if not LOGO_SRC else "🩺")):
-            with st.spinner("يعمل محرك الاستدلال على الإجابة..."):
-                try:
-                    if orch:
-                        response = orch.handle(user_input, history=st.session_state.messages[:-1])
-                        answer = response.answer if response else "عذراً، حدث خطأ داخلي في الخادم."
-                    else:
-                        answer = "النظام غير متصل لغياب مكون Orchestrator."
-                except Exception as e:
-                    logger.error(f"Chat error: {e}")
-                    answer = "حدث خطأ غير متوقع. يرجى المحاولة لاحقاً."
-            
-            st.markdown(answer)
-            st.session_state.messages.append({"role": "assistant", "content": answer})
-            save_history(st.session_state.messages)
+        # Show new user bubble immediately
+        st.markdown(f"""
+        <div class="msg-container msg-user">
+            <div class="msg-avatar">👤</div>
+            <div class="msg-bubble">
+                {user_input}
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Show assistant spinner bubble
+        avatar_html = (
+            f'<img src="{LOGO_SRC}" class="assistant-avatar-img">'
+            if LOGO_SRC else
+            '🩺'
+        )
+        
+        with st.spinner("يعمل محرك الاستدلال على الإجابة..."):
+            try:
+                if orch:
+                    response = orch.handle(user_input, history=st.session_state.messages[:-1])
+                    answer = response.answer if response else "عذراً، حدث خطأ داخلي في الخادم."
+                else:
+                    answer = "النظام غير متصل لغياب مكون Orchestrator."
+            except Exception as e:
+                logger.error(f"Chat error: {e}")
+                answer = "حدث خطأ غير متوقع. يرجى المحاولة لاحقاً."
+        
+        st.session_state.messages.append({"role": "assistant", "content": answer})
+        save_history(st.session_state.messages)
         st.rerun()
 
 # ─────────────────────────────────────────────────────────────
@@ -964,6 +1907,89 @@ elif st.session_state.page == "voice":
             col1, col2, col3 = st.columns([1, 1, 1])
             with col2:
                 audio_bytes = audio_recorder(text="انقر هنا لبدء التسجيل", recording_color="#dc2626", neutral_color="#16a34a")
+            
+            # عداد الثواني أثناء التسجيل + أنيميشن النبض
+            import streamlit.components.v1 as _mic_components
+            _mic_components.html("""
+            <div id="mic-status" style="text-align:center; min-height:60px;"></div>
+            <script>
+            (function() {
+                let timer = null;
+                let seconds = 0;
+                const statusEl = document.getElementById('mic-status');
+                
+                const checkRecording = () => {
+                    let isRecording = false;
+                    const doc = window.parent.document || document;
+                    
+                    // Search main document first
+                    const recBtn = doc.querySelector('[data-testid="stAudioRecorder"] button, .audio-recorder-btn');
+                    if (recBtn && (recBtn.getAttribute('aria-label') === 'Stop' || recBtn.classList.contains('recording') || recBtn.style.color === 'rgb(220, 38, 38)')) {
+                        isRecording = true;
+                    }
+                    
+                    // Search all iframes
+                    const iframes = doc.querySelectorAll('iframe');
+                    iframes.forEach(iframe => {
+                        try {
+                            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                            const btn = iframeDoc.querySelector('button, svg');
+                            if (btn) {
+                                // Inject keyframes definition inside iframe if missing
+                                if (!iframeDoc.getElementById('mic-pulse-style')) {
+                                    const styleEl = iframeDoc.createElement('style');
+                                    styleEl.id = 'mic-pulse-style';
+                                    styleEl.textContent = `
+                                        @keyframes mic-pulse {
+                                            0%   { box-shadow: 0 0 0 0 rgba(220,38,38,0.6); transform: scale(1); }
+                                            50%  { box-shadow: 0 0 0 15px rgba(220,38,38,0); transform: scale(1.1); }
+                                            100% { box-shadow: 0 0 0 0 rgba(220,38,38,0); transform: scale(1); }
+                                        }
+                                    `;
+                                    iframeDoc.head.appendChild(styleEl);
+                                }
+                                
+                                const style = window.getComputedStyle(btn);
+                                const isRed = style.color === 'rgb(220, 38, 38)' || style.fill === 'rgb(220, 38, 38)';
+                                if (isRed || btn.getAttribute('aria-label') === 'Stop' || btn.classList.contains('recording') || btn.classList.contains('active')) {
+                                    isRecording = true;
+                                    btn.style.animation = 'mic-pulse 1.5s ease-in-out infinite';
+                                } else {
+                                    btn.style.animation = 'none';
+                                }
+                            }
+                        } catch (e) {}
+                    });
+                    
+                    if (isRecording) {
+                        if (!timer) {
+                            seconds = 0;
+                            timer = setInterval(() => {
+                                seconds++;
+                                const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+                                const secs = (seconds % 60).toString().padStart(2, '0');
+                                statusEl.innerHTML = `
+                                    <div class="mic-timer" style="text-align:center; font-size:2rem; font-weight:800; color:#dc2626; font-family:'Cairo',monospace;">${mins}:${secs}</div>
+                                    <div style="text-align:center; color:#fca5a5; font-size:0.85rem; font-family:'Cairo'; font-weight:700;">🔴 جاري التسجيل...</div>
+                                `;
+                            }, 1000);
+                        }
+                    } else {
+                        if (timer) {
+                            clearInterval(timer);
+                            timer = null;
+                            if (seconds > 0) {
+                                statusEl.innerHTML = '<div style="text-align:center; color:#16a34a; font-size:0.9rem; font-family:\'Cairo\'; font-weight:700;">✅ تم التسجيل بنجاح</div>';
+                            } else {
+                                statusEl.innerHTML = '';
+                            }
+                        }
+                    }
+                };
+                setInterval(checkRecording, 300);
+            })();
+            </script>
+            """, height=80)
 
         if audio_bytes and len(audio_bytes) > 2000:
             with st.spinner("التسجيل قيد المعالجة..."):
@@ -1006,8 +2032,8 @@ elif st.session_state.page == "voice":
 # PAGE: VISION
 # ─────────────────────────────────────────────────────────────
 elif st.session_state.page == "vision":
-    st.markdown('<div class="moroccan-title" style="font-size:2.8rem;">معمل تحليل الصور</div>', unsafe_allow_html=True)
-    st.warning("🚨 **إخلاء مسؤولية تنظيمي:** هذا المعمل مخصص للأغراض الأكاديمية و المعرفية.")
+    st.markdown('<div class="moroccan-title" style="font-size:2.8rem;">تحليل الصور</div>', unsafe_allow_html=True)
+    st.warning("🚨 **إخلاء مسؤولية تنظيمي:** هذا القسم مخصص للأغراض الأكاديمية و المعرفية.")
 
     _VISION_MAP = {
         "🔴 الجلدية (Dermato / أمراض الجلد)": "dermato",
@@ -1081,25 +2107,48 @@ elif st.session_state.page == "scanner":
     
     with st.container(border=True):
         with st.form("symptom_form"):
-            st.subheader("بيانات المريض والأعراض الأساسية")
+            st.markdown("<h3 style='text-align: center; color: var(--shifa-text); font-family: \"Cairo\", sans-serif; margin-bottom: 1.5rem;'>بيانات المريض والأعراض الأساسية</h3>", unsafe_allow_html=True)
             col1, col2 = st.columns(2)
             with col1:
-                age = st.number_input("عمر المريض", min_value=1, max_value=120, value=30)
-                gender = st.selectbox("الجنس البيولوجي", ["ذكر", "أنثى"])
+                age = st.number_input("عمر المريض *", min_value=1, max_value=120, value=30)
+                gender = st.selectbox("الجنس البيولوجي *", ["ذكر", "أنثى"])
             with col2:
-                duration = st.selectbox("المدة الزمنية للأعراض", ["أقل من 24 ساعة", "من يوم إلى 3 أيام", "حوالي أسبوع", "أكثر من أسبوع"])
-                severity = st.select_slider("مدى حدة وقسوة الألم", options=["خفيف محتمل", "متوسط", "شديد ولا يطاق"])
+                duration = st.selectbox("المدة الزمنية للأعراض *", ["أقل من 24 ساعة", "من يوم إلى 3 أيام", "حوالي أسبوع", "أكثر من أسبوع"])
+                # Slider de douleur (1 à 10)
+                severity_num = st.slider("مدى حدة وقسوة الألم * (1-10)", min_value=1, max_value=10, value=5, step=1)
+                
+                # Real-time display of numeric value and descriptive text
+                _pain_labels = {
+                    1: "😊 خفيف جداً", 2: "🙂 خفيف", 3: "😐 خفيف محتمل",
+                    4: "😕 متوسط خفيف", 5: "😟 متوسط", 6: "😣 متوسط شديد",
+                    7: "😖 شديد", 8: "😫 شديد جداً", 9: "😱 مؤلم للغاية",
+                    10: "🔴 لا يُطاق"
+                }
+                _pain_color = "#16a34a" if severity_num <= 3 else "#f97316" if severity_num <= 6 else "#dc2626"
+                st.markdown(f"<div style='text-align:center; padding:6px; background:rgba({','.join(str(int(c)) for c in [int(_pain_color[1:3],16), int(_pain_color[3:5],16), int(_pain_color[5:7],16)])},0.15); border-radius:8px; margin-top:4px;'><span style='font-size:1.3rem; font-weight:800; color:{_pain_color};'>{severity_num}/10</span> <span style='color:#cbd5e1;'>{_pain_labels[severity_num]}</span></div>", unsafe_allow_html=True)
+                
+                # Convert numeric to original categorical values for orchestrator compatibility
+                severity = "خفيف محتمل" if severity_num <= 3 else "متوسط" if severity_num <= 6 else "شديد ولا يطاق"
             
-            symptoms = st.text_area("أعطنا وصفاً مفصلاً (المكان، طبيعة الوجع، الشدة...)", height=120, placeholder="مثال: أشعر بصداع نصفي نابض مع غثيان عند التعرض للضوء...")
+            symptoms = st.text_area("أعطنا وصفاً مفصلاً (المكان، طبيعة الوجع، الشدة...) *", height=120, placeholder="مثال: أشعر بصداع نصفي نابض مع غثيان عند التعرض للضوء...")
+            
+            # Real-time validation inside the form container
+            if not symptoms:
+                st.warning("⚠️ حقل الوصف إلزامي.")
+            elif len(symptoms.strip()) < 5:
+                st.warning("⚠️ يرجى وصف الأعراض بدقة أكبر (يجب أن يحتوي على 5 أحرف على الأقل).")
+            else:
+                st.success("✅ وصف الأعراض جاهز للتحليل.")
+
             history = st.text_input("الأمراض المزمنة أوالأدوية الحالية (إن وجد)")
             
             submitted = st.form_submit_button("إرسال للتحليل الذكي ✨", width="stretch")
         
     if submitted:
-        if len(symptoms.strip()) < 5:
-            st.warning("يرجى وصف الأعراض بدقة أكبر ليتمكن الذكاء من مساعدتك.")
+        if not symptoms or len(symptoms.strip()) < 5:
+            st.error("⚠️ يرجى تصحيح الأخطاء قبل إرسال النموذج.")
         else:
-            with st.spinner("يتم الآن دمج البيانات ومقارنتها بقاعدة بيانات التشخيصات..."):
+            with st.spinner("جاري التحليل..."):
                 try:
                     if orch:
                         result = orch.scan_symptoms(
@@ -1745,7 +2794,7 @@ elif st.session_state.page == "database":
             )
         with search_col2:
             st.markdown("<div style='height:28px;'></div>", unsafe_allow_html=True)
-            search_clicked = st.button("🔎 بحث", type="primary", use_container_width=True, key="research_btn")
+            search_clicked = st.button("🔎 بحث", type="primary", width="stretch", key="research_btn")
 
     if search_term and (search_clicked or search_term):
         try:
@@ -2045,7 +3094,19 @@ elif st.session_state.page == "history":
     history = st.session_state.get("local_history", [])
     
     if not history:
-        st.info("سجلاتك فارغة حالياً نظيفة.")
+        # صفحة فارغة مع زر CTA للانتقال للمحادثة
+        st.markdown("""
+        <div style="text-align:center; padding:3rem 1rem; margin:2rem 0;">
+            <div style="font-size:4rem; margin-bottom:1rem; opacity:0.6;">💬</div>
+            <h3 style="color:var(--z-text); font-size:1.4rem; margin-bottom:0.5rem; font-family:'Cairo';">لا توجد استشارات سابقة</h3>
+            <p style="color:var(--z-muted); font-size:0.95rem; margin-bottom:1.5rem; font-family:'Cairo';">سجلاتك فارغة حالياً. ابدأ أول استشارة طبية مع المساعد الذكي.</p>
+        </div>
+        """, unsafe_allow_html=True)
+        col_cta1, col_cta2, col_cta3 = st.columns([1, 2, 1])
+        with col_cta2:
+            if st.button("💬 ابدأ استشارتك الأولى", type="primary", width="stretch", key="history_cta"):
+                st.session_state.page = "chat"
+                st.rerun()
     else:
         for i, item in enumerate(history):
             with st.expander(f"🕰️ الاستشارة رقم {i+1} : {item['date']} - {item['title']}", expanded=(i==0)):
@@ -2060,7 +3121,14 @@ elif st.session_state.page == "history":
 # FOOTER
 # ─────────────────────────────────────────────────────────────
 st.markdown("""
-<div style="text-align:center; color:var(--z-muted); font-size:0.85rem; padding:2.5rem 0; margin-top:4rem; border-top: 1px solid rgba(22, 163, 74, 0.2);">
+<div style="text-align:center; color:var(--z-muted); font-size:0.75rem; padding:2.5rem 0; margin-top:4rem; border-top: 1px solid rgba(22, 163, 74, 0.2);">
+  <div style="margin-bottom:1rem; display:flex; justify-content:center; gap:2rem; flex-wrap:wrap; font-family:'Cairo';">
+    <a href="#" style="color:var(--z-green); text-decoration:none; font-weight:600; font-size:0.85rem;">سياسة الخصوصية</a>
+    <span style="color:var(--z-muted); opacity:0.3;">|</span>
+    <a href="#" style="color:var(--z-green); text-decoration:none; font-weight:600; font-size:0.85rem;">شروط الاستخدام</a>
+    <span style="color:var(--z-muted); opacity:0.3;">|</span>
+    <a href="#" style="color:var(--z-green); text-decoration:none; font-weight:600; font-size:0.85rem;">اتصل بنا</a>
+  </div>
   تمت البرمجة والتحسين والتصميم بواسطة فريق <b style="color:#d4af37;">SHIFA AI</b> © 2026<br/>
   <span style="font-size:0.75rem;">تنويه: النظام للاستخدامات الثقافية والتجريبية ولا يغني عن الطب البشري المعتمد.</span>
 </div>

@@ -25,6 +25,7 @@ FAISS_INDEX_PATH = str(MODELS_DIR / "faiss_index.bin")
 RETRIEVER_DATA_PATH = str(MODELS_DIR / "retriever_data.pkl")
 CLASSIFIER_MODEL_PATH = str(MODELS_DIR / "intent_classifier.pkl")
 CANCER_MODEL_PATH = str(MODELS_DIR / "breast_cancer_model_v2.keras")
+BRAIN_TUMOR_MODEL_PATH = str(MODELS_DIR / "brain_tumor_model.keras")
 MONAI_DIR = str(MODELS_DIR / "monai_breast_density")
 
 # ── Hugging Face Model IDs ──
@@ -33,7 +34,7 @@ HF_BRAIN_TUMOR_MODEL = "Devarshi/Brain_Tumor_Classification"
 HF_XRAY_MODEL = "codewithdark/vit-chest-xray"
 HF_DERM_MODEL = "avanishd/efficient-net-v2-m-finetuned-skin-lesion-classification"
 HF_WHISPER_MODEL = "openai/whisper-small"
-EMBED_MODEL_NAME = os.getenv("EMBED_MODEL", "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
+EMBED_MODEL_NAME = os.getenv("EMBED_MODEL", "aubmindlab/bert-base-arabertv2")
 USE_WHISPER_STT = os.getenv("USE_WHISPER", "").strip().lower() in ("1", "true", "yes")
 
 # ── LLM Settings ──

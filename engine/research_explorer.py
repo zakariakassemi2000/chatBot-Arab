@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 """
 ═══════════════════════════════════════════════════════════════════════
-  SHIFA AI · Research Explorer Engine
+  SHIFA AI · Research Explorer Engine v3
   ────────────────────────────────────────────────────────────────────
   Multi-source content search engine that finds and ranks:
-    • Books     (Google Books API — free, no key required)
-    • Articles  (Wikipedia API — free)
-    • Videos    (YouTube Data API v3 — requires key)
+    • Books     (Google Books API → OpenLibrary fallback)
+    • Articles  (Wikipedia API — Arabic / French / English)
+    • Videos    (YouTube Data API v3 → curated search links fallback)
 
   Semantic ranking powered by sentence-transformers (local, free).
   Composite score: 60% semantic + 25% popularity + 15% recency.
@@ -24,6 +24,7 @@ import re
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+from urllib.parse import quote_plus
 
 import numpy as np
 import requests
@@ -31,24 +32,43 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# ── Silence noisy third-party loggers ─────────────────────────────────────────
+for _noisy in (
+    "httpcore.connection",
+    "httpcore.http11",
+    "httpx",
+    "urllib3.connectionpool",
+    "sentence_transformers",
+    "sentence_transformers.SentenceTransformer",
+    "huggingface_hub",
+    "huggingface_hub.file_download",
+    "transformers",
+    "filelock",
+):
+    logging.getLogger(_noisy).setLevel(logging.WARNING)
+
 logger = logging.getLogger("shifa.research_explorer")
 
 # ─────────────────────────────────────────────────────────────
 # CONFIGURATION
 # ─────────────────────────────────────────────────────────────
 
-YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY", "")
+YOUTUBE_API_KEY    = os.getenv("YOUTUBE_API_KEY", "")
 GOOGLE_BOOKS_API_KEY = os.getenv("GOOGLE_BOOKS_API_KEY", "")
 
 RANKING_WEIGHTS = {
-    "semantic": 0.60,
+    "semantic":   0.60,
     "popularity": 0.25,
-    "recency": 0.15,
+    "recency":    0.15,
 }
 
 CACHE_DIR = Path(__file__).parent.parent / "data" / "research_cache"
 CACHE_DIR.mkdir(parents=True, exist_ok=True)
 CACHE_TTL_SECONDS = 3600  # 1 hour
+
+# Short timeouts — fail fast instead of blocking for 12+ seconds
+_TIMEOUT_FAST   = 5   # Google Books, Wikipedia
+_TIMEOUT_MEDIUM = 7   # OpenLibrary, YouTube fallbacks
 
 
 # ─────────────────────────────────────────────────────────────
@@ -65,8 +85,10 @@ class SemanticRanker:
         if cls._model is None:
             try:
                 from sentence_transformers import SentenceTransformer
-                cls._model = SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
-                logger.info("SemanticRanker model loaded: paraphrase-multilingual-MiniLM-L12-v2")
+                cls._model = SentenceTransformer(
+                    "paraphrase-multilingual-MiniLM-L12-v2",
+                    cache_folder=str(Path(__file__).parent.parent / "models"),
+                )
             except Exception as e:
                 logger.warning("sentence-transformers unavailable, using fallback: %s", e)
         return cls._model
@@ -75,9 +97,9 @@ class SemanticRanker:
         model = self._load_model()
         if model is not None:
             try:
-                return model.encode(text, normalize_embeddings=True)
+                return model.encode(text, normalize_embeddings=True, show_progress_bar=False)
             except Exception as e:
-                logger.error("Encoding error: %s", e)
+                logger.debug("Encoding error: %s", e)
         return self._fallback_encode(text)
 
     @staticmethod
@@ -120,30 +142,14 @@ class SemanticRanker:
         if not date_str:
             return 0.5
         try:
-            # Try multiple date formats
-            for fmt in ("%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%d", "%Y-%m", "%Y"):
-                try:
-                    dt = datetime.strptime(date_str[:len(fmt.replace("%", "x"))], fmt)
-                    break
-                except ValueError:
-                    continue
-            else:
-                # Handle year-only strings
-                year_match = re.match(r"(\d{4})", date_str)
-                if year_match:
-                    dt = datetime(int(year_match.group(1)), 1, 1)
-                else:
-                    return 0.5
-
-            age_years = (datetime.now() - dt).days / 365.25
-            if age_years <= 1:
-                return 1.0
-            elif age_years <= 3:
-                return 0.8
-            elif age_years <= 5:
-                return 0.6
-            elif age_years <= 10:
-                return 0.4
+            year_match = re.match(r"(\d{4})", str(date_str))
+            if year_match:
+                dt = datetime(int(year_match.group(1)), 1, 1)
+                age_years = (datetime.now() - dt).days / 365.25
+                if age_years <= 1:   return 1.0
+                if age_years <= 3:   return 0.8
+                if age_years <= 5:   return 0.6
+                if age_years <= 10:  return 0.4
             return 0.2
         except Exception:
             return 0.5
@@ -168,10 +174,10 @@ class SemanticRanker:
             pop = self.popularity_score(item)
             rec = self.recency_score(item)
 
-            item["semantic_score"] = round(sem, 4)
+            item["semantic_score"]   = round(sem, 4)
             item["popularity_score"] = round(pop, 4)
-            item["recency_score"] = round(rec, 4)
-            item["relevance_score"] = round(
+            item["recency_score"]    = round(rec, 4)
+            item["relevance_score"]  = round(
                 w["semantic"] * sem + w["popularity"] * pop + w["recency"] * rec, 4
             )
 
@@ -187,18 +193,17 @@ class ContentSearchEngine:
 
     def __init__(self):
         self._session = requests.Session()
-        self._session.headers.update({"User-Agent": "SHIFA-AI/2.0"})
+        self._session.headers.update({"User-Agent": "SHIFA-AI/3.0"})
         self._ranker = SemanticRanker()
 
     # ════════════════════════════════════════════════════════
-    #  BOOKS — Google Books API
+    #  BOOKS — Google Books API → OpenLibrary fallback
     # ════════════════════════════════════════════════════════
 
     def search_books(self, query: str, max_results: int = 5, lang: str = "ar") -> List[Dict[str, Any]]:
         """Search Google Books API, with OpenLibrary fallback."""
         books = self._search_books_google(query, max_results, lang)
         if not books:
-            logger.info("Google Books returned 0 results, trying OpenLibrary fallback...")
             books = self._search_books_openlibrary(query, max_results)
         return books
 
@@ -219,15 +224,13 @@ class ContentSearchEngine:
             resp = self._session.get(
                 "https://www.googleapis.com/books/v1/volumes",
                 params=params,
-                timeout=8,
+                timeout=_TIMEOUT_FAST,
             )
             if resp.status_code == 429:
-                logger.warning("Google Books quota exceeded (HTTP 429), using fallback")
+                logger.debug("Google Books quota exceeded (HTTP 429), skipping")
                 return []
             if resp.status_code != 200:
-                logger.warning("Google Books HTTP %d", resp.status_code)
-                if lang:
-                    return self._search_books_google(query, max_results, lang="")
+                logger.debug("Google Books HTTP %d", resp.status_code)
                 return []
 
             data = resp.json()
@@ -235,10 +238,7 @@ class ContentSearchEngine:
             for item in data.get("items", []):
                 vi = item.get("volumeInfo", {})
                 si = item.get("searchInfo", {})
-                
-                # Fetch description with hierarchy: volumeInfo.description -> searchInfo.textSnippet
                 raw_desc = vi.get("description") or si.get("textSnippet") or ""
-                
                 books.append({
                     "type": "book",
                     "id": item.get("id", ""),
@@ -260,23 +260,25 @@ class ContentSearchEngine:
             return books
 
         except Exception as e:
-            logger.error("Google Books search error: %s", e)
+            logger.debug("Google Books search error: %s", e)
             return []
 
     def _search_books_openlibrary(self, query: str, max_results: int = 5) -> List[Dict[str, Any]]:
-        """Fallback: search Open Library (completely free, no API key, no quota)."""
+        """Fallback: Open Library (free, no quota)."""
         try:
             resp = self._session.get(
                 "https://openlibrary.org/search.json",
                 params={
                     "q": query,
                     "limit": min(max_results, 10),
-                    "fields": "key,title,subtitle,author_name,first_publish_year,publisher,number_of_pages_median,subject,cover_i,ratings_average,ratings_count,edition_count,language",
+                    "fields": "key,title,subtitle,author_name,first_publish_year,publisher,"
+                              "number_of_pages_median,subject,cover_i,ratings_average,"
+                              "ratings_count,edition_count,language",
                 },
-                timeout=12,
+                timeout=_TIMEOUT_MEDIUM,
             )
             if resp.status_code != 200:
-                logger.warning("OpenLibrary HTTP %d", resp.status_code)
+                logger.debug("OpenLibrary HTTP %d", resp.status_code)
                 return []
 
             data = resp.json()
@@ -286,10 +288,8 @@ class ContentSearchEngine:
                 thumbnail = f"https://covers.openlibrary.org/b/id/{cover_id}-M.jpg" if cover_id else ""
                 ol_key = doc.get("key", "")
                 info_link = f"https://openlibrary.org{ol_key}" if ol_key else ""
-
                 subjects = doc.get("subject", [])
                 categories = subjects[:3] if isinstance(subjects, list) else []
-
                 books.append({
                     "type": "book",
                     "id": ol_key,
@@ -308,11 +308,14 @@ class ContentSearchEngine:
                     "average_rating": doc.get("ratings_average", 0) or 0,
                     "ratings_count": doc.get("ratings_count", 0) or 0,
                 })
-            logger.info("OpenLibrary returned %d books", len(books))
+            logger.debug("OpenLibrary returned %d books", len(books))
             return books
 
+        except requests.exceptions.Timeout:
+            logger.debug("OpenLibrary timed out")
+            return []
         except Exception as e:
-            logger.error("OpenLibrary search error: %s", e)
+            logger.debug("OpenLibrary search error: %s", e)
             return []
 
     # ════════════════════════════════════════════════════════
@@ -327,7 +330,6 @@ class ContentSearchEngine:
             if len(articles) >= max_results:
                 break
             try:
-                # Step 1: Search for matching titles
                 search_resp = self._session.get(
                     f"https://{wiki_lang}.wikipedia.org/w/api.php",
                     params={
@@ -338,58 +340,54 @@ class ContentSearchEngine:
                         "format": "json",
                         "utf8": 1,
                     },
-                    timeout=10,
+                    timeout=_TIMEOUT_FAST,
                 )
                 if search_resp.status_code != 200:
                     continue
 
-                search_data = search_resp.json()
-                results = search_data.get("query", {}).get("search", [])
-
+                results = search_resp.json().get("query", {}).get("search", [])
                 for r in results:
                     if len(articles) >= max_results:
                         break
-                    page_id = r.get("pageid")
                     title = r.get("title", "")
-
-                    # Step 2: Get page summary
-                    summary_resp = self._session.get(
-                        f"https://{wiki_lang}.wikipedia.org/api/rest_v1/page/summary/{requests.utils.quote(title)}",
-                        timeout=10,
-                    )
-                    if summary_resp.status_code != 200:
+                    try:
+                        summary_resp = self._session.get(
+                            f"https://{wiki_lang}.wikipedia.org/api/rest_v1/page/summary/{requests.utils.quote(title)}",
+                            timeout=_TIMEOUT_FAST,
+                        )
+                        if summary_resp.status_code != 200:
+                            continue
+                        summary_data = summary_resp.json()
+                        extract = summary_data.get("extract", "")[:600]
+                        articles.append({
+                            "type": "article",
+                            "id": str(r.get("pageid")),
+                            "title": summary_data.get("title", title),
+                            "summary": extract + ("..." if len(summary_data.get("extract", "")) > 600 else ""),
+                            "url": summary_data.get("content_urls", {}).get("desktop", {}).get("page", ""),
+                            "thumbnail": summary_data.get("thumbnail", {}).get("source", ""),
+                            "source": f"Wikipedia ({wiki_lang.upper()})",
+                            "lang": wiki_lang,
+                            "references": r.get("wordcount", 0) // 50,
+                            "description": summary_data.get("description", ""),
+                        })
+                    except Exception:
                         continue
 
-                    summary_data = summary_resp.json()
-                    extract = summary_data.get("extract", "")[:600]
-
-                    articles.append({
-                        "type": "article",
-                        "id": str(page_id),
-                        "title": summary_data.get("title", title),
-                        "summary": extract + ("..." if len(summary_data.get("extract", "")) > 600 else ""),
-                        "url": summary_data.get("content_urls", {}).get("desktop", {}).get("page", ""),
-                        "thumbnail": summary_data.get("thumbnail", {}).get("source", ""),
-                        "source": f"Wikipedia ({wiki_lang.upper()})",
-                        "lang": wiki_lang,
-                        "references": r.get("wordcount", 0) // 50,  # rough proxy
-                        "description": summary_data.get("description", ""),
-                    })
-
             except Exception as e:
-                logger.error("Wikipedia search error (%s): %s", wiki_lang, e)
+                logger.debug("Wikipedia search error (%s): %s", wiki_lang, e)
 
         return articles[:max_results]
 
     # ════════════════════════════════════════════════════════
-    #  VIDEOS — YouTube Data API v3
+    #  VIDEOS — YouTube Data API v3 → curated search links
     # ════════════════════════════════════════════════════════
 
     def search_videos(self, query: str, max_results: int = 3) -> List[Dict[str, Any]]:
-        """Search YouTube. Falls back to Invidious public API if no key."""
+        """Search YouTube. Falls back to curated search links if no API key."""
         if YOUTUBE_API_KEY:
             return self._search_youtube_official(query, max_results)
-        return self._search_youtube_fallback(query, max_results)
+        return self._search_youtube_search_links(query, max_results)
 
     def _search_youtube_official(self, query: str, max_results: int) -> List[Dict[str, Any]]:
         try:
@@ -404,11 +402,11 @@ class ContentSearchEngine:
             resp = self._session.get(
                 "https://www.googleapis.com/youtube/v3/search",
                 params=params,
-                timeout=10,
+                timeout=_TIMEOUT_FAST,
             )
             if resp.status_code != 200:
-                logger.warning("YouTube API HTTP %d", resp.status_code)
-                return self._search_youtube_fallback(query, max_results)
+                logger.debug("YouTube API HTTP %d — using search links fallback", resp.status_code)
+                return self._search_youtube_search_links(query, max_results)
 
             data = resp.json()
             video_ids = [it["id"]["videoId"] for it in data.get("items", []) if it.get("id", {}).get("videoId")]
@@ -435,169 +433,65 @@ class ContentSearchEngine:
                 })
             return videos
         except Exception as e:
-            logger.error("YouTube official API error: %s", e)
-            return self._search_youtube_fallback(query, max_results)
+            logger.debug("YouTube official API error: %s", e)
+            return self._search_youtube_search_links(query, max_results)
 
     def _get_youtube_stats(self, video_ids: List[str]) -> Dict[str, Dict]:
         try:
             resp = self._session.get(
                 "https://www.googleapis.com/youtube/v3/videos",
-                params={
-                    "part": "statistics",
-                    "id": ",".join(video_ids),
-                    "key": YOUTUBE_API_KEY,
-                },
-                timeout=10,
+                params={"part": "statistics", "id": ",".join(video_ids), "key": YOUTUBE_API_KEY},
+                timeout=_TIMEOUT_FAST,
             )
             if resp.status_code == 200:
                 return {it["id"]: it.get("statistics", {}) for it in resp.json().get("items", [])}
         except Exception as e:
-            logger.error("YouTube stats error: %s", e)
+            logger.debug("YouTube stats error: %s", e)
         return {}
 
-    def _search_youtube_fallback(self, query: str, max_results: int) -> List[Dict[str, Any]]:
-        """Fallback: try multiple Piped/Invidious instances (public, no key needed)."""
-        piped_instances = [
-            "https://pipedapi.kavin.rocks",
-            "https://pipedapi.adminforge.de",
-            "https://api.piped.yt",
-            "https://pipedapi.in.projectsegfau.lt",
+    def _search_youtube_search_links(self, query: str, max_results: int) -> List[Dict[str, Any]]:
+        """
+        No-API fallback: return curated YouTube search-page links.
+        These always work, require no key, and produce no network errors.
+        The user clicks and sees real results on YouTube.
+        """
+        encoded = quote_plus(query)
+        # Build a few search-link variants so the UI can show multiple "cards"
+        variants = [
+            {
+                "suffix": "",
+                "label": query,
+                "desc": f"نتائج يوتيوب لـ: {query}",
+            },
+            {
+                "suffix": "+شرح+طبي",
+                "label": f"{query} — شرح طبي",
+                "desc": "شروحات طبية متخصصة",
+            },
+            {
+                "suffix": "+علاج+وقاية",
+                "label": f"{query} — علاج ووقاية",
+                "desc": "نصائح العلاج والوقاية",
+            },
         ]
-
-        for base_url in piped_instances:
-            try:
-                resp = self._session.get(
-                    f"{base_url}/search",
-                    params={"q": query, "filter": "videos"},
-                    timeout=8,
-                )
-                if resp.status_code != 200:
-                    logger.warning("Piped API (%s) HTTP %d", base_url, resp.status_code)
-                    continue
-
-                data = resp.json()
-
-                # Handle both response formats: list or dict with "items" key
-                if isinstance(data, list):
-                    items_list = data
-                elif isinstance(data, dict):
-                    items_list = data.get("items", data.get("results", []))
-                else:
-                    continue
-
-                if not items_list:
-                    continue
-
-                videos: List[Dict[str, Any]] = []
-                for item in items_list[:max_results]:
-                    vid_url = item.get("url", "")
-                    # Extract video ID from various URL formats
-                    if "v=" in vid_url:
-                        vid_id = vid_url.split("v=")[-1].split("&")[0]
-                    elif "/watch?v=" in vid_url:
-                        vid_id = vid_url.replace("/watch?v=", "").split("&")[0]
-                    elif vid_url.startswith("/watch"):
-                        vid_id = vid_url.split("v=")[-1].split("&")[0] if "v=" in vid_url else vid_url.lstrip("/")
-                    else:
-                        vid_id = vid_url.lstrip("/")
-
-                    if not vid_id or vid_id == "#":
-                        continue
-
-                    videos.append({
-                        "type": "video",
-                        "id": vid_id,
-                        "title": item.get("title", ""),
-                        "description": (item.get("shortDescription") or item.get("description") or "")[:300],
-                        "channel_title": item.get("uploaderName", item.get("uploader", "")),
-                        "published_at": item.get("uploadedDate", item.get("uploaded", "")),
-                        "thumbnail": item.get("thumbnail", ""),
-                        "url": f"https://www.youtube.com/watch?v={vid_id}",
-                        "view_count": item.get("views", 0) or 0,
-                        "like_count": 0,
-                    })
-
-                if videos:
-                    logger.info("Piped (%s) returned %d videos", base_url, len(videos))
-                    return videos
-
-            except requests.exceptions.Timeout:
-                logger.warning("Piped API (%s) timed out", base_url)
-                continue
-            except Exception as e:
-                logger.error("Piped API (%s) error: %s", base_url, e)
-                continue
-
-        # Final fallback: try Invidious API
-        return self._search_youtube_invidious(query, max_results)
-
-    def _search_youtube_invidious(self, query: str, max_results: int) -> List[Dict[str, Any]]:
-        """Final fallback: Invidious public instances."""
-        invidious_instances = [
-            "https://vid.puffyan.us",
-            "https://invidious.fdn.fr",
-            "https://inv.nadeko.net",
-            "https://invidious.privacyredirect.com",
-        ]
-
-        for base_url in invidious_instances:
-            try:
-                resp = self._session.get(
-                    f"{base_url}/api/v1/search",
-                    params={"q": query, "type": "video", "sort_by": "relevance"},
-                    timeout=8,
-                )
-                if resp.status_code != 200:
-                    continue
-
-                data = resp.json()
-                if not isinstance(data, list):
-                    continue
-
-                videos: List[Dict[str, Any]] = []
-                for item in data[:max_results]:
-                    if item.get("type") != "video":
-                        continue
-                    vid_id = item.get("videoId", "")
-                    if not vid_id:
-                        continue
-
-                    # Get best thumbnail
-                    thumbs = item.get("videoThumbnails", [])
-                    thumb_url = ""
-                    for t in thumbs:
-                        if t.get("quality") in ("high", "medium", "default"):
-                            thumb_url = t.get("url", "")
-                            break
-                    if not thumb_url and thumbs:
-                        thumb_url = thumbs[0].get("url", "")
-
-                    videos.append({
-                        "type": "video",
-                        "id": vid_id,
-                        "title": item.get("title", ""),
-                        "description": (item.get("description") or "")[:300],
-                        "channel_title": item.get("author", ""),
-                        "published_at": item.get("publishedText", ""),
-                        "thumbnail": thumb_url,
-                        "url": f"https://www.youtube.com/watch?v={vid_id}",
-                        "view_count": item.get("viewCount", 0) or 0,
-                        "like_count": 0,
-                    })
-
-                if videos:
-                    logger.info("Invidious (%s) returned %d videos", base_url, len(videos))
-                    return videos
-
-            except requests.exceptions.Timeout:
-                logger.warning("Invidious (%s) timed out", base_url)
-                continue
-            except Exception as e:
-                logger.error("Invidious (%s) error: %s", base_url, e)
-                continue
-
-        logger.warning("All YouTube fallback instances failed")
-        return []
+        videos: List[Dict[str, Any]] = []
+        for i, v in enumerate(variants[:max_results]):
+            search_url = f"https://www.youtube.com/results?search_query={encoded}{v['suffix']}"
+            videos.append({
+                "type": "video",
+                "id": f"search_{i}",
+                "title": v["label"],
+                "description": v["desc"],
+                "channel_title": "YouTube Search",
+                "published_at": "",
+                "thumbnail": f"https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg",  # placeholder
+                "url": search_url,
+                "view_count": 0,
+                "like_count": 0,
+                "is_search_link": True,
+            })
+        logger.debug("YouTube search-links fallback: generated %d links", len(videos))
+        return videos
 
     # ════════════════════════════════════════════════════════
     #  TOPIC DETECTION (via Groq LLM)
@@ -607,11 +501,16 @@ class ContentSearchEngine:
         """Detect the medical topic and optimize search terms using Groq."""
         try:
             from groq import Groq
+            import httpx
             api_key = os.getenv("GROQ_API_KEY")
             if not api_key:
                 return {"topic": query, "category": "عام", "search_query_ar": query, "search_query_en": query}
 
-            client = Groq(api_key=api_key)
+            http_client = httpx.Client(
+                limits=httpx.Limits(max_connections=50, max_keepalive_connections=10),
+                timeout=httpx.Timeout(10.0, connect=4.0)
+            )
+            client = Groq(api_key=api_key, http_client=http_client, max_retries=2)
             resp = client.chat.completions.create(
                 model="llama-3.3-70b-versatile",
                 messages=[{
@@ -630,12 +529,11 @@ class ContentSearchEngine:
                 max_tokens=200,
             )
             raw = resp.choices[0].message.content.strip()
-            # Extract JSON from response
             json_match = re.search(r'\{[^}]+\}', raw)
             if json_match:
                 return json.loads(json_match.group())
         except Exception as e:
-            logger.warning("Topic detection error (using query as-is): %s", e)
+            logger.debug("Topic detection error (using query as-is): %s", e)
 
         return {"topic": query, "category": "عام", "search_query_ar": query, "search_query_en": query}
 
@@ -677,22 +575,22 @@ class ContentSearchEngine:
         search_ar = topic.get("search_query_ar", query)
         search_en = topic.get("search_query_en", query)
 
-        # ── Parallel-ish search (sequential for simplicity) ──
-        books = self.search_books(search_ar, max_books) or self.search_books(search_en, max_books, lang="en")
+        # ── Search all sources ──
+        books    = self.search_books(search_ar, max_books) or self.search_books(search_en, max_books, lang="en")
         articles = self.search_articles(search_ar, max_articles)
-        videos = self.search_videos(search_en, max_videos)
+        videos   = self.search_videos(search_en, max_videos)
 
         # ── Semantic ranking ──
-        ranked_books = self._ranker.rank(query, books)[:max_books]
+        ranked_books    = self._ranker.rank(query, books)[:max_books]
         ranked_articles = self._ranker.rank(query, articles)[:max_articles]
-        ranked_videos = self._ranker.rank(query, videos)[:max_videos]
+        ranked_videos   = self._ranker.rank(query, videos)[:max_videos]
 
         result = {
-            "query": query,
-            "topic": topic,
-            "books": ranked_books,
-            "articles": ranked_articles,
-            "videos": ranked_videos,
+            "query":     query,
+            "topic":     topic,
+            "books":     ranked_books,
+            "articles":  ranked_articles,
+            "videos":    ranked_videos,
             "timestamp": datetime.now().isoformat(),
         }
 
@@ -711,7 +609,7 @@ class ContentSearchEngine:
             data = json.loads(path.read_text(encoding="utf-8"))
             ts = datetime.fromisoformat(data.get("timestamp", "2000-01-01"))
             if (datetime.now() - ts).total_seconds() < CACHE_TTL_SECONDS:
-                logger.info("Cache hit: %s", key[:8])
+                logger.debug("Cache hit: %s", key[:8])
                 return data
         except Exception:
             pass
@@ -724,7 +622,7 @@ class ContentSearchEngine:
                 encoding="utf-8",
             )
         except Exception as e:
-            logger.warning("Cache write error: %s", e)
+            logger.debug("Cache write error: %s", e)
 
 
 # ─────────────────────────────────────────────────────────────
@@ -746,7 +644,7 @@ def format_results_markdown(results: Dict[str, Any]) -> str:
         parts.append("### 📚 الكتب الموصى بها\n")
         for i, b in enumerate(books, 1):
             authors = "، ".join(b.get("authors", ["مؤلف غير معروف"]))
-            score = b.get("relevance_score", 0) * 100
+            score   = b.get("relevance_score", 0) * 100
             parts.append(f"**{i}. {b['title']}**")
             parts.append(f"   ✍️ {authors} · 📊 {score:.0f}% تطابق")
             if b.get("description"):
@@ -774,8 +672,8 @@ def format_results_markdown(results: Dict[str, Any]) -> str:
     if videos:
         parts.append("### 🎥 فيديوهات مقترحة\n")
         for i, v in enumerate(videos, 1):
-            score = v.get("relevance_score", 0) * 100
-            views = int(v.get("view_count", 0))
+            score     = v.get("relevance_score", 0) * 100
+            views     = int(v.get("view_count", 0))
             views_str = f"{views:,}" if views else ""
             parts.append(f"**{i}. {v['title']}**")
             line = f"   📺 {v.get('channel_title', '')} · 📊 {score:.0f}% تطابق"
@@ -783,7 +681,8 @@ def format_results_markdown(results: Dict[str, Any]) -> str:
                 line += f" · 👁️ {views_str} مشاهدة"
             parts.append(line)
             if v.get("url"):
-                parts.append(f"   🔗 [شاهد على يوتيوب]({v['url']})")
+                link_label = "🔍 بحث على يوتيوب" if v.get("is_search_link") else "▶️ شاهد على يوتيوب"
+                parts.append(f"   🔗 [{link_label}]({v['url']})")
             parts.append("")
 
     if not any([books, articles, videos]):

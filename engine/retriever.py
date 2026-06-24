@@ -35,7 +35,7 @@ logger = logging.getLogger(__name__)
 #  Constants
 # ═════════════════════════════════════════════════════════════════
 
-EMBED_MODEL_NAME = "sentence-transformers/paraphrase-multilingual-mpnet-base-v2"
+EMBED_MODEL_NAME = "aubmindlab/bert-base-arabertv2"
 
 # Cross-encoder for reranking (multilingual, small, fast)
 RERANKER_MODEL_NAME = "cross-encoder/ms-marco-MiniLM-L-6-v2"
@@ -289,7 +289,11 @@ class HybridRetriever:
             chunked = len(expanded_questions)
             logger.info("Semantic chunking: %d → %d entries (%.1fx expansion)",
                         orig, chunked, chunked / max(orig, 1))
-            print(f"\n  📐 تشفير {chunked} وحدة ({orig} سؤال أصلي)...")
+            try:
+                sys.stdout.reconfigure(encoding='utf-8')
+            except Exception:
+                pass
+            print(f"\n  Tashfeer {chunked} units ({orig} questions)...")
 
         # ── Encode for FAISS ────────────────────────────────────
         self.embeddings = self.model.encode(
@@ -306,7 +310,11 @@ class HybridRetriever:
         self.index.add(self.embeddings)
 
         if verbose:
-            print(f"    ✅ FAISS جاهز: {self.index.ntotal} متجه × {self.dimension} بُعد")
+            try:
+                sys.stdout.reconfigure(encoding='utf-8')
+                print(f"    ✅ FAISS ready: {self.index.ntotal} vectors x {self.dimension} dimensions")
+            except Exception:
+                print(f"    FAISS ready: {self.index.ntotal} vectors")
 
         # ── Build BM25 ──────────────────────────────────────────
         self._tokenised_corpus = [
@@ -315,7 +323,11 @@ class HybridRetriever:
         self._build_bm25()
 
         if verbose and self._bm25:
-            print(f"    ✅ BM25 جاهز: {len(self._tokenised_corpus)} مستند")
+            try:
+                sys.stdout.reconfigure(encoding='utf-8')
+                print(f"    ✅ BM25 ready: {len(self._tokenised_corpus)} documents")
+            except Exception:
+                print(f"    BM25 ready: {len(self._tokenised_corpus)} documents")
 
         # ── Store metadata for save/load ────────────────────────
         self._meta = {
@@ -347,7 +359,11 @@ class HybridRetriever:
 
         logger.info("Saved FAISS index → %s", index_path)
         logger.info("Saved metadata   → %s", data_path)
-        print(f"    💾 تم حفظ الفهرس: {index_path}")
+        try:
+            sys.stdout.reconfigure(encoding='utf-8')
+            print(f"    💾 Saved index: {index_path}")
+        except Exception:
+            print(f"    Saved index: {index_path}")
 
     def load(self, index_path: str = None, data_path: str = None) -> bool:
         """Load persisted FAISS + BM25 + metadata. Returns True on success."""
@@ -566,7 +582,7 @@ class HybridRetriever:
                     c["dense_score"] = float(c.get("dense_score", 0)) * 0.5
                 
             # Hardware filter: Restrict absolute garbage semantic matches from passing through RRF
-            if not self._enable_reranker and c.get("dense_score", 0.0) < 0.45:
+            if not self._enable_reranker and c.get("dense_score", 0.0) < 0.25:
                 continue
 
             # Score threshold (use CE score if available, else RRF)

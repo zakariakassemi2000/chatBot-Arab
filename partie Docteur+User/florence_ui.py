@@ -71,7 +71,7 @@ def inject_florence_css():
     <style>
         /* Style global */
         .stApp {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: #f8fafc !important;
         }
         
         /* Style des boutons */

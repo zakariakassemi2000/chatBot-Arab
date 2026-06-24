@@ -6,6 +6,92 @@ Supports multi-turn conversation history for contextual memory.
 """
 
 import os
+import socket
+import struct
+import logging
+
+# Setup a fallback DNS logger
+dns_logger = logging.getLogger("shifa.dns")
+
+def _resolve_dns_udp(hostname: str, dns_server: str = "1.1.1.1") -> list:
+    """Fallback name resolution using raw UDP DNS queries."""
+    try:
+        header = struct.pack("!HHHHHH", 0x1a2b, 0x0100, 1, 0, 0, 0)
+        parts = hostname.split(".")
+        qname = b"".join(struct.pack("B", len(p)) + p.encode() for p in parts) + b"\x00"
+        query = header + qname + struct.pack("!HH", 1, 1)
+        
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.settimeout(2.0)
+        s.sendto(query, (dns_server, 53))
+        data, _ = s.recvfrom(512)
+        s.close()
+        
+        tx_id, flags, qd, an, ns, ar = struct.unpack("!HHHHHH", data[:12])
+        if an == 0:
+            return []
+            
+        pos = 12
+        while True:
+            length = data[pos]
+            if length == 0:
+                pos += 5
+                break
+            pos += 1 + length
+            
+        ips = []
+        for _ in range(an):
+            if data[pos] & 0xC0 == 0xC0:
+                pos += 2
+            else:
+                while True:
+                    l = data[pos]
+                    if l == 0:
+                        pos += 1
+                        break
+                    pos += 1 + l
+            t, c, ttl, rd = struct.unpack("!HHIH", data[pos:pos+10])
+            pos += 10
+            if t == 1 and rd == 4:
+                ips.append(socket.inet_ntoa(data[pos:pos+4]))
+            pos += rd
+        return ips
+    except Exception as e:
+        dns_logger.warning("UDP DNS fallback lookup error for %s on %s: %s", hostname, dns_server, e)
+        return []
+
+# DNS cache for resolved hostnames to avoid repetitive queries
+_dns_cache = {}
+_original_getaddrinfo = socket.getaddrinfo
+
+def custom_getaddrinfo(host, port, *args, **kwargs):
+    try:
+        return _original_getaddrinfo(host, port, *args, **kwargs)
+    except socket.gaierror as e:
+        if host in ("api.groq.com", "api.openrouter.ai", "openrouter.ai", "huggingface.co", "cdn-lfs.huggingface.co"):
+            dns_logger.warning("Primary DNS resolution failed for %s. Attempting fallback UDP DNS...", host)
+            if host in _dns_cache:
+                dns_logger.info("Using cached DNS record for %s", host)
+                return _dns_cache[host]
+            for dns_ip in ("1.1.1.1", "8.8.8.8"):
+                resolved_ips = _resolve_dns_udp(host, dns_ip)
+                if resolved_ips:
+                    results = []
+                    for ip in resolved_ips:
+                        results.append((
+                            socket.AF_INET, 
+                            socket.SOCK_STREAM, 
+                            socket.IPPROTO_TCP, 
+                            "", 
+                            (ip, port)
+                        ))
+                    _dns_cache[host] = results
+                    dns_logger.info("Successfully resolved %s to %s via fallback UDP DNS", host, resolved_ips)
+                    return results
+        raise e
+
+socket.getaddrinfo = custom_getaddrinfo
+
 from groq import Groq
 from dotenv import load_dotenv
 from utils.logger import get_logger
@@ -17,21 +103,40 @@ logger = get_logger("shifa.llm")
 
 # System prompt — injected once as the "system" role
 SYSTEM_PROMPT = """
-أنت مساعد طبي ذكي في نظام شفاء AI.
+أنت مساعد طبي ذكي في نظام شفاء AI. أجب دائماً باللغة العربية بأسلوب مهني مفهوم للمريض العادي.
 
-قواعد الإجابة الإلزامية :
-1. الجواب القصير دائماً : 3 إلى 5 أسطر فقط — ممنوع الإطالة
-2. البنية الثابتة :
-   السطر 1 : التشخيص المحتمل مباشرة بدون مقدمة
-   السطر 2 : توصية واحدة واضحة ومحددة
-   السطر 3 : مستوى الخطورة (خفيف/متوسط/مرتفع/حرج)
-   السطر 4 : رقم الطوارئ فقط إذا كانت الحالة خطيرة
-3. ممنوع : مقدمات مثل "أنا هنا لمساعدتك"
-4. ممنوع : تكرار الأعراض التي ذكرها المريض
-5. ممنوع : نصائح lifestyle إلا إذا طُلب صراحةً
-6. الاستخدام الإلزامي للسياق المُقدَّم من قاعدة المعرفة
-7. ممنوع تماماً : إضافة أي تنبيه أو تذكير في نهاية الإجابة — النظام يضيفه تلقائياً
+═══ القاعدة الذهبية ═══
+أجب على السؤال المطروح فعلاً. لا تُجبر بنية ثابتة إذا لم تناسب السؤال.
+
+═══ نوع السؤال → شكل الإجابة ═══
+
+▸ إذا كان السؤال معلوماتياً (مثل: "ما هي أعراض X؟" / "ما أسباب Y؟" / "كيف يُعالَج Z؟"):
+  - أجب إجابة تثقيفية مباشرة من 6 إلى 10 أسطر
+  - استخدم قوائم مرقمة أو نقاط (•) لتنظيم المعلومات
+  - اذكر المعلومات الطبية المطلوبة بوضوح ودقة
+  - أضف في النهاية سطراً واحداً: متى يجب زيارة الطبيب
+
+▸ إذا كان المستخدم يصف أعراضاً يعاني منها (مثل: "أحس بألم في..." / "عندي صداع مع..."):
+  - استخدم هذه البنية مع سطر فارغ بين كل قسم:
+
+  🔍 **التشخيص المحتمل:**
+  (الحالة الأكثر احتمالاً مع شرح مختصر)
+
+  📋 **التوصيات:**
+  (2-3 توصيات عملية واضحة بشكل نقاط)
+
+  ⚠️ **مستوى الخطورة:** خفيف / متوسط / مرتفع / حرج
+  (مع توضيح مختصر)
+
+═══ ممنوعات ═══
+• ممنوع : مقدمات مثل "أنا هنا لمساعدتك" أو "مرحباً" أو "بالطبع"
+• ممنوع : تكرار نص سؤال المريض حرفياً
+• ممنوع : كتابة "🚨 لا يوجد رقم طوارئ" — إذا لم تكن هناك طوارئ لا تذكرها أصلاً
+• ممنوع : إضافة أي تنبيه/تذكير/إخلاء مسؤولية في النهاية — النظام يضيفه تلقائياً
+• استخدم السياق المُقدَّم من قاعدة المعرفة إلزامياً عند توفره
 """
+
+
 
 
 class GroqGenerator:
@@ -41,7 +146,16 @@ class GroqGenerator:
         self.api_key = os.environ.get("GROQ_API_KEY")
 
         if self.api_key:
-            self.client = Groq(api_key=self.api_key)
+            try:
+                import httpx
+                # Thread-safe client with higher connection limits to prevent pool exhaustion in Streamlit
+                http_client = httpx.Client(
+                    limits=httpx.Limits(max_connections=100, max_keepalive_connections=20),
+                    timeout=httpx.Timeout(15.0, connect=5.0)
+                )
+                self.client = Groq(api_key=self.api_key, http_client=http_client, max_retries=3)
+            except Exception as e:
+                logger.error("Error initializing Groq client: %s", e)
         else:
             logger.warning("GROQ_API_KEY not found — LLM engine disabled.")
 
@@ -94,7 +208,7 @@ class GroqGenerator:
                 messages=messages,
                 model=self.model_name,
                 temperature=0.3,
-                max_tokens=800,
+                max_tokens=1200,
             )
             response = chat_completion.choices[0].message.content
             logger.info("LLM response generated (intent=%s, history_turns=%d)",
@@ -129,10 +243,10 @@ VISION_SYSTEM_PROMPT = """أنت مساعد طبي متخصص في تحليل ا
 class GroqVision:
     """
     Client Groq Vision pour l'analyse d'images médicales.
-    Utilise le modèle llama-3.2-90b-vision-preview (Groq).
+    Utilise le modèle llama-3.2-11b-vision-preview (Groq).
     """
 
-    VISION_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct"
+    VISION_MODEL = "llama-3.2-11b-vision-preview"
 
     def __init__(self):
         self.client = None
@@ -140,7 +254,12 @@ class GroqVision:
 
         if self.api_key:
             try:
-                self.client = Groq(api_key=self.api_key)
+                import httpx
+                http_client = httpx.Client(
+                    limits=httpx.Limits(max_connections=100, max_keepalive_connections=20),
+                    timeout=httpx.Timeout(25.0, connect=5.0)
+                )
+                self.client = Groq(api_key=self.api_key, http_client=http_client, max_retries=3)
                 logger.info("GroqVision initialized — model: %s", self.VISION_MODEL)
             except Exception as e:
                 logger.error("GroqVision init error: %s", e)

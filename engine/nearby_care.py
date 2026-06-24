@@ -25,9 +25,14 @@ except ImportError:
 
 
 # ── Constants ─────────────────────────────────────────────────────────────────
-OVERPASS_URL = "https://overpass-api.de/api/interpreter"
-OVERPASS_TIMEOUT = 30          # seconds for the HTTP call
-OSM_QUERY_TIMEOUT = 25         # seconds declared inside the QL query
+# Primary + fallback Overpass API mirrors (tried in order)
+OVERPASS_MIRRORS = [
+    "https://overpass-api.de/api/interpreter",          # primary
+    "https://overpass.kumi.systems/api/interpreter",    # mirror 1
+    "https://overpass.openstreetmap.fr/api/interpreter",# mirror 2
+]
+OVERPASS_TIMEOUT = 25          # seconds per mirror attempt
+OSM_QUERY_TIMEOUT = 20         # seconds declared inside the QL query
 
 # Amenity → human-readable Arabic label
 AMENITY_LABELS: Dict[str, str] = {
@@ -187,7 +192,13 @@ def _parse_element(
         or ""
     ).lower().strip()
 
-    specialty_ar = SPECIALTY_MAP.get(raw_specialty, raw_specialty)
+    # Only show specialty if it has an Arabic translation in SPECIALTY_MAP
+    # and it's not the same as the amenity type (to avoid duplicate info).
+    amenity_raw = tags.get("amenity", "").lower()
+    if raw_specialty and raw_specialty != amenity_raw and raw_specialty in SPECIALTY_MAP:
+        specialty_ar = SPECIALTY_MAP[raw_specialty]
+    else:
+        specialty_ar = ""
 
     # ── Amenity type ─────────────────────────────────────────────────────
     amenity      = tags.get("amenity", "clinic")
@@ -252,23 +263,33 @@ def get_nearby_doctors(
     """
     query = _build_overpass_query(user_lat, user_lon, radius_meters)
 
-    try:
-        response = requests.post(
-            OVERPASS_URL,
-            data={"data": query},
-            timeout=OVERPASS_TIMEOUT,
-            headers={"User-Agent": "SHIFA-AI/1.0 (medical chatbot; educational)"},
+    data = None
+    last_error: str = ""
+
+    for mirror_url in OVERPASS_MIRRORS:
+        try:
+            response = requests.post(
+                mirror_url,
+                data={"data": query},
+                timeout=OVERPASS_TIMEOUT,
+                headers={"User-Agent": "SHIFA-AI/1.0 (medical chatbot; educational)"},
+            )
+            response.raise_for_status()
+            data = response.json()
+            break  # success — stop trying mirrors
+        except requests.exceptions.Timeout:
+            last_error = f"⏱️ انتهت مهلة الاتصال بـ {mirror_url}"
+        except requests.exceptions.RequestException as exc:
+            last_error = str(exc)
+        except ValueError:
+            last_error = "استجابة غير صالحة من الخادم"
+
+    if data is None:
+        st.warning(
+            "⚠️ تعذّر الاتصال بخوادم OpenStreetMap (تم المحاولة على 3 خوادم).\n\n"
+            f"السبب: {last_error}\n\n"
+            "💡 **نصائح:** وسّع النطاق، أزل الفلاتر، أو حاول مجدداً بعد دقيقة."
         )
-        response.raise_for_status()
-        data = response.json()
-    except requests.exceptions.Timeout:
-        st.warning("⏱️ انتهت مهلة الطلب. حاول مجدداً لاحقاً.")
-        return []
-    except requests.exceptions.RequestException as exc:
-        st.warning(f"⚠️ تعذّر الاتصال بـ OpenStreetMap: {exc}")
-        return []
-    except ValueError:
-        st.warning("⚠️ استجابة غير صالحة من خادم Overpass.")
         return []
 
     results: List[Dict] = []

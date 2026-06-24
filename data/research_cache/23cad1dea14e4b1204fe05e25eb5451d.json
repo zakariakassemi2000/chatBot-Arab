@@ -1,0 +1,263 @@
+{
+  "query": "cancer ",
+  "topic": {
+    "topic": "سرطان",
+    "category": "صحة",
+    "search_query_ar": "سرطان، أمراض السرطان، علاج السرطان",
+    "search_query_en": "cancer, cancer diseases, cancer treatment"
+  },
+  "books": [
+    {
+      "type": "book",
+      "id": "/works/OL19763837W",
+      "title": "Chris beat cancer",
+      "subtitle": "",
+      "authors": [
+        "Chris Wark"
+      ],
+      "description": "Alternative treatment, Diet therapy, Cancer",
+      "publisher": "Hay House Inc.",
+      "published_date": "2018",
+      "page_count": 304,
+      "categories": [
+        "Alternative treatment",
+        "Diet therapy",
+        "Cancer"
+      ],
+      "language": "eng",
+      "thumbnail": "https://covers.openlibrary.org/b/id/12438991-M.jpg",
+      "preview_link": "https://openlibrary.org/works/OL19763837W",
+      "info_link": "https://openlibrary.org/works/OL19763837W",
+      "average_rating": 0,
+      "ratings_count": 0,
+      "semantic_score": 0.4848,
+      "popularity_score": 0.0,
+      "recency_score": 0.4,
+      "relevance_score": 0.3509
+    },
+    {
+      "type": "book",
+      "id": "/works/OL16361952W",
+      "title": "Cancer as a metabolic disease",
+      "subtitle": "",
+      "authors": [
+        "Thomas N. Seyfried"
+      ],
+      "description": "Neoplasms, Diet therapy, Energy Metabolism",
+      "publisher": "John Wiley & Sons",
+      "published_date": "2012",
+      "page_count": 421,
+      "categories": [
+        "Neoplasms",
+        "Diet therapy",
+        "Energy Metabolism"
+      ],
+      "language": "eng",
+      "thumbnail": "https://covers.openlibrary.org/b/id/14341085-M.jpg",
+      "preview_link": "https://openlibrary.org/works/OL16361952W",
+      "info_link": "https://openlibrary.org/works/OL16361952W",
+      "average_rating": 0,
+      "ratings_count": 0,
+      "semantic_score": 0.5273,
+      "popularity_score": 0.0,
+      "recency_score": 0.2,
+      "relevance_score": 0.3464
+    },
+    {
+      "type": "book",
+      "id": "/works/OL8537518W",
+      "title": "Cancer Sourcebook for Women",
+      "subtitle": "",
+      "authors": [
+        "Karen Bellenir",
+        "Amy L. Sutton",
+        "Allan R. Cook",
+        "Peter D. Dresser"
+      ],
+      "description": "Cancer in women, Popular works, Female Generative organs",
+      "publisher": "Omnigraphics",
+      "published_date": "1995",
+      "page_count": 715,
+      "categories": [
+        "Cancer in women",
+        "Popular works",
+        "Female Generative organs"
+      ],
+      "language": "eng",
+      "thumbnail": "https://covers.openlibrary.org/b/id/10648527-M.jpg",
+      "preview_link": "https://openlibrary.org/works/OL8537518W",
+      "info_link": "https://openlibrary.org/works/OL8537518W",
+      "average_rating": 0,
+      "ratings_count": 0,
+      "semantic_score": 0.5142,
+      "popularity_score": 0.0,
+      "recency_score": 0.2,
+      "relevance_score": 0.3385
+    },
+    {
+      "type": "book",
+      "id": "/works/OL1962260W",
+      "title": "Prostate cancer",
+      "subtitle": "",
+      "authors": [
+        "R. S. Kirby",
+        "Roger S. Kirby",
+        "Timothy Christmas",
+        "Michael Brawer"
+      ],
+      "description": "Urology & urogenital medicine, Prostate Cancer, Medical",
+      "publisher": "Health Press",
+      "published_date": "1998",
+      "page_count": 230,
+      "categories": [
+        "Urology & urogenital medicine",
+        "Prostate Cancer",
+        "Medical"
+      ],
+      "language": "eng",
+      "thumbnail": "https://covers.openlibrary.org/b/id/2557764-M.jpg",
+      "preview_link": "https://openlibrary.org/works/OL1962260W",
+      "info_link": "https://openlibrary.org/works/OL1962260W",
+      "average_rating": 0,
+      "ratings_count": 0,
+      "semantic_score": 0.4614,
+      "popularity_score": 0.0,
+      "recency_score": 0.2,
+      "relevance_score": 0.3068
+    },
+    {
+      "type": "book",
+      "id": "/works/OL13482629W",
+      "title": "Herbal medicine, healing & cancer",
+      "subtitle": "",
+      "authors": [
+        "Donald R. Yance",
+        "Donald Yance",
+        "Arlene Valentine"
+      ],
+      "description": "Phytotherapy, Neoplasms, Alternative therapies",
+      "publisher": "Keats Pub.",
+      "published_date": "1999",
+      "page_count": 468,
+      "categories": [
+        "Phytotherapy",
+        "Neoplasms",
+        "Alternative therapies"
+      ],
+      "language": "eng",
+      "thumbnail": "https://covers.openlibrary.org/b/id/676291-M.jpg",
+      "preview_link": "https://openlibrary.org/works/OL13482629W",
+      "info_link": "https://openlibrary.org/works/OL13482629W",
+      "average_rating": 0,
+      "ratings_count": 0,
+      "semantic_score": 0.4006,
+      "popularity_score": 0.0,
+      "recency_score": 0.2,
+      "relevance_score": 0.2704
+    }
+  ],
+  "articles": [
+    {
+      "type": "article",
+      "id": "3439568",
+      "title": "سرطان الثدي",
+      "summary": "سرطان الثدي هو نوع من أنواع السرطان يظهر في أنسجة الثدي. من علاماته تغير في شكل الثدي، وظهور كتلة في الثدي، تقشير الجلد، سائل قادم من الحلمة، حلمة مقلوبة حديثًا، أو بقع حمراء أو متقشرة. في حالة انتشار المرض في الجسم تظهر العلامات التالية:آلام العظم، انتفاخ في الغدد الليمفاوية، ضيق في التنفس أو اصفرار في الجلد.",
+      "url": "https://ar.wikipedia.org/wiki/%D8%B3%D8%B1%D8%B7%D8%A7%D9%86_%D8%A7%D9%84%D8%AB%D8%AF%D9%8A",
+      "thumbnail": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Mammo_breast_cancer.jpg/330px-Mammo_breast_cancer.jpg",
+      "source": "Wikipedia (AR)",
+      "lang": "ar",
+      "references": 333,
+      "description": "سرطان ينشأ من الغدد الثديية",
+      "semantic_score": 0.6853,
+      "popularity_score": 1.0,
+      "recency_score": 0.5,
+      "relevance_score": 0.7362
+    },
+    {
+      "type": "article",
+      "id": "131998",
+      "title": "سرطان",
+      "summary": "السَّرطان هو مجموعة من الأمراض التي تتميز خلاياها بالتوغل والانتشار ، هذه الخلايا المنقسمة لها القدرة على غزو الأنسجة المجاورة وتدميرها، أو الانتقال إلى أنسجة بعيدة في عملية يُطلق عليها الانبثاث. وهذه القدرات هي صفات الورم الخبيث على عكس الورم الحميد، الذي يتميز بنمو محدد وعدم القدرة على الغزو أو القدرة على الانتقال. مع ذلك يمكن أن يتطور الورم الحميد إلى سرطان خبيث في بعض الأحيان. حوالي 5-10% من السرطانات تحدث بسبب عيوب جينية وراثية من والدي الشخص ويمكن الكشف عن السرطان بعلامات وأعراض معينة أو اختبارات فحص. وبعد ذلك تُجْرَى المزيد من الاختبارات عن طريق التصوير الطبي والتأكيد بأخذ خزعة.",
+      "url": "https://ar.wikipedia.org/wiki/%D8%B3%D8%B1%D8%B7%D8%A7%D9%86",
+      "thumbnail": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Tumor_Mesothelioma2_legend.jpg/330px-Tumor_Mesothelioma2_legend.jpg",
+      "source": "Wikipedia (AR)",
+      "lang": "ar",
+      "references": 267,
+      "description": "مرض ينتج عن الانقسام المستمر غير الطبيعى للخلايا الحية",
+      "semantic_score": 0.678,
+      "popularity_score": 1.0,
+      "recency_score": 0.5,
+      "relevance_score": 0.7318
+    },
+    {
+      "type": "article",
+      "id": "1769143",
+      "title": "تاريخ السرطان",
+      "summary": "تاريخ السرطان يصف تطور مجال علم الأورام ودورها في تاريخ الطب.",
+      "url": "https://ar.wikipedia.org/wiki/%D8%AA%D8%A7%D8%B1%D9%8A%D8%AE_%D8%A7%D9%84%D8%B3%D8%B1%D8%B7%D8%A7%D9%86",
+      "thumbnail": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Clara_Jacobi-Tumor.jpg/330px-Clara_Jacobi-Tumor.jpg",
+      "source": "Wikipedia (AR)",
+      "lang": "ar",
+      "references": 32,
+      "description": "",
+      "semantic_score": 0.7216,
+      "popularity_score": 0.64,
+      "recency_score": 0.5,
+      "relevance_score": 0.668
+    }
+  ],
+  "videos": [
+    {
+      "type": "video",
+      "id": "search_1",
+      "title": "cancer, cancer diseases, cancer treatment — شرح طبي",
+      "description": "شروحات طبية متخصصة",
+      "channel_title": "YouTube Search",
+      "published_at": "",
+      "thumbnail": "https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+      "url": "https://www.youtube.com/results?search_query=cancer%2C+cancer+diseases%2C+cancer+treatment+شرح+طبي",
+      "view_count": 0,
+      "like_count": 0,
+      "is_search_link": true,
+      "semantic_score": 0.7469,
+      "popularity_score": 0.0,
+      "recency_score": 0.5,
+      "relevance_score": 0.5231
+    },
+    {
+      "type": "video",
+      "id": "search_2",
+      "title": "cancer, cancer diseases, cancer treatment — علاج ووقاية",
+      "description": "نصائح العلاج والوقاية",
+      "channel_title": "YouTube Search",
+      "published_at": "",
+      "thumbnail": "https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+      "url": "https://www.youtube.com/results?search_query=cancer%2C+cancer+diseases%2C+cancer+treatment+علاج+وقاية",
+      "view_count": 0,
+      "like_count": 0,
+      "is_search_link": true,
+      "semantic_score": 0.6746,
+      "popularity_score": 0.0,
+      "recency_score": 0.5,
+      "relevance_score": 0.4797
+    },
+    {
+      "type": "video",
+      "id": "search_0",
+      "title": "cancer, cancer diseases, cancer treatment",
+      "description": "نتائج يوتيوب لـ: cancer, cancer diseases, cancer treatment",
+      "channel_title": "YouTube Search",
+      "published_at": "",
+      "thumbnail": "https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+      "url": "https://www.youtube.com/results?search_query=cancer%2C+cancer+diseases%2C+cancer+treatment",
+      "view_count": 0,
+      "like_count": 0,
+      "is_search_link": true,
+      "semantic_score": 0.5326,
+      "popularity_score": 0.0,
+      "recency_score": 0.5,
+      "relevance_score": 0.3945
+    }
+  ],
+  "timestamp": "2026-06-14T23:57:22.731818"
+}

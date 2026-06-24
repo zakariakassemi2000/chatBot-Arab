@@ -91,6 +91,16 @@ class IntentClassifier:
         if embedding.ndim == 1:
             embedding = embedding.reshape(1, -1)
 
+        # ── Dimension safety: handle model mismatch ──
+        expected = self.model.n_features_in_
+        actual = embedding.shape[1]
+        if actual != expected:
+            if actual > expected:
+                embedding = embedding[:, :expected]
+            else:
+                pad = np.zeros((embedding.shape[0], expected - actual), dtype=embedding.dtype)
+                embedding = np.hstack([embedding, pad])
+
         proba = self.model.predict_proba(embedding)[0]
         pred_idx = np.argmax(proba)
         confidence = proba[pred_idx]
@@ -110,6 +120,16 @@ class IntentClassifier:
 
         if embedding.ndim == 1:
             embedding = embedding.reshape(1, -1)
+
+        # ── Dimension safety: handle model mismatch ──
+        expected = self.model.n_features_in_
+        actual = embedding.shape[1]
+        if actual != expected:
+            if actual > expected:
+                embedding = embedding[:, :expected]
+            else:
+                pad = np.zeros((embedding.shape[0], expected - actual), dtype=embedding.dtype)
+                embedding = np.hstack([embedding, pad])
 
         proba = self.model.predict_proba(embedding)[0]
         top_k_indices = np.argsort(proba)[-k:][::-1]

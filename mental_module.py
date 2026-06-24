@@ -126,13 +126,13 @@ def render_mental_module(api_key: Optional[str] = None):
     col_d1, col_d2, col_d3 = st.columns([1, 1, 4])
     with col_d1:
         if st.button("🇲🇦 الدارجة", key="btn_darija",
-                     use_container_width=True,
+                     width="stretch",
                      type="primary" if st.session_state.mental_dialect == "darija" else "secondary"):
             st.session_state.mental_dialect = "darija"
             st.rerun()
     with col_d2:
         if st.button("📖 الفصحى", key="btn_msa",
-                     use_container_width=True,
+                     width="stretch",
                      type="primary" if st.session_state.mental_dialect == "msa" else "secondary"):
             st.session_state.mental_dialect = "msa"
             st.rerun()
@@ -167,13 +167,13 @@ def render_mental_module(api_key: Optional[str] = None):
             st.markdown("""
             <div class="crisis-screen" style="margin-bottom:1.5rem;">
                 <div style="font-size:2rem; margin-bottom:0.5rem;">💙</div>
-                <div style="color:#f0f4ff; font-size:1.2rem; font-weight:700; margin-bottom:0.5rem;">
+                <div style="color:#e11d48; font-size:1.2rem; font-weight:700; margin-bottom:0.5rem;">
                     كيف حالك اليوم؟
                 </div>
-                <div style="color:#94a3b8; font-size:0.9rem;">
+                <div style="color:#475569; font-size:0.9rem;">
                     لاحظنا أنك مررت بوقت صعب مؤخراً. نريد الاطمئنان عليك.
                     <br>تذكّر أن طلب المساعدة علامة قوة وليست ضعفاً.
-                    <br>📞 خط الدعم النفسي: <strong>0800 005 100</strong>
+                    <br>📞 خط الدعم النفسي: <strong style="color:#e11d48;">0800 005 100</strong>
                 </div>
             </div>
             """, unsafe_allow_html=True)
@@ -253,7 +253,7 @@ def _render_chat_tab(detector, llm_client, db, dialect, api_key):
         greeting = "كيفاش كتحس اليوم؟" if dialect == "darija" else "كيف تشعر اليوم؟"
         st.markdown(f"#### {greeting}")
     with col2:
-        if st.button("🔄 محادثة جديدة", use_container_width=True):
+        if st.button("🔄 محادثة جديدة", width="stretch"):
             st.session_state.mental_chat = []
             st.session_state.distress_history = []
             st.rerun()
@@ -272,7 +272,7 @@ def _render_chat_tab(detector, llm_client, db, dialect, api_key):
         st.markdown(f"""
         <div class="mental-card">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                <span style="color:#94a3b8; font-size:0.85rem;">مستوى الضيق المكتشف</span>
+                <span style="color:#475569; font-size:0.85rem;">مستوى الضيق المكتشف</span>
                 <span class="severity-badge {badge_classes[current_level]}">{labels[current_level]}</span>
             </div>
             <div class="distress-gauge">{bars_html}</div>
@@ -285,12 +285,12 @@ def _render_chat_tab(detector, llm_client, db, dialect, api_key):
             welcome = """مرحبا، أنا شفاء-نفس 🌿<br><br>
             أنا هنا باش نسمع ليك بتعاطف وبلا أحكام.
             يمكنك تهضر على المشاعر ديالك والأفكار ديالك بحرية تامة.<br><br>
-            <em style="color:#94a3b8;">كيفاش كتحس ف هاد اللحظة؟</em>"""
+            <em style="color:#475569;">كيفاش كتحس ف هاد اللحظة؟</em>"""
         else:
             welcome = """مرحباً، أنا شفاء-نفس 🌿<br><br>
             أنا هنا للاستماع إليك بتعاطف ودون أحكام.
             يمكنك التحدث عن مشاعرك وأفكارك بحرية تامة.<br><br>
-            <em style="color:#94a3b8;">كيف تشعر في هذه اللحظة؟</em>"""
+            <em style="color:#475569;">كيف تشعر في هذه اللحظة؟</em>"""
 
         st.markdown(f"""
         <div class="mental-card">
@@ -330,9 +330,9 @@ def _render_chat_tab(detector, llm_client, db, dialect, api_key):
 
     send_col, clear_col = st.columns([3, 1])
     with send_col:
-        send_btn = st.button("📤 إرسال", use_container_width=True, type="primary")
+        send_btn = st.button("📤 إرسال", width="stretch", type="primary")
     with clear_col:
-        if st.button("🗑️ مسح", use_container_width=True):
+        if st.button("🗑️ مسح", width="stretch"):
             st.session_state["mental_input"] = ""
 
     if send_btn and user_input.strip():
@@ -382,7 +382,7 @@ def _render_phq9_tab(db):
     st.markdown("#### 📋 مقياس تقييم الاكتئاب (PHQ-9)")
     st.markdown("""
     <div class="mental-card">
-        <p style="color:#94a3b8; margin:0;">
+        <p style="color:#475569; margin:0;">
         على مدى آخر أسبوعين، كم مرة أزعجتك المشكلات التالية؟
         </p>
     </div>
@@ -401,7 +401,7 @@ def _render_phq9_tab(db):
         )
         answers.append(answer)
 
-    if st.button("📊 احسب النتيجة", use_container_width=True, key="calc_phq9"):
+    if st.button("📊 احسب النتيجة", width="stretch", key="calc_phq9"):
         score, severity, rec, badge_class = PHQ9Assessment.calculate(answers)
         icon = PHQ9Assessment.get_badge_icon(severity)
 
@@ -409,15 +409,15 @@ def _render_phq9_tab(db):
         db.save_assessment("PHQ-9", score, severity, answers)
 
         st.markdown(f"""
-        <div class="mental-card" style="border-color: rgba(139,92,246,0.4);">
+        <div class="mental-card" style="border-color: rgba(124, 58, 237, 0.25);">
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <div>
-                    <div style="font-size:2.5rem; font-weight:700; color:#06b6d4;">{score}<span style="font-size:1rem; color:#94a3b8;">/27</span></div>
+                    <div style="font-size:2.5rem; font-weight:700; color:#0284c7;">{score}<span style="font-size:1rem; color:#64748b;">/27</span></div>
                     <span class="severity-badge {badge_class}">{icon} {severity}</span>
                 </div>
                 <div style="font-size:3rem;">{icon}</div>
             </div>
-            <p style="color:#94a3b8; margin-top:1rem; margin-bottom:0;">{rec}</p>
+            <p style="color:#475569; margin-top:1rem; margin-bottom:0;">{rec}</p>
         </div>
         """, unsafe_allow_html=True)
 
@@ -432,9 +432,9 @@ def _render_phq9_tab(db):
         for entry in past:
             st.markdown(f"""
             <div class="resource-card">
-                <div style="color:#94a3b8; font-size:0.8rem; width:80px;">{entry['date'][-5:]}</div>
-                <div style="flex:1; color:#e2e8f0; font-weight:600;">{entry['severity']}</div>
-                <div style="color:#06b6d4; font-weight:700;">{entry['score']}/27</div>
+                <div style="color:#64748b; font-size:0.8rem; width:80px;">{entry['date'][-5:]}</div>
+                <div style="flex:1; color:#1e293b; font-weight:600;">{entry['severity']}</div>
+                <div style="color:#0284c7; font-weight:700;">{entry['score']}/27</div>
             </div>
             """, unsafe_allow_html=True)
 
@@ -444,7 +444,7 @@ def _render_gad7_tab(db):
     st.markdown("#### 😰 مقياس اضطراب القلق العام (GAD-7)")
     st.markdown("""
     <div class="mental-card">
-        <p style="color:#94a3b8; margin:0;">
+        <p style="color:#475569; margin:0;">
         على مدى آخر أسبوعين، كم مرة أزعجتك المشكلات التالية؟
         </p>
     </div>
@@ -463,7 +463,7 @@ def _render_gad7_tab(db):
         )
         answers.append(answer)
 
-    if st.button("📊 احسب نتيجة القلق", use_container_width=True, key="calc_gad7"):
+    if st.button("📊 احسب نتيجة القلق", width="stretch", key="calc_gad7"):
         score, severity, rec, badge_class = GAD7Assessment.calculate(answers)
         icon = GAD7Assessment.get_badge_icon(severity)
 
@@ -471,15 +471,15 @@ def _render_gad7_tab(db):
         db.save_assessment("GAD-7", score, severity, answers)
 
         st.markdown(f"""
-        <div class="mental-card" style="border-color: rgba(139,92,246,0.4);">
+        <div class="mental-card" style="border-color: rgba(124, 58, 237, 0.25);">
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <div>
-                    <div style="font-size:2.5rem; font-weight:700; color:#8b5cf6;">{score}<span style="font-size:1rem; color:#94a3b8;">/21</span></div>
+                    <div style="font-size:2.5rem; font-weight:700; color:#7c3aed;">{score}<span style="font-size:1rem; color:#64748b;">/21</span></div>
                     <span class="severity-badge {badge_class}">{icon} {severity}</span>
                 </div>
                 <div style="font-size:3rem;">{icon}</div>
             </div>
-            <p style="color:#94a3b8; margin-top:1rem; margin-bottom:0;">{rec}</p>
+            <p style="color:#475569; margin-top:1rem; margin-bottom:0;">{rec}</p>
         </div>
         """, unsafe_allow_html=True)
 
@@ -494,9 +494,9 @@ def _render_gad7_tab(db):
         for entry in past:
             st.markdown(f"""
             <div class="resource-card">
-                <div style="color:#94a3b8; font-size:0.8rem; width:80px;">{entry['date'][-5:]}</div>
-                <div style="flex:1; color:#e2e8f0; font-weight:600;">{entry['severity']}</div>
-                <div style="color:#8b5cf6; font-weight:700;">{entry['score']}/21</div>
+                <div style="color:#64748b; font-size:0.8rem; width:80px;">{entry['date'][-5:]}</div>
+                <div style="flex:1; color:#1e293b; font-weight:600;">{entry['severity']}</div>
+                <div style="color:#7c3aed; font-weight:700;">{entry['score']}/21</div>
             </div>
             """, unsafe_allow_html=True)
 
@@ -512,7 +512,7 @@ def _render_exercises_tab():
                 st.markdown("""
                 <div class="breath-container">
                     <div class="breath-circle">تنفّس</div>
-                    <p style="color:#94a3b8; text-align:center;">اتبع نبضة الدائرة</p>
+                    <p style="color:#475569; text-align:center;">اتبع نبضة الدائرة</p>
                 </div>
                 """, unsafe_allow_html=True)
 
@@ -520,12 +520,12 @@ def _render_exercises_tab():
             for j, (step_name, step_desc, duration) in enumerate(ex_data["steps"]):
                 st.markdown(f"""
                 <div class="resource-card">
-                    <div class="resource-icon" style="background:rgba(6,182,212,0.1);">
-                        <span style="color:#06b6d4;">{j+1}</span>
+                    <div class="resource-icon" style="background:rgba(2, 132, 199, 0.08);">
+                        <span style="color:#0284c7;">{j+1}</span>
                     </div>
                     <div>
-                        <div style="color:#f0f4ff; font-weight:600;">{step_name}</div>
-                        <div style="color:#94a3b8; font-size:0.85rem;">{step_desc} — {duration} ثانية</div>
+                        <div style="color:#1e293b; font-weight:600;">{step_name}</div>
+                        <div style="color:#475569; font-size:0.85rem;">{step_desc} — {duration} ثانية</div>
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
@@ -549,8 +549,8 @@ def _render_cbt_tab(db):
             <div style="font-size:1.3rem; color:{sv['color']}; font-weight:700; margin-bottom:0.5rem; line-height:2;">
                 {sv['verse']}
             </div>
-            <div style="color:#94a3b8; font-size:0.82rem; margin-bottom:0.5rem;">📖 {sv['source']}</div>
-            <div style="color:#e2e8f0; font-size:0.92rem;">{sv['meaning']}</div>
+            <div style="color:#475569; font-size:0.82rem; margin-bottom:0.5rem;">📖 {sv['source']}</div>
+            <div style="color:#1e293b; font-size:0.92rem;">{sv['meaning']}</div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -562,7 +562,7 @@ def _render_cbt_tab(db):
             for step in tech['steps']:
                 st.markdown(f"""
                 <div class="resource-card">
-                    <div style="color:#e2e8f0; font-size:0.92rem;">{step}</div>
+                    <div style="color:#1e293b; font-size:0.92rem;">{step}</div>
                 </div>
                 """, unsafe_allow_html=True)
 
@@ -594,9 +594,9 @@ def _render_cbt_tab(db):
         for entry in past_thoughts:
             st.markdown(f"""
             <div class="mental-card" style="margin:0.5rem 0;">
-                <div style="color:#94a3b8; font-size:0.75rem; margin-bottom:0.5rem;">🕐 {entry['date']}</div>
-                <div style="color:#f43f5e; font-size:0.88rem;">❌ {entry['negative']}</div>
-                <div style="color:#10b981; font-size:0.88rem; margin-top:0.4rem;">✅ {entry['positive']}</div>
+                <div style="color:#475569; font-size:0.75rem; margin-bottom:0.5rem;">🕐 {entry['date']}</div>
+                <div style="color:#e11d48; font-size:0.88rem;">❌ {entry['negative']}</div>
+                <div style="color:#059669; font-size:0.88rem; margin-top:0.4rem;">✅ {entry['positive']}</div>
             </div>
             """, unsafe_allow_html=True)
 
@@ -618,7 +618,7 @@ def _render_mood_tab(db):
     with col_mood1:
         selected_mood = st.selectbox("كيف مزاجك الآن؟", list(MOOD_OPTIONS.keys()), key="mood_select")
         mood_note = st.text_input("ملاحظة:", placeholder="ما الذي أثّر على مزاجك؟", key="mood_note")
-        if st.button("➕ تسجيل المزاج", key="log_mood", use_container_width=True):
+        if st.button("➕ تسجيل المزاج", key="log_mood", width="stretch"):
             db.save_mood(selected_mood, MOOD_OPTIONS[selected_mood], mood_note)
             st.success(f"تم تسجيل مزاجك: {selected_mood}")
             st.rerun()
@@ -638,11 +638,11 @@ def _render_mood_tab(db):
             m2.metric("المتوسط", f"{avg:.1f}/5")
             m3.metric("الاتجاه", trend)
 
-            colors = {5: "#10b981", 4: "#06b6d4", 3: "#f59e0b", 2: "#f97316", 1: "#f43f5e"}
+            colors = {5: "#059669", 4: "#0284c7", 3: "#d97706", 2: "#ea580c", 1: "#e11d48"}
             bars_html = "".join([
                 f'<div style="display:flex;align-items:center;gap:8px;margin:4px 0;">'
-                f'<span style="color:#94a3b8;font-size:0.75rem;width:40px;">{labels[i]}</span>'
-                f'<div style="flex:1;background:rgba(255,255,255,0.05);border-radius:4px;height:18px;overflow:hidden;">'
+                f'<span style="color:#475569;font-size:0.75rem;width:40px;">{labels[i]}</span>'
+                f'<div style="flex:1;background:#e2e8f0;border-radius:4px;height:18px;overflow:hidden;">'
                 f'<div style="width:{scores[i]*20}%;background:{colors[scores[i]]};height:100%;border-radius:4px;transition:width 0.5s;"></div>'
                 f'</div>'
                 f'<span style="color:{colors[scores[i]]};font-size:0.85rem;">{m["mood_label"].split()[0]}</span>'
@@ -652,7 +652,7 @@ def _render_mood_tab(db):
 
             st.markdown(f"""
             <div class="mental-card">
-                <div style="color:#94a3b8;font-size:0.8rem;margin-bottom:0.75rem;">📅 آخر {len(recent)} سجل</div>
+                <div style="color:#475569;font-size:0.8rem;margin-bottom:0.75rem;">📅 آخر {len(recent)} سجل</div>
                 {bars_html}
             </div>
             """, unsafe_allow_html=True)
@@ -661,16 +661,16 @@ def _render_mood_tab(db):
             if len(scores) >= 3:
                 if avg >= 4:
                     insight = "🌟 مزاجك ممتاز بشكل عام! استمر في ما تفعله."
-                    insight_color = "#10b981"
+                    insight_color = "#059669"
                 elif avg >= 3:
                     insight = "💙 مزاجك معقول. بعض تمارين الاسترخاء قد تساعد."
-                    insight_color = "#06b6d4"
+                    insight_color = "#0284c7"
                 else:
                     insight = "🤗 يبدو أنك تمر بوقت صعب. تحدث مع شفاء-نفس أو جرب تمارين الاسترخاء."
-                    insight_color = "#f59e0b"
+                    insight_color = "#d97706"
 
                 st.markdown(f"""
-                <div class="mental-card" style="border-color:{insight_color}40; background:rgba(0,0,0,0.2);">
+                <div class="mental-card" style="border-color:{insight_color}40; background:#f8fafc;">
                     <div style="color:{insight_color}; font-size:0.92rem;">{insight}</div>
                 </div>
                 """, unsafe_allow_html=True)
@@ -678,7 +678,7 @@ def _render_mood_tab(db):
             st.markdown("""
             <div class="mental-card" style="text-align:center; padding: 2rem;">
                 <div style="font-size:2rem;">📊</div>
-                <div style="color:#94a3b8; margin-top:0.5rem;">لا توجد سجلات بعد.<br>سجّل مزاجك اليومي لرؤية الأنماط.</div>
+                <div style="color:#475569; margin-top:0.5rem;">لا توجد سجلات بعد.<br>سجّل مزاجك اليومي لرؤية الأنماط.</div>
             </div>
             """, unsafe_allow_html=True)
 
@@ -692,12 +692,12 @@ def _render_mood_tab(db):
         for entry in all_moods[:15]:
             st.markdown(f"""
             <div class="resource-card">
-                <div class="resource-icon" style="background:rgba(6,182,212,0.1); font-size:1.2rem;">{entry['mood_label'].split()[0]}</div>
+                <div class="resource-icon" style="background:rgba(2, 132, 199, 0.08); font-size:1.2rem;">{entry['mood_label'].split()[0]}</div>
                 <div style="flex:1;">
-                    <div style="color:#e2e8f0; font-weight:600; font-size:0.88rem;">{entry['mood_label']}</div>
-                    <div style="color:#94a3b8; font-size:0.78rem;">{entry['date']}{' — ' + entry['note'] if entry.get('note') else ''}</div>
+                    <div style="color:#1e293b; font-weight:600; font-size:0.88rem;">{entry['mood_label']}</div>
+                    <div style="color:#475569; font-size:0.78rem;">{entry['date']}{' — ' + entry['note'] if entry.get('note') else ''}</div>
                 </div>
-                <div style="color:#06b6d4; font-weight:700;">{'⭐' * entry['score']}</div>
+                <div style="color:#0284c7; font-weight:700;">{'⭐' * entry['score']}</div>
             </div>
             """, unsafe_allow_html=True)
 
@@ -717,7 +717,7 @@ def _render_journal_tab(db, llm_client, dialect, api_key):
         key="journal_content"
     )
 
-    if st.button("💾 حفظ في اليومية", key="save_personal_journal", use_container_width=True):
+    if st.button("💾 حفظ في اليومية", key="save_personal_journal", width="stretch"):
         if journal_input.strip():
             db.save_journal(journal_input.strip())
             st.success("✅ تم حفظ الإدخال في يوميتك الشخصية!")
@@ -732,17 +732,17 @@ def _render_journal_tab(db, llm_client, dialect, api_key):
             preview = entry["content"][:120] + "..." if len(entry["content"]) > 120 else entry["content"]
             sentiment_badge = ""
             if entry.get("sentiment_label"):
-                colors_map = {"إيجابي": "#10b981", "سلبي": "#f43f5e", "محايد": "#f59e0b"}
-                scolor = colors_map.get(entry["sentiment_label"], "#94a3b8")
+                colors_map = {"إيجابي": "#059669", "سلبي": "#e11d48", "محايد": "#d97706"}
+                scolor = colors_map.get(entry["sentiment_label"], "#475569")
                 sentiment_badge = f'<span style="color:{scolor}; font-size:0.75rem; margin-right:8px;">● {entry["sentiment_label"]}</span>'
 
             st.markdown(f"""
             <div class="mental-card" style="margin:0.5rem 0; padding:1rem;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
-                    <span style="color:#94a3b8; font-size:0.75rem;">🕐 {entry['date']}</span>
+                    <span style="color:#475569; font-size:0.75rem;">🕐 {entry['date']}</span>
                     {sentiment_badge}
                 </div>
-                <div style="color:#e2e8f0; font-size:0.9rem; line-height:1.7;">{preview}</div>
+                <div style="color:#1e293b; font-size:0.9rem; line-height:1.7;">{preview}</div>
             </div>
             """, unsafe_allow_html=True)
 
@@ -757,13 +757,13 @@ def _render_resources_tab():
     st.markdown("**🚨 خطوط الطوارئ النفسية**")
     for res in urgent_resources:
         st.markdown(f"""
-        <div class="resource-card" style="border-color: rgba(244,63,94,0.3);">
-            <div class="resource-icon" style="background:rgba(244,63,94,0.1);">
+        <div class="resource-card" style="border-color: rgba(225, 29, 72, 0.25);">
+            <div class="resource-icon" style="background:rgba(225, 29, 72, 0.08);">
                 {res['icon']}
             </div>
             <div style="flex:1;">
-                <div style="color:#f0f4ff; font-weight:700;">{res['name']}</div>
-                <div style="color:#94a3b8; font-size:0.85rem;">{res['detail']}</div>
+                <div style="color:#1e293b; font-weight:700;">{res['name']}</div>
+                <div style="color:#475569; font-size:0.85rem;">{res['detail']}</div>
             </div>
             <div style="color:{res['color']}; font-weight:700; font-size:1.1rem;">{res['contact']}</div>
         </div>
@@ -773,20 +773,20 @@ def _render_resources_tab():
     for res in other_resources:
         st.markdown(f"""
         <div class="resource-card">
-            <div class="resource-icon" style="background:rgba(139,92,246,0.1);">
+            <div class="resource-icon" style="background:rgba(124, 58, 237, 0.08);">
                 {res['icon']}
             </div>
             <div style="flex:1;">
-                <div style="color:#f0f4ff; font-weight:600;">{res['name']}</div>
-                <div style="color:#94a3b8; font-size:0.85rem;">{res['detail']}</div>
+                <div style="color:#1e293b; font-weight:600;">{res['name']}</div>
+                <div style="color:#475569; font-size:0.85rem;">{res['detail']}</div>
             </div>
             <div style="color:{res['color']}; font-size:0.9rem;">{res['contact']}</div>
         </div>
         """, unsafe_allow_html=True)
 
     st.markdown("""
-    <div class="mental-card" style="margin-top:1.5rem; border-color: rgba(6,182,212,0.25);">
-        <p style="color:#94a3b8; font-size:0.88rem; margin:0; text-align:center;">
+    <div class="mental-card" style="margin-top:1.5rem; border-color: rgba(2, 132, 199, 0.25);">
+        <p style="color:#475569; font-size:0.88rem; margin:0; text-align:center;">
             ⚠️ شفاء-نفس هو مساعد دعم، وليس بديلاً عن الرعاية النفسية المتخصصة.
             في حالات الأزمة، يُرجى التواصل فوراً مع خطوط الطوارئ أعلاه.
         </p>

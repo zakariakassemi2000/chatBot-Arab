@@ -2,12 +2,12 @@
 SITE_NAME = "Parapharmacie "
 SITE_ICON = "💊"
 
-# Design System - Rouge
+# Design System - Bleu Médical
 COLORS = {
-    "primary": "#dc2626",      # Rouge principal
-    "primary_dark": "#b91c1c",  # Rouge foncé
-    "primary_light": "#ef4444", # Rouge clair
-    "primary_bg": "#fef2f2",    # Fond rouge très clair
+    "primary": "#2563EB",      # Bleu principal
+    "primary_dark": "#1D4ED8",  # Bleu foncé
+    "primary_light": "#3B82F6", # Bleu clair
+    "primary_bg": "#eff6ff",    # Fond bleu très clair
     "secondary": "#4b5563",     # Gris
     "success": "#10b981",       # Vert
     "warning": "#f59e0b",       # Orange

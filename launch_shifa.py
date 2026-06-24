@@ -38,12 +38,12 @@ BOLD = "\033[1m"
 def banner():
     print(f"""
 {GREEN}{BOLD}
-  ╔═══════════════════════════════════════════════════════════╗
-  ║               🏥  SHIFA AI — Unified Launcher            ║
-  ╠═══════════════════════════════════════════════════════════╣
-  ║  Chatbot Médical (arabe)    →  http://localhost:{MAIN_PORT}     ║
-  ║  Espace Docteur + Patient   →  http://localhost:{DOCTOR_PORT}     ║
-  ╚═══════════════════════════════════════════════════════════╝
+  ===========================================================
+                 SHIFA AI - Unified Launcher            
+  ===========================================================
+    Chatbot Medical (arabe)    ->  http://localhost:{MAIN_PORT}     
+    Espace Docteur + Patient   ->  http://localhost:{DOCTOR_PORT}     
+  ===========================================================
 {RESET}""")
 
 
@@ -62,9 +62,9 @@ def launch():
             cwd=str(PROJECT_ROOT)
         )
         processes.append(("SHIFA AI", p1))
-        print(f"  {GREEN}✔ PID {p1.pid}{RESET}")
+        print(f"  {GREEN}[OK] PID {p1.pid}{RESET}")
     else:
-        print(f"  {RED}✘ Fichier introuvable : {MAIN_APP}{RESET}")
+        print(f"  {RED}[ERR] Fichier introuvable : {MAIN_APP}{RESET}")
 
     time.sleep(2)
 
@@ -78,16 +78,16 @@ def launch():
             cwd=str(DOCTOR_APP.parent)
         )
         processes.append(("Docteur+Patient", p2))
-        print(f"  {GREEN}✔ PID {p2.pid}{RESET}")
+        print(f"  {GREEN}[OK] PID {p2.pid}{RESET}")
     else:
-        print(f"  {RED}✘ Fichier introuvable : {DOCTOR_APP}{RESET}")
+        print(f"  {RED}[ERR] Fichier introuvable : {DOCTOR_APP}{RESET}")
 
     if not processes:
         print(f"\n{RED}Aucune application lancée. Vérifiez les fichiers.{RESET}")
         return
 
-    print(f"\n{GREEN}{BOLD}═══ Les deux applications sont lancées ! ═══{RESET}")
-    print(f"{YELLOW}Appuyez sur Ctrl+C pour arrêter toutes les applications.{RESET}\n")
+    print(f"\n{GREEN}{BOLD}=== Les deux applications sont lancees ! ==={RESET}")
+    print(f"{YELLOW}Appuyez sur Ctrl+C pour arreter toutes les applications.{RESET}\n")
 
     # ── Wait & Cleanup ──
     try:
@@ -102,10 +102,10 @@ def launch():
             try:
                 proc.terminate()
                 proc.wait(timeout=5)
-                print(f"  {GREEN}✔ {name} arrêté{RESET}")
+                print(f"  {GREEN}[OK] {name} arrêté{RESET}")
             except Exception:
                 proc.kill()
-                print(f"  {RED}✘ {name} forcé à s'arrêter{RESET}")
+                print(f"  {RED}[ERR] {name} forcé à s'arrêter{RESET}")
         print(f"\n{GREEN}Toutes les applications sont arrêtées. Au revoir !{RESET}")
 
 
